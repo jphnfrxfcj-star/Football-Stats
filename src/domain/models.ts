@@ -28,7 +28,19 @@ export type Metric =
   | 'bigChances'
   | 'xg';
 export type TeamMetrics = Record<Metric, number | null>;
+export interface SourceStamp {
+  name: string;
+  url: string;
+  fetchedAt: string;
+}
 export interface Fixture {
+  sourceDate?: string;
+  kickoffKnown?: boolean;
+  provenance?: {
+    sources: SourceStamp[];
+    fields: Partial<Record<'kickoff' | 'score' | 'halfTime' | 'statistics', string>>;
+    conflicts: string[];
+  };
   id: string;
   refs: ProviderRef[];
   league: League;
@@ -57,6 +69,7 @@ export interface MatchData {
   awayHistory: Fixture[];
   h2h: Fixture[];
   source: 'demo' | 'live';
+  sourceLabel?: string;
   updatedAt: string;
   warnings: string[];
 }

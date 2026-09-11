@@ -1,6 +1,34 @@
 import { ServiceError } from './errors';
 export function serverConfig(env: NodeJS.ProcessEnv = process.env) {
-  const names = ['API_FOOTBALL_KEY', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] as const;
+  const provider = env.FOOTBALL_PROVIDER?.trim() || 'free-football';
+  if (!['free-football', 'api-football'].includes(provider))
+    throw new ServiceError(
+      'PROVIDER_INVALID',
+      'FOOTBALL_PROVIDER moet free-football of api-football zijn.',
+    );
+  const names = [
+    'SUPABASE_URL',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    ...(provider === 'api-football' ? ['API_FOOTBALL_KEY'] : []),
+  ];
+  const now = new Date();
+  const season = Number(
+    env.FOOTBALL_SEASON?.trim() || now.getUTCFullYear() - (now.getUTCMonth() < 6 ? 1 : 0),
+  );
+  if (!Number.isInteger(season) || season < 2024 || season > now.getUTCFullYear())
+    throw new ServiceError(
+      'SEASON_INVALID',
+      'FOOTBALL_SEASON moet een seizoenstartjaar vanaf 2024 tot het huidige jaar zijn.',
+    );
+  if (
+    provider === 'free-football' &&
+    env.SUPPORTED_LEAGUE_ID &&
+    !['39', 'E0'].includes(env.SUPPORTED_LEAGUE_ID)
+  )
+    throw new ServiceError(
+      'LEAGUE_UNSUPPORTED',
+      'De gratis bron ondersteunt momenteel alleen de Premier League (39 of E0).',
+    );
   const missing = names.filter((name) => !env[name]?.trim());
   if (missing.length)
     throw new ServiceError(
@@ -30,7 +58,9 @@ export function serverConfig(env: NodeJS.ProcessEnv = process.env) {
     );
   // The dashboard also exposes /rest/v1 URLs; the SDK adds that path itself.
   return {
-    apiKey: env.API_FOOTBALL_KEY!.trim(),
+    provider,
+    season,
+    apiKey: env.API_FOOTBALL_KEY?.trim() ?? '',
     supabaseUrl: url.origin,
     supabaseKey: env.SUPABASE_SERVICE_ROLE_KEY!.trim(),
   };

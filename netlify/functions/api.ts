@@ -3,6 +3,7 @@ import { timingSafeEqual, createHash } from 'node:crypto';
 import { z } from 'zod';
 import { ServiceError } from '../../server/errors';
 import { serverConfig } from '../../server/config';
+import { FreeFootballProvider, downloadSource } from '../../server/providers/free-football';
 import { ApiFootballProvider } from '../../server/providers/api-football';
 import { Repository } from '../../server/repositories/supabase';
 import { BusyError, FootballService } from '../../server/service';
@@ -34,11 +35,19 @@ const json = (data: unknown, status = 200) =>
 let service: FootballService | undefined;
 function getService() {
   if (service) return service;
-  const { apiKey, supabaseUrl, supabaseKey } = serverConfig();
-  service = new FootballService(
-    new ApiFootballProvider(apiKey, process.env.SUPPORTED_LEAGUE_ID, process.env.FOOTBALL_SEASON),
-    new Repository(supabaseUrl, supabaseKey),
-  );
+  const config = serverConfig();
+  const repository = new Repository(config.supabaseUrl, config.supabaseKey);
+  const provider =
+    config.provider === 'free-football'
+      ? new FreeFootballProvider(config.season, (url, ttl) =>
+          service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+        )
+      : new ApiFootballProvider(
+          config.apiKey,
+          process.env.SUPPORTED_LEAGUE_ID,
+          String(config.season),
+        );
+  service = new FootballService(provider, repository);
   return service;
 }
 export default async function handler(request: Request, context: Context) {

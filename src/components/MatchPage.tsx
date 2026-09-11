@@ -110,7 +110,7 @@ export default function MatchPage({
           <Trophy size={15} />
           {f.league.name}
           <span>•</span>
-          {dateLabel(f.kickoff)}
+          {dateLabel(f.sourceDate ?? f.kickoff)}
         </div>
         <div className="match-contest">
           <div className="contender">
@@ -124,7 +124,9 @@ export default function MatchPage({
             <strong>
               {f.homeGoals !== null && f.awayGoals !== null
                 ? `${f.homeGoals} – ${f.awayGoals}`
-                : time(f.kickoff)}
+                : f.kickoffKnown === false
+                  ? 'Tijd volgt'
+                  : time(f.kickoff)}
             </strong>
             <span>
               {f.status === 'finished'
@@ -159,6 +161,19 @@ export default function MatchPage({
         <a href="#metrics">Wedstrijdstatistieken</a>
         <a href="#h2h">Head-to-head</a>
       </div>
+      {data.sourceLabel && (
+        <div className="demo-note">
+          <Database size={15} />
+          <span>
+            Bronnen: {data.sourceLabel}.{' '}
+            {f.provenance?.sources.map((source) => (
+              <span key={source.url}>
+                {source.name}: opgehaald {new Date(source.fetchedAt).toLocaleString('nl-BE')}.{' '}
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
       {data.warnings.map((w) => (
         <div className="demo-note" key={w}>
           <Info size={15} />
@@ -546,7 +561,7 @@ export default function MatchPage({
         </summary>
         <p>
           Genormaliseerde brondata · modelversie {analysis.version} ·{' '}
-          {data.source === 'demo' ? 'synthetische demo' : 'API-Football'}
+          {data.source === 'demo' ? 'synthetische demo' : (data.sourceLabel ?? 'API-Football')}
         </p>
         <pre>{JSON.stringify({ home: h.fixtures, away: a.fixtures }, null, 2)}</pre>
       </details>

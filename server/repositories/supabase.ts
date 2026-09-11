@@ -62,10 +62,10 @@ export class Repository {
     this.assert(error);
     return data === true;
   }
-  async log(resource: string, status: string) {
+  async log(resource: string, status: string, provider = 'api-football') {
     const { error } = await this.db
       .from('provider_sync_log')
-      .insert({ provider: 'api-football', resource, status });
+      .insert({ provider, resource, status });
     this.assert(error);
   }
   async resolve(kind: 'team' | 'league' | 'fixture', refs: ProviderRef[], fallback: string) {
@@ -212,6 +212,27 @@ export class Repository {
         const { error } = await this.db.from(`${kind}_provider_ids`).upsert(rows);
         this.assert(error);
       }
+    }
+    // Inline CSV metrics are already fetched; persist them in the normalized per-provider tables.
+    const enriched = fixtures.filter((f) => f.statistics && f.provenance?.fields.statistics);
+    if (enriched.length) {
+      const stats = enriched.map((f) => ({
+        fixture_id: f.id,
+        provider: f.provenance!.fields.statistics!,
+        data: f.statistics,
+      }));
+      const result = await this.db.from('fixture_statistics').upsert(stats);
+      this.assert(result.error);
+      const teamStats = enriched.flatMap((f) =>
+        (['home', 'away'] as const).map((side) => ({
+          fixture_id: f.id,
+          team_id: f[side].id,
+          provider: f.provenance!.fields.statistics!,
+          data: f.statistics![side],
+        })),
+      );
+      const teamsResult = await this.db.from('team_match_stats').upsert(teamStats);
+      this.assert(teamsResult.error);
     }
     return fixtures;
   }

@@ -1,6 +1,11 @@
 import type { Fixture, League, MatchEvent, TeamMetrics } from '../../src/domain/models';
 export interface FootballDataProvider {
   readonly name: string;
+  readonly cacheNamespace?: string;
+  readonly label?: string;
+  readonly fixtureIdPrefix?: string;
+  readonly statisticsProvider?: string;
+  readonly warnings?: string[];
   leagues(): Promise<League[]>;
   fixtures(date: string): Promise<Fixture[]>;
   fixture(externalId: string): Promise<Fixture | null>;

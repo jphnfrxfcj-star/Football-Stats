@@ -246,6 +246,11 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           <Search size={30} />
           <h3>Geen wedstrijden gevonden</h3>
           <p>Probeer een andere datum, competitie of teamnaam.</p>
+          {!query && (
+            <button className="secondary-button" onClick={() => shift(1)}>
+              Volgende dag bekijken
+            </button>
+          )}
           <button
             className="secondary-button"
             onClick={() => {
@@ -270,7 +275,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           {filtered.map((f) => (
             <button className="fixture-row" key={f.id} onClick={() => navigate(`/match/${f.id}`)}>
               <div className="fixture-time">
-                <strong>{time(f.kickoff)}</strong>
+                <strong>{f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff)}</strong>
                 <span>
                   {f.status === 'finished'
                     ? 'Afgelopen'

@@ -32,10 +32,10 @@ export class FootballService {
         if (again !== null) return again;
         const data = await loader();
         await this.repo.cache(key, data, ttl, table);
-        await this.repo.log(key, 'success');
+        await this.repo.log(key, 'success', this.provider.name);
         return data;
       } catch (error) {
-        await this.repo.log(key, 'error');
+        await this.repo.log(key, 'error', this.provider.name);
         throw error;
       } finally {
         await this.repo.unlock(key);
@@ -49,7 +49,10 @@ export class FootballService {
     }
   }
   private scope() {
-    return `${this.provider.name}:${process.env.SUPPORTED_LEAGUE_ID ?? '39'}:${process.env.FOOTBALL_SEASON ?? '2026'}`;
+    return (
+      this.provider.cacheNamespace ??
+      `${this.provider.name}:${process.env.SUPPORTED_LEAGUE_ID ?? '39'}:${process.env.FOOTBALL_SEASON ?? '2026'}`
+    );
   }
   private ext(entity: { refs: { provider: string; externalId: string }[] }) {
     const ref = entity.refs.find((r) => r.provider === this.provider.name);
@@ -66,13 +69,20 @@ export class FootballService {
   }
   async fixture(id: string) {
     const saved = await this.repo.fixture(id);
+    if (saved && !saved.refs.some((r) => r.provider === this.provider.name)) return null;
     if (saved?.status === 'finished') return saved;
     return this.cached(`${this.scope()}:fixture:${id}`, 120, async () => {
-      const ext = saved ? this.ext(saved) : id.match(/^af-fixture-(\d+)$/)?.[1];
+      const prefix = this.provider.fixtureIdPrefix;
+      const ext = saved
+        ? this.ext(saved)
+        : prefix && id.startsWith(prefix)
+          ? id.slice(prefix.length)
+          : null;
       if (!ext) return null;
       const raw = await this.provider.fixture(ext);
-      if (!raw || raw.league.refs[0].externalId !== (process.env.SUPPORTED_LEAGUE_ID ?? '39'))
-        return null;
+      if (!raw) return null;
+      const leagues = await this.leagues();
+      if (!leagues.some((l) => l.id === raw.league.id)) return null;
       return this.repo.saveFixture(raw);
     });
   }
@@ -84,7 +94,10 @@ export class FootballService {
         return this.repo.saveFixtures(await this.provider.history(this.ext(team), kickoff));
       },
     );
-    return this.repo.withStats(before(fixtures, kickoff), this.provider.name);
+    return this.repo.withStats(
+      before(fixtures, kickoff),
+      this.provider.statisticsProvider ?? this.provider.name,
+    );
   }
   async h2h(f: Fixture) {
     return this.cached(
@@ -113,9 +126,17 @@ export class FootballService {
       awayHistory,
       h2h,
       source: 'live',
+      sourceLabel: this.provider.label ?? 'API-Football',
       updatedAt: new Date().toISOString(),
       warnings: [
-        'Historie is beperkt tot het ingestelde competitieseizoen. Geavanceerde statistieken verschijnen na expliciete synchronisatie; beschikbaarheid hangt af van providerdekking.',
+        ...(this.provider.warnings ?? [
+          'Historie is beperkt tot het ingestelde competitieseizoen. Geavanceerde statistieken verschijnen na expliciete synchronisatie; beschikbaarheid hangt af van providerdekking.',
+        ]),
+        ...new Set(
+          [fixture, ...homeHistory, ...awayHistory, ...h2h].flatMap(
+            (f) => f.provenance?.conflicts ?? [],
+          ),
+        ),
       ],
     };
   }
@@ -142,11 +163,14 @@ export class FootballService {
         message: 'Statistieken worden pas na afloop permanent opgeslagen.',
       };
     return this.cached(`${this.scope()}:sync:${id}`, 86400, async () => {
-      const existing = await this.repo.stats(id, this.provider.name);
+      const existing = await this.repo.stats(
+        id,
+        this.provider.statisticsProvider ?? this.provider.name,
+      );
       const statistics = existing ?? (await this.provider.statistics(f));
       const updated = { ...f, statistics };
       await this.repo.saveFixture(updated);
-      await this.repo.saveStats(updated, this.provider.name);
+      await this.repo.saveStats(updated, this.provider.statisticsProvider ?? this.provider.name);
       if ((await this.repo.events(id, this.provider.name)) === null)
         await this.repo.saveEvents(id, this.provider.name, await this.provider.events(this.ext(f)));
       const { error } = await this.repo.db

@@ -152,7 +152,7 @@ export default function App() {
           </div>
           <div className="source-status">
             <span className="green-dot" />
-            {isDemo ? 'Demo-omgeving' : 'API-Football verbonden'}
+            {isDemo ? 'Demo-omgeving' : 'Databronnen via server'}
             <span>v1.0</span>
           </div>
         </div>

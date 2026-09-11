@@ -82,6 +82,10 @@ export function normalizeFixture(raw: unknown): Fixture {
 }
 export class ApiFootballProvider implements FootballDataProvider {
   readonly name = 'api-football';
+  get cacheNamespace() {
+    return `${this.name}:${this.league}:${this.season}`;
+  }
+  readonly fixtureIdPrefix = 'af-fixture-';
   constructor(
     private key: string,
     private league = '39',
