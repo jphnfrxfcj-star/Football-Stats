@@ -1,6 +1,8 @@
 import type { Context } from '@netlify/functions';
 import { timingSafeEqual, createHash } from 'node:crypto';
 import { z } from 'zod';
+import { ServiceError } from '../../server/errors';
+import { serverConfig } from '../../server/config';
 import { ApiFootballProvider } from '../../server/providers/api-football';
 import { Repository } from '../../server/repositories/supabase';
 import { BusyError, FootballService } from '../../server/service';
@@ -32,16 +34,10 @@ const json = (data: unknown, status = 200) =>
 let service: FootballService | undefined;
 function getService() {
   if (service) return service;
-  const { API_FOOTBALL_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
-  if (!API_FOOTBALL_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY)
-    throw new Error('Server configuration missing');
+  const { apiKey, supabaseUrl, supabaseKey } = serverConfig();
   service = new FootballService(
-    new ApiFootballProvider(
-      API_FOOTBALL_KEY,
-      process.env.SUPPORTED_LEAGUE_ID,
-      process.env.FOOTBALL_SEASON,
-    ),
-    new Repository(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY),
+    new ApiFootballProvider(apiKey, process.env.SUPPORTED_LEAGUE_ID, process.env.FOOTBALL_SEASON),
+    new Repository(supabaseUrl, supabaseKey),
   );
   return service;
 }
@@ -128,7 +124,11 @@ export default async function handler(request: Request, context: Context) {
     return json({ error: 'Endpoint niet gevonden' }, 404);
   } catch (error) {
     if (error instanceof z.ZodError) return json({ error: 'Ongeldige API-parameters' }, 400);
-    if (error instanceof BusyError) return json({ error: error.message }, 503);
+    if (error instanceof BusyError) return json({ error: error.message, code: 'SYNC_BUSY' }, 503);
+    if (error instanceof ServiceError) {
+      console.error('API request failed', error.code);
+      return json({ error: error.message, code: error.code }, 503);
+    }
     console.error('API request failed', error instanceof Error ? error.message : 'Unknown error');
     return json(
       {

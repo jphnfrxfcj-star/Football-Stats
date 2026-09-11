@@ -1,12 +1,31 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { ServiceError } from '../errors';
 import type { Fixture, League, ProviderRef, Team } from '../../src/domain/models';
 export class Repository {
   readonly db: SupabaseClient;
   constructor(url: string, key: string) {
     this.db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   }
-  private assert(error: { message: string } | null) {
-    if (error) throw new Error(`Database operation failed: ${error.message}`);
+  private assert(error: { message: string; code?: string } | null) {
+    if (!error) return;
+    const code = error.code ?? '';
+    if (
+      ['PGRST301', 'PGRST302', 'PGRST303', '42501', '28P01'].includes(code) ||
+      /invalid api key|invalid jwt/i.test(error.message)
+    )
+      throw new ServiceError(
+        'SUPABASE_AUTH_FAILED',
+        'Supabase weigert de serversleutel of databasepermissies. Controleer SUPABASE_SERVICE_ROLE_KEY in Netlify Functions.',
+      );
+    if (['PGRST202', 'PGRST205', '42P01', '42883'].includes(code))
+      throw new ServiceError(
+        'SUPABASE_SCHEMA_MISSING',
+        'Een Supabase-tabel of databasefunctie ontbreekt. Voer de volledige database-migratie uit.',
+      );
+    throw new ServiceError(
+      'SUPABASE_REQUEST_FAILED',
+      'Een Supabase-databaseverzoek is mislukt. Controleer de project-URL, projectstatus en databaseconfiguratie.',
+    );
   }
   async cached<T>(key: string, table = 'provider_cache'): Promise<T | null> {
     const { data, error } = await this.db

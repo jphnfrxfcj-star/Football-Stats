@@ -47,3 +47,16 @@ describe('API boundary', () => {
     ).toBe(404);
   });
 });
+
+it('reports missing server settings without returning secret values', async () => {
+  vi.stubEnv('DEMO_MODE', 'false');
+  vi.stubEnv('API_FOOTBALL_KEY', 'private-test-value');
+  vi.stubEnv('SUPABASE_URL', '');
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', '');
+  const response = await handler(new Request('http://localhost/api/leagues'), context);
+  expect(response.status).toBe(503);
+  const body = await response.json();
+  expect(body.code).toBe('SERVER_CONFIG_MISSING');
+  expect(body.error).toContain('SUPABASE_URL');
+  expect(JSON.stringify(body)).not.toContain('private-test-value');
+});

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ServiceError } from '../errors';
 import {
   emptyMetrics,
   type Fixture,
@@ -91,7 +92,11 @@ export class ApiFootballProvider implements FootballDataProvider {
       `https://v3.football.api-sports.io/${path}?${new URLSearchParams(params)}`,
       { headers: { 'x-apisports-key': this.key }, signal: AbortSignal.timeout(12000) },
     );
-    if (!response.ok) throw new Error(`Football provider returned HTTP ${response.status}`);
+    if (!response.ok)
+      throw new ServiceError(
+        'FOOTBALL_HTTP_ERROR',
+        `API-Football antwoordt met HTTP ${response.status}. Controleer API_FOOTBALL_KEY en je API-abonnement.`,
+      );
     const body = z
       .object({
         errors: z.union([z.array(z.unknown()), z.record(z.unknown())]),
@@ -100,7 +105,10 @@ export class ApiFootballProvider implements FootballDataProvider {
       })
       .parse(await response.json());
     if (Object.keys(body.errors).length)
-      throw new Error('Football provider rejected request; check plan coverage or quota.');
+      throw new ServiceError(
+        'FOOTBALL_REQUEST_REJECTED',
+        'API-Football heeft het verzoek geweigerd. Controleer je API-key, quotum en toegang tot het ingestelde seizoen.',
+      );
     if (body.paging && body.paging.total > 1)
       throw new Error('Provider response is paginated; refusing incomplete data.');
     return body.response;

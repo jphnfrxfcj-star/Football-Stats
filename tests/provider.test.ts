@@ -39,7 +39,7 @@ describe('normalization', () => {
         ),
     );
     await expect(new ApiFootballProvider('test').fixtures('2026-09-11')).rejects.toThrow(
-      'rejected',
+      'geweigerd',
     );
   });
   it('does not use prediction endpoints and bounds history before kickoff', async () => {
