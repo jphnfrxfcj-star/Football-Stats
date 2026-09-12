@@ -141,3 +141,28 @@ Clublogo’s worden lokaal uit `public/clubs/` geladen, ook bij eerder gecachte 
 Succesvolle openbare GET-responses worden 30 seconden in de browser en 60 seconden in Netlify’s gedeelde, duurzame cache bewaard. Alle queryparameters horen bij de cachesleutel, zodat datums en afkapmomenten gescheiden blijven. Fouten, geauthenticeerde verzoeken en synchronisaties krijgen `no-store`. Een synchronisatie kan daardoor maximaal 60 seconden later zichtbaar worden in een reeds gecachte publieke response. Zie [Netlify caching](https://docs.netlify.com/build/caching/caching-overview/).
 
 Bij gratis bronnen worden beide teamhistories en onderlinge duels samen uit de bronbestanden gehaald. Overlappende wedstrijden worden één keer opgeslagen, met behoud van de canonieke database-ID’s. Een eerste analyse kan nog bron- en databasewerk vereisen; daaropvolgende aanvragen profiteren van de bestaande datacache en de CDN-cache.
+
+### Spelerstatistieken
+
+`GET /api/match/:id/players` verrijkt de laatste vijf beschikbare Premier League-duels van beide teams met ESPN-spelergegevens. De openbare scoreboard- en summary-responses worden server-side gelezen en gecacht; het is een ongedocumenteerde bron zonder beschikbaarheidsgarantie. Bij uitval blijven de bestaande wedstrijdanalyses werken en vermeldt de spelersectie de ontbrekende duels. Er wordt geen blokkade omzeild.
+
+Alleen afgeronde wedstrijden vóór de aftrap tellen mee. Clubs worden via gecontroleerde naamkoppelingen gematcht. Ongebruikte wisselspelers tellen niet als nulobservatie. Schoten, schoten op doel, gemaakte en uitgelokte overtredingen, goals, assists en kaarten hebben elk hun eigen aantal bekende observaties. De UI toont totalen of gemiddelden per optreden, plus het aantal duels en basisplaatsen. Ontbrekende data blijft onbekend. Er zijn geen betrouwbare minuten in deze bron: geen per-90-statistieken, voorspelde opstellingen of player-prop-kansen. Historische spelers kunnen inmiddels vertrokken zijn.
+
+De eerste aanvraag haalt meerdere wedstrijden op en kan circa 10–15 seconden duren. De sectie laadt op verzoek; de wedstrijdanalyse wacht hier niet op. Maximaal twee wedstrijden worden tegelijk opgehaald. Afgeronde spelerobservaties worden 30 dagen gedeeld gecacht, het samengestelde overzicht vijf minuten. ESPN blijft eigenaar van de broninhoud; openbare bereikbaarheid is geen herpublicatielicentie. Bronlinks staan bij de gegevens.
+
+### Spotlight en bookmakerodds
+
+`GET /api/spotlight?date=YYYY-MM-DD` berekent onafhankelijk van de wedstrijdlijst maximaal drie selecties. Alleen komende wedstrijden met bekende aftraptijd en minimaal tien recente duels per team tellen mee. Rangschikking: positief modelvoordeel met recente odds, vervolgens modelkansen met beschikbare bookmakerodds, daarna overige modelkansen. Eén selectie per wedstrijd; dit is geen volledige marktscan of getoetste winststrategie.
+
+De modelquotering is `1 / kans`; het modelvoordeel is `kans × decimale odds − 1`. De eigen kansmodellen zijn niet gekalibreerd op bookmakerprijzen. Het label ‘mogelijke value’ vereist dezelfde teams, datum, aftrap (bij een feed), markt en lijn, plus een quoteringstijdstip van hoogstens vijftien minuten geleden. Oude/onbekende tijden, live of begonnen wedstrijden en onvolledige steekproeven tellen niet als actuele value. Tijdens een geopende pagina verdwijnt het value-label zodra de odds te oud worden. Exchangeprijzen worden uit de optionele feed weggelaten omdat commissie niet wordt gemodelleerd.
+
+`GET /api/match/:id/odds` toont de beschikbare bookmakerprijzen vóór de aftrap. Zonder extra key gebruiken beide onderdelen `Football-Data.co.uk/fixtures.csv`: periodieke 1X2- en over/under-2.5-odds waar gevuld. Kolommen Max/Avg zijn geen bookmakers en worden niet als concrete aanbiedingen getoond. De oorspronkelijke quoteringstijd is onbekend; ‘opgehaald op’ is alleen ons ophaalmoment. Bronbeschrijving: https://www.football-data.co.uk/notes.txt.
+
+Voor recentere 1X2-odds is [The Odds API](https://the-odds-api.com/sports/epl-odds.html) geïntegreerd:
+
+1. Maak zelf een account/key aan bij https://the-odds-api.com/ en zet `ODDS_API_KEY` als **server-side** omgevingsvariabele in Netlify. Geen `VITE_`-prefix en niet in Git.
+2. Kies `ODDS_REGION=eu` (standaard) of `uk`, `us`, `au`. [Bookmakerdekking](https://the-odds-api.com/sports-odds-data/bookmaker-apis.html) verschilt; een Nederlandse of Franse Unibet-feed is geen bevestigde Belgische feed. Napoleon en betFIRST zijn niet bevestigd.
+3. `ODDS_CACHE_SECONDS=7200` gebruikt één 1X2-markt en één regio per gedeelde refresh: maximaal ongeveer 372 reguliere refreshes in 31 dagen. Dit past binnen 500 maandcredits zolang er geen ander verbruik of extra retries zijn. Requests worden alleen op bezoekersverzoek uitgevoerd. Het gratis profiel is **geen continue livefeed**: prijzen ouder dan vijftien minuten behouden hun tijdstip maar verliezen het value-label.
+4. Voor frequenter verversen kan `ODDS_CACHE_SECONDS=300` worden ingesteld zodra het account voldoende credits heeft. Dat kan circa 8.928 reguliere refreshes per 31 dagen verbruiken. Er wordt geen abonnement afgesloten of quota automatisch verhoogd. Herdeploy na het instellen van de variabelen.
+
+Player-prop-odds en in-playberekeningen zijn nog niet aangesloten; de huidige spelersectie toont historische prestaties. De aanbieder biedt [EPL player-prop-markten](https://the-odds-api.com/sports/epl-odds.html) voor een deel van de bookmakers, maar dekking en afzonderlijke eventrequests moeten eerst op het gekozen account worden bevestigd. In-playodds vergelijken met het bestaande pre-matchmodel zou misleidend zijn.

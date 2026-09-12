@@ -66,3 +66,23 @@ test('club crests load locally and failed images fall back to a shield', async (
   await expect(arsenal.locator('svg')).toBeVisible();
   await expect(arsenal).toContainText('ARS');
 });
+
+test('spotlight links to its analysis and enrichment is clearly labelled in demo mode', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('.spotlight-card')).toHaveCount(3);
+  await expect(page.locator('.spotlight-card').first()).toContainText('Modelkans');
+  await expect(page.locator('.spotlight-note').first()).toContainText('fictieve wedstrijden');
+  await page.getByRole('button', { name: 'Bekijk onderbouwing' }).first().click();
+  await expect(
+    page.getByRole('heading', { name: 'Spelerstatistieken', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Spelers bekijken' }).click();
+  await expect(page.locator('#players')).toContainText('Geen spelerstatistieken beschikbaar');
+  await page.getByRole('button', { name: 'Odds vergelijken' }).click();
+  await expect(page.getByLabel('Bookmakervergelijking')).toContainText(
+    'De demo bevat geen bookmakerodds',
+  );
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

@@ -1,3 +1,7 @@
+import { getOdds } from '../../server/providers/odds';
+import { canonicalClubName } from '../../src/domain/club-names';
+import { playerReport } from '../../server/providers/espn-players';
+import { buildSpotlight } from '../../src/analysis/spotlight';
 import type { Context } from '@netlify/functions';
 import { timingSafeEqual, createHash } from 'node:crypto';
 import { z } from 'zod';
@@ -87,14 +91,99 @@ async function route(request: Request, context: Context) {
     }
     if (path[0] === 'leagues' && path.length === 1)
       return json(demo ? [demoLeague] : await svc!.leagues());
+    if (path[0] === 'spotlight' && path.length === 1) {
+      const date = dateSchema.parse(url.searchParams.get('date') ?? today());
+      if (!demo) return json(await svc!.spotlight(date));
+      const matches = demoFixtures(date).map((fixture) => {
+        const data = demoMatch(fixture.id)!;
+        const analysis = analyze(data);
+        return {
+          fixture,
+          probabilities: probabilities(data, analysis),
+          homeSamples: analysis.home[2].available,
+          awaySamples: analysis.away[2].available,
+        };
+      });
+      return json(
+        buildSpotlight(
+          matches,
+          {
+            source: 'Demo',
+            kind: 'snapshot',
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Voorbeeld van modelkansen op fictieve wedstrijden. Geen bookmakerodds.',
+          },
+          Date.parse(`${date}T00:00:00Z`),
+        ),
+      );
+    }
     if (path[0] === 'fixtures' && path.length === 1) {
       const date = dateSchema.parse(url.searchParams.get('date') ?? today());
       return json(demo ? demoFixtures(date) : await svc!.fixtures(date));
     }
     if (path[0] === 'match' && path.length >= 2 && path.length <= 3) {
       const id = idSchema.parse(path[1]);
-      if (path[2] && !['analysis', 'h2h'].includes(path[2]))
+      if (path[2] && !['analysis', 'h2h', 'players', 'odds'].includes(path[2]))
         return json({ error: 'Niet gevonden' }, 404);
+      if (path[2] === 'odds') {
+        if (demo)
+          return json({
+            source: 'Demo',
+            kind: 'snapshot',
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'De demo bevat geen bookmakerodds.',
+          });
+        const fixture = await svc!.fixture(id);
+        if (!fixture) return json({ error: 'Wedstrijd niet gevonden' }, 404);
+        if (
+          fixture.status !== 'scheduled' ||
+          fixture.kickoffKnown === false ||
+          Date.parse(fixture.kickoff) <= Date.now()
+        )
+          return json({
+            source: 'Geen pre-matchodds',
+            kind: 'snapshot',
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message:
+              'Deze vergelijking is alleen beschikbaar vóór een bekende aftrap. In-playodds vereisen een afzonderlijk live model.',
+          });
+        const odds = await getOdds(svc!);
+        return json({
+          ...odds,
+          quotes: odds.quotes.filter(
+            (q) =>
+              q.home === canonicalClubName(fixture.home.name) &&
+              q.away === canonicalClubName(fixture.away.name) &&
+              q.date === (fixture.sourceDate ?? fixture.kickoff.slice(0, 10)) &&
+              (q.kickoff === null ||
+                Math.abs(Date.parse(q.kickoff) - Date.parse(fixture.kickoff)) <= 60000),
+          ),
+        });
+      }
+      if (path[2] === 'players') {
+        if (demo)
+          return json({
+            source: 'Demo',
+            fetchedAt: new Date().toISOString(),
+            teams: [],
+            matches: [],
+            warnings: [
+              'Spelergegevens zijn beschikbaar bij echte wedstrijden; de demo bevat geen verzonnen spelers.',
+            ],
+          });
+        const result = await svc!.analysis(id);
+        if (!result) return json({ error: 'Wedstrijd niet gevonden' }, 404);
+        return json(
+          await svc!.cached(
+            `players-report:v2:${svc!.provider.cacheNamespace ?? svc!.provider.name}:${id}:${result.data.fixture.kickoff}`,
+            300,
+            () => playerReport(result.data, svc!),
+          ),
+        );
+      }
       if (path[2] === 'analysis') {
         const data = demo ? demoMatch(id) : null;
         const result = demo

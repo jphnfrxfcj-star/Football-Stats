@@ -1,3 +1,5 @@
+import OddsComparison from './OddsComparison';
+import PlayerStats from './PlayerStats';
 import { useEffect, useState } from 'react';
 import {
   ArrowLeft,
@@ -242,6 +244,7 @@ export default function MatchPage({
           Transparante modelinschattingen, geen zekerheid. Klik op een kans voor de onderbouwing.
         </div>
       </section>
+      <OddsComparison key={`odds-${id}`} id={id} />
       <section className="trends-section">
         <SectionTitle
           title="Wat valt op?"
@@ -472,6 +475,7 @@ export default function MatchPage({
           </table>
         </div>
       </section>
+      <PlayerStats key={id} id={id} />
       <section id="h2h">
         <SectionTitle
           title="Eerdere ontmoetingen"

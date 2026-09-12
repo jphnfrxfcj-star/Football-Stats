@@ -1,3 +1,6 @@
+import type { PlayerReport } from './domain/players';
+import type { SpotlightReport, OddsSnapshot } from './domain/spotlight';
+import { buildSpotlight } from './analysis/spotlight';
 import { demoFixtures, demoLeague, demoMatch } from './demo/data';
 import type { Fixture, League, MatchData } from './domain/models';
 import { analyze, type Analysis } from './analysis/engine';
@@ -18,6 +21,54 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   return r.json();
 }
 export const api = {
+  odds: (id: string, signal?: AbortSignal): Promise<OddsSnapshot> =>
+    isDemo
+      ? Promise.resolve({
+          source: 'Demo',
+          kind: 'snapshot',
+          fetchedAt: new Date().toISOString(),
+          quotes: [],
+          message: 'De demo bevat geen bookmakerodds.',
+        })
+      : get(`match/${encodeURIComponent(id)}/odds`, signal),
+  players: (id: string, signal?: AbortSignal): Promise<PlayerReport> =>
+    isDemo
+      ? Promise.resolve({
+          source: 'Demo',
+          fetchedAt: new Date().toISOString(),
+          teams: [],
+          matches: [],
+          warnings: [
+            'Spelergegevens zijn beschikbaar bij echte wedstrijden; de demo bevat geen verzonnen spelers.',
+          ],
+        })
+      : get(`match/${encodeURIComponent(id)}/players`, signal),
+  spotlight: (date: string, signal?: AbortSignal): Promise<SpotlightReport> => {
+    if (!isDemo) return get(`spotlight?date=${date}`, signal);
+    const matches = demoFixtures(date).map((fixture) => {
+      const data = demoMatch(fixture.id)!,
+        analysis = analyze(data);
+      return {
+        fixture,
+        probabilities: probabilities(data, analysis),
+        homeSamples: analysis.home[2].available,
+        awaySamples: analysis.away[2].available,
+      };
+    });
+    return Promise.resolve(
+      buildSpotlight(
+        matches,
+        {
+          source: 'Demo',
+          kind: 'snapshot',
+          fetchedAt: new Date().toISOString(),
+          quotes: [],
+          message: 'Voorbeeld van modelkansen op fictieve wedstrijden. Geen bookmakerodds.',
+        },
+        Date.parse(`${date}T00:00:00Z`),
+      ),
+    );
+  },
   fixtures: (date: string, signal?: AbortSignal): Promise<Fixture[]> =>
     isDemo ? Promise.resolve(demoFixtures(date)) : get(`fixtures?date=${date}`, signal),
   leagues: (signal?: AbortSignal): Promise<League[]> =>

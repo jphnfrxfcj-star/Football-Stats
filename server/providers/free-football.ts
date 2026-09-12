@@ -5,6 +5,7 @@ import {
   before,
   emptyMetrics,
   type Fixture,
+  type MatchData,
   type League,
   type Metric,
   type Team,
@@ -433,6 +434,25 @@ export class FreeFootballProvider implements FootballDataProvider {
   }
   async fixture(id: string) {
     return (await this.season()).find((f) => f.refs[0].externalId === id) ?? null;
+  }
+  async previewData(date: string): Promise<MatchData[]> {
+    const [fixtures, history] = await Promise.all([this.fixtures(date), this.historical()]);
+    return fixtures.map((fixture) => {
+      const rows = before(history, fixture.kickoff);
+      const includes = (f: Fixture, id: string) => f.home.id === id || f.away.id === id;
+      return {
+        fixture,
+        homeHistory: rows.filter((f) => includes(f, fixture.home.id)).slice(0, 60),
+        awayHistory: rows.filter((f) => includes(f, fixture.away.id)).slice(0, 60),
+        h2h: rows
+          .filter((f) => includes(f, fixture.home.id) && includes(f, fixture.away.id))
+          .slice(0, 10),
+        source: 'live',
+        sourceLabel: this.label,
+        updatedAt: new Date().toISOString(),
+        warnings: this.warnings,
+      };
+    });
   }
   async matchHistory(home: string, away: string, cutoff: string) {
     const fixtures = before(await this.historical(), cutoff);

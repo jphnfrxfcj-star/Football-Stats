@@ -1,3 +1,4 @@
+import Spotlight from './Spotlight';
 import { useEffect, useState } from 'react';
 import {
   CalendarDays,
@@ -174,6 +175,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
+      <Spotlight date={date} navigate={navigate} />
       <SectionTitle
         title="Op het programma"
         aside={<span className="subtle">Alle tijden in jouw tijdzone</span>}

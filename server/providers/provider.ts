@@ -1,4 +1,4 @@
-import type { Fixture, League, MatchEvent, TeamMetrics } from '../../src/domain/models';
+import type { Fixture, League, MatchEvent, TeamMetrics, MatchData } from '../../src/domain/models';
 export interface FootballDataProvider {
   readonly name: string;
   readonly cacheNamespace?: string;
@@ -21,6 +21,7 @@ export interface FootballDataProvider {
     awayHistory: Fixture[];
     h2h: Fixture[];
   }>;
+  previewData?(date: string): Promise<MatchData[]>;
   statistics(fixture: Fixture): Promise<{ home: TeamMetrics; away: TeamMetrics } | null>;
   events(fixtureExternalId: string): Promise<MatchEvent[]>;
 }

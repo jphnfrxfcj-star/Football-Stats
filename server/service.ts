@@ -1,3 +1,5 @@
+import { buildSpotlight } from '../src/analysis/spotlight';
+import { getOdds } from './providers/odds';
 import type { Fixture, MatchData, Team } from '../src/domain/models';
 import { before } from '../src/domain/models';
 import { analyze } from '../src/analysis/engine';
@@ -185,6 +187,44 @@ export class FootballService {
       },
       'analysis_results',
     );
+  }
+  async spotlight(date: string) {
+    const matches = await this.cached(
+      `${this.scope()}:spotlight-models:v1:${date}`,
+      900,
+      async () => {
+        if (this.provider.previewData)
+          return (await this.provider.previewData(date)).map((data) => {
+            const analysis = analyze(data);
+            return {
+              fixture: data.fixture,
+              probabilities: probabilities(data, analysis),
+              homeSamples: analysis.home[2].available,
+              awaySamples: analysis.away[2].available,
+            };
+          });
+        const results = [];
+        for (const fixture of (await this.fixtures(date)).slice(0, 10)) {
+          const result = await this.analysis(fixture.id);
+          if (result)
+            results.push({
+              fixture: result.data.fixture,
+              probabilities: result.probabilities,
+              homeSamples: result.analysis.home[2].available,
+              awaySamples: result.analysis.away[2].available,
+            });
+        }
+        return results;
+      },
+    );
+    const odds = await getOdds(this).catch(() => ({
+      source: 'Geen odds beschikbaar',
+      kind: 'snapshot' as const,
+      fetchedAt: new Date().toISOString(),
+      quotes: [],
+      message: 'Bookmakerodds zijn tijdelijk niet beschikbaar. De modelkansen blijven zichtbaar.',
+    }));
+    return buildSpotlight(matches, odds);
   }
   async sync(id: string) {
     const f = await this.fixture(id);

@@ -76,3 +76,22 @@ it('caches only successful public GETs and keeps query parameters in the CDN key
     expect(result.headers.get('netlify-cdn-cache-control')).toBeNull();
   }
 });
+
+it('serves spotlight and explicit empty enrichment in demo mode', async () => {
+  const spotlight = await handler(
+    new Request('http://localhost/api/spotlight?date=2026-09-12'),
+    context,
+  );
+  const report = await spotlight.json();
+  expect(spotlight.status).toBe(200);
+  expect(report.cards.length).toBeGreaterThan(0);
+  expect(report.cards.every((c: { quote: unknown }) => c.quote === null)).toBe(true);
+  for (const feature of ['players', 'odds']) {
+    const r = await handler(
+      new Request(`http://localhost/api/match/demo-2026-09-12-0/${feature}`),
+      context,
+    );
+    expect(r.status).toBe(200);
+    expect((await r.json()).source).toBe('Demo');
+  }
+});
