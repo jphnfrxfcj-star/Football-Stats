@@ -1,3 +1,4 @@
+import { buildMarkets } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
 import { ServiceError } from './errors';
 import { buildSpotlight } from '../src/analysis/spotlight';
@@ -207,6 +208,26 @@ export class FootballService {
       },
       'analysis_results',
     );
+  }
+  async markets(date: string, window: number) {
+    const matches = await this.cached(`${this.scope()}:markets-data:v1:${date}`, 900, async () => {
+      if (this.provider.previewData) return this.provider.previewData(date);
+      const rows: MatchData[] = [];
+      for (const fixture of (await this.fixtures(date)).slice(0, 10)) {
+        const data = await this.data(fixture.id);
+        if (data) rows.push(data);
+      }
+      return rows;
+    });
+    const odds = await getOdds(this).catch(() => ({
+      source: 'Geen odds beschikbaar',
+      kind: 'snapshot' as const,
+      fetchedAt: new Date().toISOString(),
+      quotes: [],
+      message:
+        'Bookmakerodds zijn tijdelijk niet beschikbaar. Historische selecties blijven zichtbaar.',
+    }));
+    return buildMarkets(matches, odds, window);
   }
   async spotlight(date: string) {
     const matches = await this.cached(

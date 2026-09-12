@@ -1,3 +1,4 @@
+import Markets from './Markets';
 import Spotlight from './Spotlight';
 import { useEffect, useState } from 'react';
 import {
@@ -176,6 +177,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         </div>
       </div>
       <Spotlight date={date} navigate={navigate} />
+      <Markets key={date} date={date} navigate={navigate} />
       <SectionTitle
         title="Op het programma"
         aside={<span className="subtle">Alle tijden in jouw tijdzone</span>}

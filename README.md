@@ -178,3 +178,13 @@ Supabase-aanvragen hebben één centrale retrylaag; de SDK-retries staan uit om 
 Logging en het opruimen van cachelocks mogen een correct geladen/gecachet resultaat niet vervangen door een fout; een originele fout blijft eveneens behouden. Netlify-logs bevatten operatie, tabel, HTTP-status en databasecode, zonder sleutels, queryparameters, rijgegevens of ruwe foutmeldingen. Bij een blijvende storing blijft een foutmelding zichtbaar; opnieuw proberen is begrensd.
 
 Bij nieuwe `sb_secret_`-sleutels wordt de sleutel alleen als `apikey` verzonden; een identieke, redundante `Authorization: Bearer`-waarde wordt verwijderd omdat deze sleutel geen JWT is. Echte gebruikers-JWT’s en legacy-sleutels blijven behouden. Zie [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys).
+
+### Odds en historische combi’s
+
+De homepagina toont een odds-tabel per bookmaker; de wedstrijdanalyse laadt zijn bookmakervergelijking automatisch. `GET /api/markets?date=YYYY-MM-DD&window=5` levert de dagprijzen en onderliggende historische selecties. Vensters zijn 5, 10 of 20. De historie wordt gedeeld gecachet; begonnen wedstrijden worden bij de aanvraag en tijdens weergave uitgesloten.
+
+Een selectie moet in **alle N laatste duels van beide teams** voorkomen. Alleen voltooide duels vóór het evaluatiemoment en de komende aftrap tellen mee, ontdubbeld en ongeacht thuis/uit. Een ontbrekende score of te korte reeks voldoet niet. Onderlinge wedstrijden kunnen in beide reeksen staan; de interface toont beide afzonderlijk met uitslagen. Onderzochte markten: over 0,5/1,5/2,5/3,5, under 2,5, beide teams scoren en eerste helft over 0,5/1,5. Historische 100% is geen voorspelde winstkans.
+
+De combibouwer vermenigvuldigt prijzen bij **dezelfde bookmaker**, met één selectie per wedstrijd, twee tot zes legs en een werkelijk product binnen [2, 3]. De begrensde zoekprocedure toont maximaal drie suggesties, zonder garantie alle mogelijkheden te vinden. Er wordt geen gecombineerde winstkans berekend. Prijzen uit momentopnames blijven indicatief; de boekmaker moet prijs en combinatiemogelijkheid bevestigen.
+
+De gratis CSV bevat geen prijzen voor de meeste lage doellijnen. Een ongeprijsde historische selectie blijft zichtbaar met bewijs, maar wordt niet automatisch geprijsd. Een gebruiker kan bij een opengeklapte selectie zelf een gecontroleerde decimale odd invoeren. Dit vervangt lokaal de prijs voor die selectie en bookmaker, wordt in de combi als **handmatig ingevoerd** gemarkeerd en wordt niet opgeslagen of als feedprijs gepubliceerd. Wissen herstelt de bronprijs. Zonder passende prijzen verschijnt een expliciete lege toestand; criteria worden niet versoepeld om toch een combi te tonen.

@@ -1,3 +1,4 @@
+import { buildMarkets } from '../../src/analysis/combinations';
 import { getOdds } from '../../server/providers/odds';
 import { canonicalClubName } from '../../src/domain/club-names';
 import { playerReport } from '../../server/providers/espn-players';
@@ -91,6 +92,28 @@ async function route(request: Request, context: Context) {
     }
     if (path[0] === 'leagues' && path.length === 1)
       return json(demo ? [demoLeague] : await svc!.leagues());
+    if (path[0] === 'markets' && path.length === 1) {
+      const date = dateSchema.parse(url.searchParams.get('date') ?? today());
+      const window = z.coerce
+        .number()
+        .refine((n) => [5, 10, 20].includes(n))
+        .parse(url.searchParams.get('window') ?? 5);
+      if (!demo) return json(await svc!.markets(date, window));
+      return json(
+        buildMarkets(
+          demoFixtures(date).map((f) => ({ ...demoMatch(f.id)!, fixture: f })),
+          {
+            source: 'Demo',
+            kind: 'snapshot',
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Fictieve wedstrijdhistorie. Geen bookmakerodds.',
+          },
+          window,
+          Date.parse(`${date}T00:00:00Z`),
+        ),
+      );
+    }
     if (path[0] === 'spotlight' && path.length === 1) {
       const date = dateSchema.parse(url.searchParams.get('date') ?? today());
       if (!demo) return json(await svc!.spotlight(date));

@@ -14,9 +14,8 @@ export default function OddsComparison({ id }: { id: string }) {
   const [report, setReport] = useState<OddsSnapshot | null>(null),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(false),
-    [attempt, setAttempt] = useState(0);
+    [attempt, setAttempt] = useState(1);
   useEffect(() => {
-    if (!attempt) return;
     const c = new AbortController();
     setLoading(true);
     setError('');

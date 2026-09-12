@@ -33,6 +33,14 @@ try {
     await page
       .locator('.spotlight-section')
       .screenshot({ path: `/tmp/football-spotlight-${width}.png` });
+    const markets = page.getByRole('region', { name: 'Odds en combibouwer' });
+    await expect(markets.locator('tbody tr')).toHaveCount(7, { timeout: 30000 });
+    await expect(markets.getByLabel('Bookmaker', { exact: true }).locator('option')).toHaveCount(6);
+    await markets.getByText(/Alle historische 100%-selecties/).click();
+    await expect(markets.locator('.selection-evidence').first()).toBeVisible();
+    await markets.locator('.selection-evidence summary').first().click();
+    await expect(markets.locator('.manual-price input').first()).toBeVisible();
+    await markets.screenshot({ path: `/tmp/football-markets-${width}.png` });
     await page.goto('http://127.0.0.1:5174/match/free-fixture-2026-crystal-palace-vs-ipswich');
     await page.getByRole('button', { name: 'Spelers bekijken' }).click({ timeout: 30000 });
     await expect(page.locator('#players .player-table tbody tr').first()).toBeVisible({
@@ -43,7 +51,6 @@ try {
     await page.locator('#players .window-tabs button').nth(1).click();
     await expect(page.locator('#players .player-table tbody tr').first()).toBeVisible();
     await page.locator('#players').screenshot({ path: `/tmp/football-players-${width}.png` });
-    await page.getByRole('button', { name: 'Odds vergelijken' }).click();
     await expect(page.locator('.odds-section .player-table tbody tr').first()).toBeVisible({
       timeout: 30000,
     });

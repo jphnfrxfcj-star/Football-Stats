@@ -2665,3 +2665,92 @@ td {
   color: #7d8980;
   margin: 8px 0;
 }
+
+.markets-section {
+  margin: 32px 0;
+}
+.market-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 18px 0;
+}
+.market-controls label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.market-controls select {
+  max-width: 100%;
+  padding: 10px;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+  background: white;
+  color: #173b2e;
+}
+.markets-section h3 {
+  margin: 24px 0 12px;
+}
+.combo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.combo-card {
+  border: 1px solid #dce3df;
+  border-radius: 12px;
+  padding: 18px;
+  background: white;
+}
+.combo-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  color: #176b43;
+}
+.combo-card ul {
+  padding-left: 18px;
+  margin-bottom: 0;
+}
+.combo-card li {
+  padding: 10px 0;
+}
+.combo-card small {
+  color: #68796e;
+}
+.perfect-details {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #dce3df;
+  border-radius: 10px;
+}
+.perfect-details summary {
+  cursor: pointer;
+  line-height: 1.6;
+}
+.selection-evidence {
+  padding: 12px 0;
+  border-top: 1px solid #e7ece9;
+  font-size: 13px;
+}
+.selection-evidence ul {
+  padding-left: 18px;
+  line-height: 1.8;
+}
+.manual-price {
+  display: grid;
+  gap: 8px;
+  padding: 16px 0;
+}
+.manual-price input,
+.market-controls input {
+  max-width: 180px;
+  padding: 10px;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+}
+.manual-price small {
+  color: #68796e;
+}

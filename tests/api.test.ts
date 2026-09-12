@@ -95,3 +95,25 @@ it('serves spotlight and explicit empty enrichment in demo mode', async () => {
     expect((await r.json()).source).toBe('Demo');
   }
 });
+
+it('serves combo evidence and validates the exact sample window', async () => {
+  const ok = await handler(
+    new Request('http://localhost/api/markets?date=2026-09-12&window=5'),
+    context,
+  );
+  expect(ok.status).toBe(200);
+  const body = await ok.json();
+  expect(body.window).toBe(5);
+  expect(body.fixtures).toHaveLength(4);
+  expect(body.fixtures.every((row: { quotes: unknown[] }) => row.quotes.length === 0)).toBe(true);
+  for (const window of ['0', '6', '-5', 'five', '']) {
+    expect(
+      (
+        await handler(
+          new Request(`http://localhost/api/markets?date=2026-09-12&window=${window}`),
+          context,
+        )
+      ).status,
+    ).toBe(400);
+  }
+});

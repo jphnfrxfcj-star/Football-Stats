@@ -1,3 +1,4 @@
+import { buildMarkets, type MarketsReport } from './analysis/combinations';
 import { getJson as get } from './lib/http';
 import type { PlayerReport } from './domain/players';
 import type { SpotlightReport, OddsSnapshot } from './domain/spotlight';
@@ -14,6 +15,23 @@ export interface AnalysisResponse {
   probabilities: Probability[];
 }
 export const api = {
+  markets: (date: string, window: number, signal?: AbortSignal): Promise<MarketsReport> =>
+    isDemo
+      ? Promise.resolve(
+          buildMarkets(
+            demoFixtures(date).map((f) => ({ ...demoMatch(f.id)!, fixture: f })),
+            {
+              source: 'Demo',
+              kind: 'snapshot',
+              fetchedAt: new Date().toISOString(),
+              quotes: [],
+              message: 'Fictieve wedstrijdhistorie. De demo bevat geen bookmakerodds.',
+            },
+            window,
+            Date.parse(`${date}T00:00:00Z`),
+          ),
+        )
+      : get(`markets?date=${date}&window=${window}`, signal),
   odds: (id: string, signal?: AbortSignal): Promise<OddsSnapshot> =>
     isDemo
       ? Promise.resolve({
