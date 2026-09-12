@@ -1,3 +1,4 @@
+import { getJson as get } from './lib/http';
 import type { PlayerReport } from './domain/players';
 import type { SpotlightReport, OddsSnapshot } from './domain/spotlight';
 import { buildSpotlight } from './analysis/spotlight';
@@ -11,14 +12,6 @@ export interface AnalysisResponse {
   data: MatchData;
   analysis: Analysis;
   probabilities: Probability[];
-}
-async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const r = await fetch(`/api/${path}`, { signal });
-  if (!r.ok) {
-    const body = await r.json().catch(() => ({ error: 'Kon gegevens niet laden' }));
-    throw new Error(body.error ?? 'Kon gegevens niet laden');
-  }
-  return r.json();
 }
 export const api = {
   odds: (id: string, signal?: AbortSignal): Promise<OddsSnapshot> =>

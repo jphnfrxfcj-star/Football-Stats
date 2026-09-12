@@ -1,10 +1,15 @@
+import { databaseFetch, rollbackCodes } from './database-fetch';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { ServiceError } from '../errors';
 import type { Fixture, League, ProviderRef, Team } from '../../src/domain/models';
 export class Repository {
   readonly db: SupabaseClient;
   constructor(url: string, key: string) {
-    this.db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    this.db = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      db: { retry: false },
+      global: { fetch: databaseFetch() },
+    });
   }
   private assert(error: { message: string; code?: string } | null) {
     if (!error) return;
@@ -22,9 +27,17 @@ export class Repository {
         'SUPABASE_SCHEMA_MISSING',
         'Een Supabase-tabel of databasefunctie ontbreekt. Voer de volledige database-migratie uit.',
       );
+    if (
+      rollbackCodes.has(code) ||
+      /fetch failed|network|timeout|timed out|aborterror/i.test(error.message)
+    )
+      throw new ServiceError(
+        'SUPABASE_TEMPORARY_UNAVAILABLE',
+        'De database is tijdelijk bezet of niet bereikbaar. Probeer het over enkele seconden opnieuw.',
+      );
     throw new ServiceError(
       'SUPABASE_REQUEST_FAILED',
-      'Een Supabase-databaseverzoek is mislukt. Controleer de project-URL, projectstatus en databaseconfiguratie.',
+      'Het ophalen of opslaan van de gegevens is niet gelukt. Probeer het opnieuw.',
     );
   }
   async cached<T>(key: string, table = 'provider_cache'): Promise<T | null> {

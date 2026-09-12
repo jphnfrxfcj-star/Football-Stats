@@ -1,3 +1,5 @@
+import { sleep } from '../src/lib/retry';
+import { ServiceError } from './errors';
 import { buildSpotlight } from '../src/analysis/spotlight';
 import { getOdds } from './providers/odds';
 import type { Fixture, MatchData, Team } from '../src/domain/models';
@@ -7,9 +9,19 @@ import { analysisWeights } from '../src/analysis/config';
 import { probabilities } from '../src/analysis/probability';
 import type { FootballDataProvider } from './providers/provider';
 import { Repository } from './repositories/supabase';
-const inFlight = new Map<string, Promise<unknown>>();
 export class BusyError extends Error {}
 export class FootballService {
+  private inFlight = new Map<string, Promise<unknown>>();
+  private async maintenance(operation: string, task: () => Promise<unknown>) {
+    try {
+      await task();
+    } catch (error) {
+      console.warn('Cache maintenance failed', {
+        operation,
+        code: error instanceof ServiceError ? error.code : 'UNKNOWN',
+      });
+    }
+  }
   constructor(
     readonly provider: FootballDataProvider,
     readonly repo: Repository,
@@ -20,34 +32,42 @@ export class FootballService {
     loader: () => Promise<T>,
     table = 'provider_cache',
   ): Promise<T> {
-    const cached = await this.repo.cached<T>(key, table);
-    if (cached !== null) return cached;
-    const pending = inFlight.get(key);
+    const flightKey = `${table}:${key}`;
+    const pending = this.inFlight.get(flightKey);
     if (pending) return pending as Promise<T>;
     const job = (async () => {
-      if (!(await this.repo.lock(key)))
+      const cached = await this.repo.cached<T>(key, table);
+      if (cached !== null) return cached;
+      if (!(await this.repo.lock(key))) {
+        // Another instance owns the work. Wait for its result; never steal or release its lock.
+        for (const delay of [200, 400, 800]) {
+          await sleep(delay);
+          const ready = await this.repo.cached<T>(key, table);
+          if (ready !== null) return ready;
+        }
         throw new BusyError(
           'Gegevens worden gesynchroniseerd. Probeer het over enkele seconden opnieuw.',
         );
+      }
       try {
         const again = await this.repo.cached<T>(key, table);
         if (again !== null) return again;
         const data = await loader();
         await this.repo.cache(key, data, ttl, table);
-        await this.repo.log(key, 'success', this.provider.name);
+        await this.maintenance('log', () => this.repo.log(key, 'success', this.provider.name));
         return data;
       } catch (error) {
-        await this.repo.log(key, 'error', this.provider.name);
+        await this.maintenance('log', () => this.repo.log(key, 'error', this.provider.name));
         throw error;
       } finally {
-        await this.repo.unlock(key);
+        await this.maintenance('unlock', () => this.repo.unlock(key));
       }
     })();
-    inFlight.set(key, job);
+    this.inFlight.set(flightKey, job);
     try {
       return await job;
     } finally {
-      inFlight.delete(key);
+      this.inFlight.delete(flightKey);
     }
   }
   private scope() {

@@ -55,3 +55,31 @@ describe('persistent cache coordination', () => {
     expect(repo.unlock).toHaveBeenCalled();
   });
 });
+
+it('waits for another instance to finish without unlocking its work', async () => {
+  const { service, repo } = setup(null, false);
+  repo.cached.mockResolvedValueOnce(null).mockResolvedValueOnce([7]);
+  const load = vi.fn(async () => [8]);
+  expect(await service.cached('shared', 60, load)).toEqual([7]);
+  expect(load).not.toHaveBeenCalled();
+  expect(repo.unlock).not.toHaveBeenCalled();
+});
+it('does not discard valid results or mask the original error when maintenance fails', async () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  try {
+    const { service, repo } = setup();
+    repo.log.mockRejectedValue(new Error('logging failed'));
+    repo.unlock.mockRejectedValue(new Error('unlock failed'));
+    expect(await service.cached('maintenance', 60, async () => [3])).toEqual([3]);
+    const second = setup();
+    second.repo.log.mockRejectedValue(new Error('logging failed'));
+    second.repo.unlock.mockRejectedValue(new Error('unlock failed'));
+    await expect(
+      second.service.cached('original', 60, async () => {
+        throw new Error('original failure');
+      }),
+    ).rejects.toThrow('original failure');
+  } finally {
+    warn.mockRestore();
+  }
+});

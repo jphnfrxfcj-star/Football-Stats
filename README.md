@@ -166,3 +166,15 @@ Voor recentere 1X2-odds is [The Odds API](https://the-odds-api.com/sports/epl-od
 4. Voor frequenter verversen kan `ODDS_CACHE_SECONDS=300` worden ingesteld zodra het account voldoende credits heeft. Dat kan circa 8.928 reguliere refreshes per 31 dagen verbruiken. Er wordt geen abonnement afgesloten of quota automatisch verhoogd. Herdeploy na het instellen van de variabelen.
 
 Player-prop-odds en in-playberekeningen zijn nog niet aangesloten; de huidige spelersectie toont historische prestaties. De aanbieder biedt [EPL player-prop-markten](https://the-odds-api.com/sports/epl-odds.html) voor een deel van de bookmakers, maar dekking en afzonderlijke eventrequests moeten eerst op het gekozen account worden bevestigd. In-playodds vergelijken met het bestaande pre-matchmodel zou misleidend zijn.
+
+### Tijdelijke databasefouten
+
+Productiesite: https://matchday-be.netlify.app/.
+
+Gelijktijdige aanvragen voor dezelfde cache-entry delen binnen een serverinstantie één promise. Als een andere instantie de gegevens ophaalt, wacht de aanvraag kort op het resultaat. Publieke browser-GETs proberen tijdelijke database- en synchronisatiefouten maximaal twee keer opnieuw, met respect voor `Retry-After` en annulering bij navigatie. Sleutel-, permissie- en schemafouten worden niet automatisch herhaald.
+
+Supabase-aanvragen hebben één centrale retrylaag; de SDK-retries staan uit om vermenigvuldiging te voorkomen. Veilige reads worden bij netwerk- of gatewayfouten herhaald. Writes/RPCs worden alleen herhaald bij een expliciete rollback of een fout vóór uitvoering, nooit bij een onduidelijke netwerkonderbreking. Bulk-upserts gebruiken een vaste primaire-sleutelvolgorde om [deadlocks te beperken](https://www.postgresql.org/docs/17/explicit-locking.html), zonder de geretourneerde fixturevolgorde te wijzigen.
+
+Logging en het opruimen van cachelocks mogen een correct geladen/gecachet resultaat niet vervangen door een fout; een originele fout blijft eveneens behouden. Netlify-logs bevatten operatie, tabel, HTTP-status en databasecode, zonder sleutels, queryparameters, rijgegevens of ruwe foutmeldingen. Bij een blijvende storing blijft een foutmelding zichtbaar; opnieuw proberen is begrensd.
+
+Bij nieuwe `sb_secret_`-sleutels wordt de sleutel alleen als `apikey` verzonden; een identieke, redundante `Authorization: Bearer`-waarde wordt verwijderd omdat deze sleutel geen JWT is. Echte gebruikers-JWT’s en legacy-sleutels blijven behouden. Zie [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys).
