@@ -83,7 +83,7 @@ export class FootballService {
       if (!raw) return null;
       const leagues = await this.leagues();
       if (!leagues.some((l) => l.id === raw.league.id)) return null;
-      return this.repo.saveFixture(raw);
+      return (await this.repo.saveFixtures([raw]))[0];
     });
   }
   async history(team: Team, kickoff: string) {
@@ -117,9 +117,42 @@ export class FootballService {
   async data(id: string): Promise<MatchData | null> {
     const fixture = await this.fixture(id);
     if (!fixture) return null;
-    const homeHistory = await this.history(fixture.home, fixture.kickoff),
-      awayHistory = await this.history(fixture.away, fixture.kickoff),
-      h2h = await this.h2h(fixture);
+    const { homeHistory, awayHistory, h2h } = this.provider.matchHistory
+      ? await this.cached(
+          `${this.scope()}:match-history:v1:${id}:${fixture.kickoff}`,
+          21600,
+          async () => {
+            const groups = await this.provider.matchHistory!(
+              this.ext(fixture.home),
+              this.ext(fixture.away),
+              fixture.kickoff,
+            );
+            const unique = [
+              ...new Map(
+                Object.values(groups)
+                  .flat()
+                  .map((f) => [f.id, f]),
+              ).values(),
+            ];
+            const saved = await this.repo.saveFixtures(unique);
+            const byOriginalId = new Map(unique.map((f, index) => [f.id, saved[index]]));
+            const canonical = (rows: Fixture[]) =>
+              before(
+                rows.map((f) => byOriginalId.get(f.id)!),
+                fixture.kickoff,
+              );
+            return {
+              homeHistory: canonical(groups.homeHistory),
+              awayHistory: canonical(groups.awayHistory),
+              h2h: canonical(groups.h2h),
+            };
+          },
+        )
+      : {
+          homeHistory: await this.history(fixture.home, fixture.kickoff),
+          awayHistory: await this.history(fixture.away, fixture.kickoff),
+          h2h: await this.h2h(fixture),
+        };
     return {
       fixture,
       homeHistory,

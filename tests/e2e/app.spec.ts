@@ -42,3 +42,27 @@ test('unknown fixture has a useful error state', async ({ page }) => {
   await page.goto('/match/not-a-fixture');
   await expect(page.getByRole('alert')).toContainText('Wedstrijd niet gevonden');
 });
+
+test('club crests load locally and failed images fall back to a shield', async ({ page }) => {
+  await page.goto('/');
+  const logos = page.locator('.fixture-row .team-badge img');
+  await expect(logos).toHaveCount(8);
+  await expect
+    .poll(() =>
+      logos.evaluateAll((images) =>
+        images.every(
+          (img) =>
+            img instanceof HTMLImageElement &&
+            img.complete &&
+            img.naturalWidth > 0 &&
+            img.getAttribute('src')?.startsWith('/clubs/'),
+        ),
+      ),
+    )
+    .toBe(true);
+  await page.route('**/clubs/42.v1.png', (route) => route.abort());
+  await page.reload();
+  const arsenal = page.locator('.fixture-row .team-badge').first();
+  await expect(arsenal.locator('svg')).toBeVisible();
+  await expect(arsenal).toContainText('ARS');
+});

@@ -183,3 +183,18 @@ it('supports both observed OpenFootball score formats and empty fixture lists', 
     [],
   );
 });
+
+it('returns the same cutoff-safe histories in one batch as individual source reads', async () => {
+  const provider = new FreeFootballProvider(2026, async (url) =>
+    doc(url.includes('/2627/') ? played : csvHeader),
+  );
+  const cutoff = '2026-09-12T14:00:00Z';
+  const groups = await provider.matchHistory('arsenal', 'manchester-united', cutoff);
+  expect(groups.homeHistory).toEqual(await provider.history('arsenal', cutoff));
+  expect(groups.awayHistory).toEqual(await provider.history('manchester-united', cutoff));
+  expect(groups.h2h).toEqual(await provider.h2h('arsenal', 'manchester-united', cutoff));
+  expect(groups.homeHistory).toHaveLength(1);
+  expect(
+    (await provider.matchHistory('arsenal', 'manchester-united', '2026-08-20T00:00:00Z')).h2h,
+  ).toEqual([]);
+});

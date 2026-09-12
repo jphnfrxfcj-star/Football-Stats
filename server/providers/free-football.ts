@@ -1,3 +1,4 @@
+import { clubLogo } from '../../src/domain/club-assets';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import {
@@ -63,7 +64,7 @@ export function freeTeam(name: string): Team {
     id: `free-team-${slug}`,
     name: canonical,
     shortName: canonical.replaceAll(' ', '').slice(0, 3).toUpperCase(),
-    logo: null,
+    logo: clubLogo(canonical),
     color: '#65766c',
     refs: [{ provider: FREE_PROVIDER, externalId: slug }],
   };
@@ -432,6 +433,16 @@ export class FreeFootballProvider implements FootballDataProvider {
   }
   async fixture(id: string) {
     return (await this.season()).find((f) => f.refs[0].externalId === id) ?? null;
+  }
+  async matchHistory(home: string, away: string, cutoff: string) {
+    const fixtures = before(await this.historical(), cutoff);
+    const includes = (f: Fixture, team: string) =>
+      f.home.refs[0].externalId === team || f.away.refs[0].externalId === team;
+    return {
+      homeHistory: fixtures.filter((f) => includes(f, home)).slice(0, 60),
+      awayHistory: fixtures.filter((f) => includes(f, away)).slice(0, 60),
+      h2h: fixtures.filter((f) => includes(f, home) && includes(f, away)).slice(0, 10),
+    };
   }
   async history(team: string, cutoff: string) {
     return before(await this.historical(), cutoff)

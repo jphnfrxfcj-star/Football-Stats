@@ -190,7 +190,12 @@ export default function App() {
             matchday<span className="brand-dot">.</span>{' '}
             <span className="footer-text">Meer inzicht. Beter voorbereid.</span>
           </span>
-          <span>Modelinschattingen zijn geen zekerheid.</span>
+          <span>
+            Modelinschattingen zijn geen zekerheid.{' '}
+            <a href="/clubs/CREDITS.md" target="_blank" rel="noreferrer">
+              Clublogo’s: bron en rechten
+            </a>
+          </span>
         </footer>
       </div>
       {method && <Modal onClose={() => setMethod(false)} />}

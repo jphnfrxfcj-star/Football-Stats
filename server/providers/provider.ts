@@ -11,6 +11,16 @@ export interface FootballDataProvider {
   fixture(externalId: string): Promise<Fixture | null>;
   history(teamExternalId: string, beforeDate: string): Promise<Fixture[]>;
   h2h(homeExternalId: string, awayExternalId: string, beforeDate: string): Promise<Fixture[]>;
+  /** Optional batch with inline statistics, avoiding repeated source parsing and database writes. */
+  matchHistory?(
+    home: string,
+    away: string,
+    cutoff: string,
+  ): Promise<{
+    homeHistory: Fixture[];
+    awayHistory: Fixture[];
+    h2h: Fixture[];
+  }>;
   statistics(fixture: Fixture): Promise<{ home: TeamMetrics; away: TeamMetrics } | null>;
   events(fixtureExternalId: string): Promise<MatchEvent[]>;
 }

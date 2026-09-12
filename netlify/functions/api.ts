@@ -50,7 +50,7 @@ function getService() {
   service = new FootballService(provider, repository);
   return service;
 }
-export default async function handler(request: Request, context: Context) {
+async function route(request: Request, context: Context) {
   try {
     const url = new URL(request.url);
     const path = url.pathname
@@ -78,10 +78,11 @@ export default async function handler(request: Request, context: Context) {
     if (svc) {
       const ip = context.ip ?? 'unknown';
       const bucket = createHash('sha256').update(ip).digest('hex');
-      if (
-        !(await svc.repo.rateLimit(`${isSync ? 'sync' : 'read'}:${bucket}`, isSync ? 5 : 60, 60)) ||
-        !(await svc.repo.rateLimit('global:api', 300, 60))
-      )
+      const allowed = await Promise.all([
+        svc.repo.rateLimit(`${isSync ? 'sync' : 'read'}:${bucket}`, isSync ? 5 : 60, 60),
+        svc.repo.rateLimit('global:api', 300, 60),
+      ]);
+      if (allowed.some((value) => !value))
         return json({ error: 'Te veel verzoeken. Probeer later opnieuw.' }, 429);
     }
     if (path[0] === 'leagues' && path.length === 1)
@@ -147,4 +148,19 @@ export default async function handler(request: Request, context: Context) {
       503,
     );
   }
+}
+
+// Only successful public reads are shared. Errors and authenticated writes remain no-store.
+export default async function handler(request: Request, context: Context) {
+  const response = await route(request, context);
+  if (
+    request.method === 'GET' &&
+    response.status === 200 &&
+    !request.headers.has('authorization')
+  ) {
+    response.headers.set('Cache-Control', 'public, max-age=30');
+    response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60');
+    response.headers.set('Netlify-Vary', 'query');
+  }
+  return response;
 }

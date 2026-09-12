@@ -133,3 +133,11 @@ npx tsx scripts/check-free-sources.ts 2026-09-12
 ```
 
 Met `SUPABASE_URL` en `SUPABASE_SERVICE_ROLE_KEY` in de shell voert hetzelfde controlescript ook een echte opslag-/analysecontrole uit; dit schrijft wedstrijddata en caches naar die database. Sleutels blijven buiten Git. De browserflows draaien standaard op demodata; de bron-/Supabase-smoketest controleert de echte integratie afzonderlijk.
+
+### Clublogo’s en laadtijd
+
+Clublogo’s worden lokaal uit `public/clubs/` geladen, ook bij eerder gecachte teamgegevens zonder logo. Zie [bron en rechten](public/clubs/CREDITS.md). De afbeeldingen hebben een versie in de bestandsnaam en mogen één jaar in de browsercache blijven. Vervang bij een nieuw logo ook het versienummer.
+
+Succesvolle openbare GET-responses worden 30 seconden in de browser en 60 seconden in Netlify’s gedeelde, duurzame cache bewaard. Alle queryparameters horen bij de cachesleutel, zodat datums en afkapmomenten gescheiden blijven. Fouten, geauthenticeerde verzoeken en synchronisaties krijgen `no-store`. Een synchronisatie kan daardoor maximaal 60 seconden later zichtbaar worden in een reeds gecachte publieke response. Zie [Netlify caching](https://docs.netlify.com/build/caching/caching-overview/).
+
+Bij gratis bronnen worden beide teamhistories en onderlinge duels samen uit de bronbestanden gehaald. Overlappende wedstrijden worden één keer opgeslagen, met behoud van de canonieke database-ID’s. Een eerste analyse kan nog bron- en databasewerk vereisen; daaropvolgende aanvragen profiteren van de bestaande datacache en de CDN-cache.

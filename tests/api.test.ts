@@ -60,3 +60,19 @@ it('reports missing server settings without returning secret values', async () =
   expect(body.error).toContain('SUPABASE_URL');
   expect(JSON.stringify(body)).not.toContain('private-test-value');
 });
+
+it('caches only successful public GETs and keeps query parameters in the CDN key', async () => {
+  const ok = await handler(new Request('http://localhost/api/leagues'), context);
+  expect(ok.headers.get('cache-control')).toBe('public, max-age=30');
+  expect(ok.headers.get('netlify-cdn-cache-control')).toContain('s-maxage=60');
+  expect(ok.headers.get('netlify-vary')).toBe('query');
+  for (const request of [
+    new Request('http://localhost/api/fixtures?date=invalid'),
+    new Request('http://localhost/api/sync/fixture/x', { method: 'POST' }),
+    new Request('http://localhost/api/leagues', { headers: { authorization: 'Bearer test' } }),
+  ]) {
+    const result = await handler(request, context);
+    expect(result.headers.get('cache-control')).toBe('no-store');
+    expect(result.headers.get('netlify-cdn-cache-control')).toBeNull();
+  }
+});

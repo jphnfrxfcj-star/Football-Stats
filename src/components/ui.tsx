@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { clubLogo } from '../domain/club-assets';
 import { ShieldCheck, Info } from 'lucide-react';
 import type { Team } from '../domain/models';
 import type { Frequency } from '../analysis/engine';
@@ -17,18 +19,21 @@ export function Badge({
   team: Team;
   size?: 'small' | 'normal' | 'large';
 }) {
+  const logo = clubLogo(team.name) ?? team.logo;
+  const [failedLogo, setFailedLogo] = useState<string | null>(null);
   return (
     <span
       className={`team-badge ${size}`}
       style={{ '--team-color': team.color } as React.CSSProperties}
     >
-      {team.logo ? (
+      {logo && failedLogo !== logo ? (
         <img
-          src={team.logo}
+          src={logo}
           alt=""
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
+          decoding="async"
+          width={size === 'large' ? 50 : size === 'small' ? 23 : 30}
+          height={size === 'large' ? 50 : size === 'small' ? 23 : 30}
+          onError={() => setFailedLogo(logo)}
         />
       ) : (
         <ShieldCheck size={size === 'large' ? 36 : 21} />
