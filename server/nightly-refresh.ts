@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { serverConfig } from './config';
+import type { Fixture } from '../src/domain/models';
 import { Repository } from './repositories/supabase';
 import { downloadSource, FreeFootballProvider, type Division } from './providers/free-football';
 export function refreshToken(secret: string) {
@@ -33,11 +34,20 @@ export async function refreshLeague(repo: Repository, year: number, division: Di
   );
   const rows = await provider.seasonFixtures();
   // Idempotent batches preserve stable IDs and also apply corrected results earlier in the season.
-  for (let i = 0; i < rows.length; i += 100) await repo.saveFixtures(rows.slice(i, i + 100));
+  const saved: Fixture[] = [];
+  for (let i = 0; i < rows.length; i += 100)
+    saved.push(...(await repo.saveFixtures(rows.slice(i, i + 100))));
   return {
     division,
     fixtures: rows.length,
-    finished: rows.filter((f) => f.status === 'finished').length,
+    finished: saved.filter((f) => f.status === 'finished').length,
+    pendingResults: saved.filter(
+      (f) =>
+        f.status === 'scheduled' &&
+        f.kickoffKnown !== false &&
+        Date.parse(f.kickoff) < Date.now() - 3 * 3600000,
+    ).length,
+    recentResultChecksFailed: provider.recentResultChecksFailed,
   };
 }
 export async function runNightlyRefresh() {

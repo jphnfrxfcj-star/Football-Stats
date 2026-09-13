@@ -427,6 +427,7 @@ export class FreeFootballProvider implements FootballDataProvider {
     'Historie omvat maximaal vijf seizoenen in de geselecteerde competitie; voor gepromoveerde teams kan minder data beschikbaar zijn.',
     'xG, grote kansen en events zijn niet beschikbaar; overige statistieken hangen af van de bron.',
   ];
+  recentResultChecksFailed = 0;
   private documents = new Map<string, { expires: number; value: Promise<SourceDocument> }>();
   constructor(
     private year: number,
@@ -457,6 +458,7 @@ export class FreeFootballProvider implements FootballDataProvider {
     );
   }
   async seasonFixtures() {
+    this.recentResultChecksFailed = 0;
     const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/${this.division === 'E0' ? 'en' : 'es'}.1.json`;
     const fixtureUrl = 'https://www.football-data.co.uk/fixtures.csv';
     const [schedule, results, upcoming] = await Promise.all([
@@ -489,7 +491,11 @@ export class FreeFootballProvider implements FootballDataProvider {
           return { date, url, doc };
         }),
       );
-      for (const item of batch)
+      for (const item of batch) {
+        if (item.status === 'rejected') {
+          this.recentResultChecksFailed++;
+          console.warn('Recent result source unavailable', { division: this.division });
+        }
         if (item.status === 'fulfilled') {
           const { date, url, doc } = item.value;
           try {
@@ -502,12 +508,14 @@ export class FreeFootballProvider implements FootballDataProvider {
             const map = new Map(updated.map((f) => [f.id, f]));
             rows = rows.map((f) => map.get(f.id) ?? f);
           } catch {
+            this.recentResultChecksFailed++;
             console.warn('Recent result source could not be normalized', {
               division: this.division,
               date,
             });
           }
         }
+      }
     }
     return rows;
   }
