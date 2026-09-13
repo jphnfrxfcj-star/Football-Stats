@@ -161,3 +161,17 @@ it('only relaxes the historical threshold explicitly, with full observed windows
     false,
   );
 });
+
+it('excludes odds below 1.10 while including the boundary', () => {
+  const base = buildMarkets(data, odds, 5, now).selections.find((s) => s.market === 'over25')!;
+  const selections = [1.03, 1.099, 1.1, 2].map((decimal, i) => ({
+    ...base,
+    id: `minimum-${i}:over25`,
+    fixture: { ...base.fixture, id: `minimum-${i}` },
+    quotes: [{ ...base.quotes[0], bookmaker: 'A', decimal }],
+  }));
+  const combos = suggestCombinations(selections, 'A', now, 8);
+  expect(combos).toHaveLength(1);
+  expect(combos[0].legs.map((leg) => leg.quote.decimal).sort()).toEqual([1.1, 2]);
+  expect(combos[0].decimal).toBeCloseTo(2.2);
+});

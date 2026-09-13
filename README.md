@@ -219,7 +219,7 @@ De jobrapportage telt opgeslagen eindstanden, inclusief behouden resultaten wann
 
 ### Zichtbare Combi x2–x3
 
-De zelfstandige zoekkaart op de homepagina doorzoekt de gekozen datum en de volgende zeven kalenderdagen, over Premier League en La Liga. Ze blijft zichtbaar wanneer de daglijst leeg is; voor historische datums wordt ze verborgen. Unibet België is standaard geselecteerd. De kaart zoekt maximaal drie voorstellen met twee tot acht verschillende wedstrijden, prijzen van dezelfde bookmaker en een totale odd tussen 2 en 3. De begrensde zoekprocedure garandeert niet dat alle mogelijkheden worden gevonden.
+De zelfstandige zoekkaart op de homepagina doorzoekt de gekozen datum en de volgende zeven kalenderdagen, over Premier League en La Liga. Ze blijft zichtbaar wanneer de daglijst leeg is; voor historische datums wordt ze verborgen. Unibet België is standaard geselecteerd. Elke selectie heeft een odd van minimaal 1,10. De kaart zoekt maximaal drie voorstellen met twee tot acht verschillende wedstrijden, prijzen van dezelfde bookmaker en een totale odd tussen 2 en 3. De begrensde zoekprocedure garandeert niet dat alle mogelijkheden worden gevonden.
 
 Standaard moet elke selectie bij beide teams in 100% van de laatste 5, 10 of 20 wedstrijden zijn uitgekomen. De gebruiker kan expliciet 90% of 80% kiezen; de volledige reeks blijft vereist, ontbrekende gegevens worden nooit als geslaagd beschouwd en beide teams moeten afzonderlijk de drempel halen. De kaart toont werkelijke aantallen en onderliggende uitslagen. Zonder passende prijzen verschijnt een lege toestand. Historische frequentie is geen voorspelde winstkans en de bookmaker moet de actuele combinatieprijs bevestigen.
 

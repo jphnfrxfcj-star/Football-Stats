@@ -49,7 +49,17 @@ export default function ComboFinder({
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
   const priced = [
     ...new Set(
-      eligible.filter((s) => s.quotes.some((q) => q.bookmaker === book)).map((s) => s.fixture.id),
+      eligible
+        .filter((s) =>
+          s.quotes.some(
+            (q) =>
+              q.bookmaker === book &&
+              Number.isFinite(q.decimal) &&
+              q.decimal >= 1.1 &&
+              q.decimal <= 3,
+          ),
+        )
+        .map((s) => s.fixture.id),
     ),
   ].length;
   const end = new Date(Date.parse(date) + 7 * 86400000).toISOString().slice(0, 10);
@@ -63,7 +73,7 @@ export default function ComboFinder({
       <p className="section-intro">
         Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League
         en La Liga. Iedere selectie kwam voor in minstens {minimumRate}% van de laatste {window}{' '}
-        competitieduels van elk team.
+        competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.
       </p>
       <div className="market-controls">
         <label>

@@ -47,7 +47,7 @@ export function fixtureQuotes(f: Fixture, odds: OddsSnapshot): OddsQuote[] {
       q.away === away &&
       q.date === (f.sourceDate ?? f.kickoff.slice(0, 10)) &&
       Number.isFinite(q.decimal) &&
-      q.decimal > 1 &&
+      q.decimal >= 1.1 &&
       (q.kickoff === null || Math.abs(Date.parse(q.kickoff) - Date.parse(f.kickoff)) <= 60000),
   );
 }
@@ -112,7 +112,7 @@ export function suggestCombinations(
         (q) =>
           q.bookmaker === bookmaker &&
           Number.isFinite(q.decimal) &&
-          q.decimal > 1 &&
+          q.decimal >= 1.1 &&
           q.decimal <= 3,
       )
       .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
