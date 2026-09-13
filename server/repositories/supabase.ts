@@ -1,3 +1,4 @@
+import { preserveResult } from './preserve-result';
 import { databaseFetch, rollbackCodes } from './database-fetch';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { ServiceError } from '../errors';
@@ -173,12 +174,28 @@ export class Repository {
         entity.refs.map((r) => maps.get(`${kind}:${r.provider}:${r.externalId}`)).find(Boolean) ??
         entity.id,
     });
-    const fixtures = inputs.map((f) => ({
+    let fixtures = inputs.map((f) => ({
       ...canonical('fixture', f),
       home: canonical('team', f.home),
       away: canonical('team', f.away),
       league: canonical('league', f.league),
     }));
+    const incomplete = fixtures.filter(
+      (f) => f.status !== 'finished' || f.homeGoals === null || f.awayGoals === null,
+    );
+    if (incomplete.length) {
+      const { data: stored, error } = await this.db
+        .from('fixtures')
+        .select('id,data')
+        .eq('status', 'finished')
+        .in(
+          'id',
+          incomplete.map((f) => f.id),
+        );
+      this.assert(error);
+      const known = new Map((stored ?? []).map((row) => [row.id, row.data as Fixture]));
+      fixtures = fixtures.map((f) => preserveResult(f, known.get(f.id)));
+    }
     const teams = [
       ...new Map(fixtures.flatMap((f) => [f.home, f.away]).map((t) => [t.id, t])).values(),
     ];

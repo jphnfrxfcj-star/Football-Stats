@@ -135,6 +135,7 @@ describe('free provider', () => {
     const calls: string[] = [];
     const reader: SourceReader = async (url) => {
       calls.push(url);
+      if (url.includes('espn.com')) return doc(JSON.stringify({ events: [] }));
       if (url.includes('githubusercontent')) return doc(schedule);
       if (url.endsWith('fixtures.csv'))
         return doc('Div,Date,Time,HomeTeam,AwayTeam\nE0,12/09/2026,15:00,Arsenal,Chelsea\n');
@@ -152,7 +153,8 @@ describe('free provider', () => {
     expect(history).toHaveLength(5);
     expect(h2h).toHaveLength(5);
     expect(await provider.fixture(fixtures[0].refs[0].externalId)).not.toBeNull();
-    expect(calls).toHaveLength(7);
+    expect(new Set(calls).size).toBe(calls.length);
+    expect(calls.filter((url) => !url.includes('espn.com'))).toHaveLength(7);
     const analysis = analyze({
       fixture: fixtures[0],
       homeHistory: history,
@@ -186,7 +188,15 @@ it('supports both observed OpenFootball score formats and empty fixture lists', 
 
 it('returns the same cutoff-safe histories in one batch as individual source reads', async () => {
   const provider = new FreeFootballProvider(2026, async (url) =>
-    doc(url.includes('/2627/') ? played : csvHeader),
+    doc(
+      url.includes('githubusercontent')
+        ? JSON.stringify({ matches: [] })
+        : url.includes('espn.com')
+          ? JSON.stringify({ events: [] })
+          : url.includes('/2627/')
+            ? played
+            : csvHeader,
+    ),
   );
   const cutoff = '2026-09-12T14:00:00Z';
   const groups = await provider.matchHistory('arsenal', 'manchester-united', cutoff);

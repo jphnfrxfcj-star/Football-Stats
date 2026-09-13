@@ -35,7 +35,7 @@ export function normalizeUnibet(raw: unknown, now = Date.now()): OddsQuote[] {
   for (const event of body.events) {
     if (
       event.sport !== 'FOOTBALL' ||
-      event.groupId !== 1000094985 ||
+      ![1000094985, 1000095049].includes(event.groupId) ||
       event.state !== 'NOT_STARTED' ||
       Date.parse(event.start) <= now
     )
@@ -91,11 +91,20 @@ async function read(path: string) {
   return JSON.parse(text) as unknown;
 }
 export async function unibetOdds(service: FootballService): Promise<OddsSnapshot> {
-  return service.cached('odds:unibet-be:v1', 300, async () => {
+  return service.cached('odds:unibet-be:v2', 300, async () => {
     const now = Date.now();
-    const list = z
-      .object({ events: z.array(z.object({ event: eventSchema })) })
-      .parse(await read('listView/football/england/premier_league/all/matches.json'));
+    const lists = await Promise.allSettled(
+      ['football/england/premier_league', 'football/spain/la_liga'].map((path) =>
+        read(`listView/${path}/all/matches.json`).then((raw) =>
+          z.object({ events: z.array(z.object({ event: eventSchema })) }).parse(raw),
+        ),
+      ),
+    );
+    const events = lists.flatMap((result) =>
+      result.status === 'fulfilled' ? result.value.events : [],
+    );
+    if (lists.every((r) => r.status === 'rejected')) throw new Error('Unibet leagues unavailable');
+    const list = { events };
     const upcoming = list.events
       .map((e) => e.event)
       .filter(
@@ -105,7 +114,7 @@ export async function unibetOdds(service: FootballService): Promise<OddsSnapshot
           Date.parse(e.start) < now + 8 * 86400000,
       )
       .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
-      .slice(0, 12);
+      .slice(0, 24);
     const quotes: OddsQuote[] = [];
     let failed = 0;
     for (let i = 0; i < upcoming.length; i += 3) {
@@ -113,7 +122,7 @@ export async function unibetOdds(service: FootballService): Promise<OddsSnapshot
         upcoming
           .slice(i, i + 3)
           .map((e) =>
-            service.cached(`odds:unibet-be:event:v1:${e.id}`, 300, async () =>
+            service.cached(`odds:unibet-be:event:v2:${e.id}`, 300, async () =>
               normalizeUnibet(await read(`betoffer/event/${e.id}.json`)),
             ),
           ),

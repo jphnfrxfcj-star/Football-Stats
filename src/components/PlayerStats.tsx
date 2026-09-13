@@ -60,7 +60,7 @@ export default function PlayerStats({ id }: { id: string }) {
           <Users size={24} />
           <div>
             <strong>Wie zorgt voor het gevaar?</strong>
-            <p>Vergelijk spelers uit recente Premier League-wedstrijden vóór deze aftrap.</p>
+            <p>Vergelijk spelers uit recente competitiewedstrijden vóór deze aftrap.</p>
           </div>
           <button className="secondary-button" onClick={() => setAttempt(attempt + 1)}>
             {error ? 'Opnieuw proberen' : 'Spelers bekijken'}

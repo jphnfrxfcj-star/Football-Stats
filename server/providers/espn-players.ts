@@ -9,7 +9,7 @@ import {
 } from '../../src/domain/players';
 import { ServiceError } from '../errors';
 import type { FootballService } from '../service';
-const base = 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/';
+const base = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
 const team = z.object({ displayName: z.string() });
 const competitor = z.object({ homeAway: z.string(), team });
 const competition = z.object({
@@ -91,9 +91,9 @@ export function normalizePlayerSummary(raw: unknown): {
     observations,
   };
 }
-async function read(path: string): Promise<unknown> {
+async function read(path: string, league = 'eng.1'): Promise<unknown> {
   try {
-    const r = await fetch(base + path, {
+    const r = await fetch(base + league + '/' + path, {
       signal: AbortSignal.timeout(12000),
       headers: { 'User-Agent': 'Matchday/1.0' },
     });
@@ -110,6 +110,11 @@ export async function playerReport(
   data: MatchData,
   service: FootballService,
 ): Promise<PlayerReport> {
+  const league = data.fixture.league.refs.some(
+    (r) => r.externalId === 'SP1' || r.externalId === '140',
+  )
+    ? 'esp.1'
+    : 'eng.1';
   const cutoff = Date.parse(data.fixture.kickoff);
   const teams = [data.fixture.home, data.fixture.away];
   const histories = [data.homeHistory, data.awayHistory].map((rows, i) =>
@@ -124,16 +129,20 @@ export async function playerReport(
   async function collect(f: Fixture) {
     try {
       const date = (f.sourceDate ?? f.kickoff.slice(0, 10)).replaceAll('-', '');
-      const events = await service.cached(`espn:scoreboard:v1:${date}`, 86400, async () => {
-        const parsed = z
-          .object({
-            events: z.array(
-              z.object({ id: z.string().regex(/^\d+$/), competitions: z.array(competition) }),
-            ),
-          })
-          .parse(await read(`scoreboard?dates=${date}&limit=100`));
-        return parsed.events;
-      });
+      const events = await service.cached(
+        `espn:scoreboard:v2:${league}:${date}`,
+        86400,
+        async () => {
+          const parsed = z
+            .object({
+              events: z.array(
+                z.object({ id: z.string().regex(/^\d+$/), competitions: z.array(competition) }),
+              ),
+            })
+            .parse(await read(`scoreboard?dates=${date}&limit=100`, league));
+          return parsed.events;
+        },
+      );
       const home = canonicalClubName(f.home.name),
         away = canonicalClubName(f.away.name);
       const event = events.find((e) =>
@@ -149,7 +158,7 @@ export async function playerReport(
       );
       if (!home || !away || !event) throw new Error('Match not mapped');
       const result = await service.cached(`espn:players:v2:${event.id}`, 2592000, async () =>
-        normalizePlayerSummary(await read(`summary?event=${event.id}`)),
+        normalizePlayerSummary(await read(`summary?event=${event.id}`, league)),
       );
       if (
         result.eventId !== event.id ||

@@ -1,3 +1,5 @@
+import { applyResults } from './espn-results';
+import { spanishClubs } from '../../src/domain/spanish-clubs';
 import { clubLogo } from '../../src/domain/club-assets';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
@@ -22,6 +24,7 @@ export interface SourceDocument {
 }
 export type SourceReader = (url: string, ttl: number) => Promise<SourceDocument>;
 const aliases: Record<string, string[]> = {
+  ...spanishClubs,
   Arsenal: ['Arsenal FC'],
   'Aston Villa': ['Aston Villa FC'],
   Bournemouth: ['AFC Bournemouth'],
@@ -77,6 +80,14 @@ export const freeLeague: League = {
   logo: null,
   refs: [{ provider: FREE_PROVIDER, externalId: 'E0' }],
 };
+export const spanishLeague: League = {
+  id: 'free-league-sp1',
+  name: 'La Liga',
+  country: 'Spanje',
+  logo: null,
+  refs: [{ provider: FREE_PROVIDER, externalId: 'SP1' }],
+};
+export type Division = 'E0' | 'SP1';
 export function fixtureKey(year: number, home: Team, away: Team) {
   return `${year}-${home.refs[0].externalId}-vs-${away.refs[0].externalId}`;
 }
@@ -88,6 +99,7 @@ const isoDay = z
 export function londonKickoff(
   date: string,
   time?: string,
+  timeZone = 'Europe/London',
 ): { kickoff: string; kickoffKnown: boolean } {
   isoDay.parse(date);
   if (!time?.trim()) return { kickoff: `${date}T00:00:00.000Z`, kickoffKnown: false };
@@ -95,7 +107,7 @@ export function londonKickoff(
     throw new ServiceError('SOURCE_FORMAT_CHANGED', 'Een bron bevat een ongeldige aftraptijd.');
   const desired = Date.parse(`${date}T${time}:00Z`);
   const formatter = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -123,6 +135,7 @@ function baseFixture(
   date: string,
   time: string | undefined,
   stamp: SourceStamp,
+  division: Division = 'E0',
 ): Fixture {
   const home = freeTeam(homeName),
     away = freeTeam(awayName),
@@ -133,11 +146,15 @@ function baseFixture(
       { provider: FREE_PROVIDER, externalId: key },
       { provider: stamp.name, externalId: key },
     ],
-    league: freeLeague,
+    league: division === 'SP1' ? spanishLeague : freeLeague,
     home,
     away,
     sourceDate: date,
-    ...londonKickoff(date, time),
+    ...londonKickoff(
+      date,
+      time,
+      division === 'SP1' && stamp.name === 'openfootball' ? 'Europe/Madrid' : 'Europe/London',
+    ),
     venue: null,
     status: 'scheduled',
     homeGoals: null,
@@ -165,7 +182,12 @@ const scheduleSchema = z.object({
     }),
   ),
 });
-export function normalizeSchedule(document: SourceDocument, year: number, url: string): Fixture[] {
+export function normalizeSchedule(
+  document: SourceDocument,
+  year: number,
+  url: string,
+  division: Division = 'E0',
+): Fixture[] {
   let raw: z.infer<typeof scheduleSchema>;
   try {
     raw = scheduleSchema.parse(JSON.parse(document.text));
@@ -176,11 +198,19 @@ export function normalizeSchedule(document: SourceDocument, year: number, url: s
     );
   }
   return raw.matches.map((m) => {
-    const f = baseFixture(year, m.team1, m.team2, m.date, m.time, {
-      name: 'openfootball',
-      url,
-      fetchedAt: document.fetchedAt,
-    });
+    const f = baseFixture(
+      year,
+      m.team1,
+      m.team2,
+      m.date,
+      m.time,
+      {
+        name: 'openfootball',
+        url,
+        fetchedAt: document.fetchedAt,
+      },
+      division,
+    );
     if (m.score?.ft) {
       [f.homeGoals, f.awayGoals] = m.score.ft;
       f.status = 'finished';
@@ -207,6 +237,7 @@ export function normalizeCsv(
   year: number,
   url: string,
   upcoming = false,
+  division: Division = 'E0',
 ): Fixture[] {
   let rows: Record<string, string>[];
   let columns: string[] = [];
@@ -234,18 +265,26 @@ export function normalizeCsv(
     );
   const output: Fixture[] = [];
   for (const r of rows) {
-    if (r.Div !== 'E0') continue;
+    if (r.Div !== division) continue;
     const date = r.Date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     if (!date)
       throw new ServiceError('SOURCE_FORMAT_CHANGED', 'Een CSV-wedstrijddatum is ongeldig.');
     const day = `${date[3]}-${date[2]}-${date[1]}`;
     // The rolling fixtures CSV includes whatever season is current; never attach it to another season.
     if (upcoming && Number(date[3]) - (Number(date[2]) < 7 ? 1 : 0) !== year) continue;
-    const f = baseFixture(year, r.HomeTeam, r.AwayTeam, day, r.Time, {
-      name: CSV_PROVIDER,
-      url,
-      fetchedAt: document.fetchedAt,
-    });
+    const f = baseFixture(
+      year,
+      r.HomeTeam,
+      r.AwayTeam,
+      day,
+      r.Time,
+      {
+        name: CSV_PROVIDER,
+        url,
+        fetchedAt: document.fetchedAt,
+      },
+      division,
+    );
     f.homeGoals = csvNumber(r.FTHG);
     f.awayGoals = csvNumber(r.FTAG);
     f.halfHomeGoals = csvNumber(r.HTHG);
@@ -378,20 +417,21 @@ export async function downloadSource(url: string): Promise<SourceDocument> {
 export class FreeFootballProvider implements FootballDataProvider {
   readonly name = FREE_PROVIDER;
   get cacheNamespace() {
-    return `${this.name}:39:${this.year}`;
+    return `${this.name}:${this.division === 'E0' ? '39' : '140'}:${this.year}`;
   }
   readonly fixtureIdPrefix = 'free-fixture-';
   readonly statisticsProvider = CSV_PROVIDER;
-  readonly label = 'OpenFootball + Football-Data.co.uk';
+  readonly label = 'OpenFootball + Football-Data.co.uk + ESPN-uitslagen';
   readonly warnings = [
     'Gratis bronnen worden periodiek bijgewerkt; dit zijn geen livescores.',
-    'Historie omvat maximaal vijf Premier League-seizoenen; voor gepromoveerde teams kan minder data beschikbaar zijn.',
-    'xG, balbezit, grote kansen, stadion en events zijn niet beschikbaar in deze bronnen.',
+    'Historie omvat maximaal vijf seizoenen in de geselecteerde competitie; voor gepromoveerde teams kan minder data beschikbaar zijn.',
+    'xG, grote kansen en events zijn niet beschikbaar; overige statistieken hangen af van de bron.',
   ];
   private documents = new Map<string, { expires: number; value: Promise<SourceDocument> }>();
   constructor(
     private year: number,
     private read: SourceReader = (url) => downloadSource(url),
+    readonly division: Division = 'E0',
   ) {}
   private doc(url: string, ttl: number) {
     const cached = this.documents.get(url);
@@ -400,40 +440,95 @@ export class FreeFootballProvider implements FootballDataProvider {
       this.documents.delete(url);
       throw e;
     });
-    this.documents.set(url, { expires: Date.now() + ttl * 1000, value });
+    this.documents.set(url, { expires: Date.now() + Math.min(ttl, 300) * 1000, value });
     return value;
   }
   private csvUrl(year: number) {
-    return `https://www.football-data.co.uk/mmz4281/${String(year).slice(-2)}${String(year + 1).slice(-2)}/E0.csv`;
+    return `https://www.football-data.co.uk/mmz4281/${String(year).slice(-2)}${String(year + 1).slice(-2)}/${this.division}.csv`;
   }
   private async results(year: number) {
     const url = this.csvUrl(year);
-    return normalizeCsv(await this.doc(url, year === this.year ? 21600 : 2592000), year, url);
+    return normalizeCsv(
+      await this.doc(url, year === this.year ? 21600 : 2592000),
+      year,
+      url,
+      false,
+      this.division,
+    );
   }
-  private async season() {
-    const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/en.1.json`;
+  async seasonFixtures() {
+    const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/${this.division === 'E0' ? 'en' : 'es'}.1.json`;
     const fixtureUrl = 'https://www.football-data.co.uk/fixtures.csv';
     const [schedule, results, upcoming] = await Promise.all([
-      this.doc(url, 21600).then((d) => normalizeSchedule(d, this.year, url)),
+      this.doc(url, 21600).then((d) => normalizeSchedule(d, this.year, url, this.division)),
       this.results(this.year),
-      this.doc(fixtureUrl, 3600).then((d) => normalizeCsv(d, this.year, fixtureUrl, true)),
+      this.doc(fixtureUrl, 3600).then((d) =>
+        normalizeCsv(d, this.year, fixtureUrl, true, this.division),
+      ),
     ]);
-    return mergeFixtures(schedule, results, upcoming);
+    let rows = mergeFixtures(schedule, results, upcoming);
+    // Recent final scores may reach ESPN before the periodic CSV. Never query bookmaker odds here.
+    const now = Date.now();
+    const dates = [
+      ...new Set(
+        rows
+          .filter(
+            (f) =>
+              Date.parse(f.kickoff) < now &&
+              Date.parse(f.kickoff) > now - 7 * 86400000 &&
+              (f.status !== 'finished' || !f.statistics),
+          )
+          .map((f) => f.sourceDate!),
+      ),
+    ];
+    for (let i = 0; i < dates.length; i += 2) {
+      const batch = await Promise.allSettled(
+        dates.slice(i, i + 2).map(async (date) => {
+          const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${this.division === 'SP1' ? 'esp.1' : 'eng.1'}/scoreboard?dates=${date.replaceAll('-', '')}&limit=100`;
+          const doc = await this.doc(url, 300);
+          return { date, url, doc };
+        }),
+      );
+      for (const item of batch)
+        if (item.status === 'fulfilled') {
+          const { date, url, doc } = item.value;
+          try {
+            const updated = applyResults(
+              rows.filter((f) => f.sourceDate === date),
+              JSON.parse(doc.text),
+              url,
+              doc.fetchedAt,
+            );
+            const map = new Map(updated.map((f) => [f.id, f]));
+            rows = rows.map((f) => map.get(f.id) ?? f);
+          } catch {
+            console.warn('Recent result source could not be normalized', {
+              division: this.division,
+              date,
+            });
+          }
+        }
+    }
+    return rows;
   }
   private async historical() {
     const sets = await Promise.all(
       Array.from({ length: 5 }, (_, i) => this.results(this.year - i)),
     );
-    return mergeFixtures([], sets.flat(), []);
+    return mergeFixtures(
+      [],
+      [...sets.flat(), ...(await this.seasonFixtures()).filter((f) => f.status === 'finished')],
+      [],
+    );
   }
   async leagues() {
-    return [freeLeague];
+    return [this.division === 'SP1' ? spanishLeague : freeLeague];
   }
   async fixtures(date: string) {
-    return (await this.season()).filter((f) => f.sourceDate === date);
+    return (await this.seasonFixtures()).filter((f) => f.sourceDate === date);
   }
   async fixture(id: string) {
-    return (await this.season()).find((f) => f.refs[0].externalId === id) ?? null;
+    return (await this.seasonFixtures()).find((f) => f.refs[0].externalId === id) ?? null;
   }
   async previewData(date: string): Promise<MatchData[]> {
     const [fixtures, history] = await Promise.all([this.fixtures(date), this.historical()]);

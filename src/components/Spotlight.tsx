@@ -5,9 +5,11 @@ import type { SpotlightReport } from '../domain/spotlight';
 import { Badge, SectionTitle, pct, dateLabel } from './ui';
 export default function Spotlight({
   date,
+  league = 'all',
   navigate,
 }: {
   date: string;
+  league?: string;
   navigate: (path: string) => void;
 }) {
   const [report, setReport] = useState<SpotlightReport | null>(null),
@@ -32,7 +34,12 @@ export default function Spotlight({
       });
     return () => c.abort();
   }, [date, retry]);
-  const cards = report?.cards.filter((c) => isDemo || Date.parse(c.fixture.kickoff) > now) ?? [];
+  const cards =
+    report?.cards.filter(
+      (c) =>
+        (isDemo || Date.parse(c.fixture.kickoff) > now) &&
+        (league === 'all' || c.fixture.league.id === league),
+    ) ?? [];
   return (
     <section className="spotlight-section" aria-label="Spotlight">
       <SectionTitle

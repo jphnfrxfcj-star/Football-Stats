@@ -1,3 +1,5 @@
+import { MatchRecap } from './Recap';
+import { isUpcoming } from '../analysis/recap';
 import OddsComparison from './OddsComparison';
 import PlayerStats from './PlayerStats';
 import { useEffect, useState } from 'react';
@@ -48,7 +50,12 @@ export default function MatchPage({
     [retry, setRetry] = useState(0),
     [windowIndex, setWindowIndex] = useState(1),
     [h2hIndex, setH2hIndex] = useState(0),
-    [detail, setDetail] = useState<Probability | null>(null);
+    [detail, setDetail] = useState<Probability | null>(null),
+    [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
@@ -134,7 +141,9 @@ export default function MatchPage({
               {f.status === 'finished'
                 ? 'AFGELOPEN'
                 : f.status === 'scheduled'
-                  ? 'AFTRAP'
+                  ? Date.parse(f.kickoff) < now
+                    ? 'UITSLAG VOLGT'
+                    : 'AFTRAP'
                   : f.status.toUpperCase()}
             </span>
           </div>
@@ -182,11 +191,20 @@ export default function MatchPage({
           <span>{w}</span>
         </div>
       ))}
-      <OddsComparison key={`odds-${id}`} id={id} response={response} />
+      {isUpcoming(f, now) && <OddsComparison key={`odds-${id}`} id={id} response={response} />}
+      <MatchRecap fixture={f} />
       <section id="probabilities">
+        {f.status === 'finished' && (
+          <p className="spotlight-note">
+            Achteraf gereconstrueerd met de beschikbare historie vóór deze wedstrijd; geen
+            vastgelegde pre-matchvoorspelling.
+          </p>
+        )}
         <SectionTitle
           eyebrow="HET MODEL AAN HET WOORD"
-          title="Kansen in één oogopslag"
+          title={
+            f.status === 'finished' ? 'Historische modelinschatting' : 'Kansen in één oogopslag'
+          }
           aside={
             <button className="text-button" onClick={showModel}>
               <CircleHelp size={15} />

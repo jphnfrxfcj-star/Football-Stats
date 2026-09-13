@@ -129,12 +129,19 @@ export default function App() {
           </button>
         </nav>
         <div className="sidebar-divider" />
-        <div className="workspace-label">COMPETITIE</div>
+        <div className="workspace-label">COMPETITIES</div>
         <div className="league-nav">
           <Trophy size={17} />
           <span>Premier League</span>
           <span className="green-dot" />
         </div>
+        {!isDemo && (
+          <div className="league-nav">
+            <Trophy size={17} />
+            <span>La Liga</span>
+            <span className="green-dot" />
+          </div>
+        )}
         <div className="sidebar-bottom">
           <div className="engine-card">
             <span className="engine-icon">

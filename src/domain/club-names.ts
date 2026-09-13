@@ -1,3 +1,4 @@
+import { spanishClubName } from './spanish-clubs';
 import { clubLogo } from './club-assets';
 const aliases: Record<string, string> = {
   'AFC Bournemouth': 'Bournemouth',
@@ -21,6 +22,8 @@ const aliases: Record<string, string> = {
 };
 /** Reviewed names only: never fuzzy-match an odds market or player to another club. */
 export function canonicalClubName(name: string): string | null {
+  const spanish = spanishClubName(name);
+  if (spanish) return spanish;
   const stripped = name.trim().replace(/ (FC|AFC)$/, '');
   const canonical = aliases[stripped] ?? stripped;
   return clubLogo(canonical) ? canonical : null;

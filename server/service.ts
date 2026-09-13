@@ -1,3 +1,4 @@
+import { isUpcoming } from '../src/analysis/recap';
 import { buildMarkets } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
 import { ServiceError } from './errors';
@@ -219,7 +220,17 @@ export class FootballService {
       }
       return rows;
     });
-    const odds = await getOdds(this).catch(() => ({
+    const odds = await (
+      matches.some((m) => isUpcoming(m.fixture))
+        ? getOdds(this)
+        : Promise.resolve({
+            source: 'Geen pre-matchodds nodig',
+            kind: 'snapshot' as const,
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Geen komende wedstrijden.',
+          })
+    ).catch(() => ({
       source: 'Geen odds beschikbaar',
       kind: 'snapshot' as const,
       fetchedAt: new Date().toISOString(),
@@ -258,7 +269,17 @@ export class FootballService {
         return results;
       },
     );
-    const odds = await getOdds(this).catch(() => ({
+    const odds = await (
+      matches.some((m) => isUpcoming(m.fixture))
+        ? getOdds(this)
+        : Promise.resolve({
+            source: 'Geen pre-matchodds nodig',
+            kind: 'snapshot' as const,
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Geen komende wedstrijden.',
+          })
+    ).catch(() => ({
       source: 'Geen odds beschikbaar',
       kind: 'snapshot' as const,
       fetchedAt: new Date().toISOString(),

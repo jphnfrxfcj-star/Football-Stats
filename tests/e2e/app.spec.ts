@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-12T08:00:00Z'));
+});
 test('filters, navigates, explains probabilities and switches windows', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -144,4 +147,16 @@ test('Unibet analysis compares prices and builds a joint-history concept without
   await slip.getByRole('button', { name: 'Verwijder Beide teams scoren' }).click();
   await expect(slip).not.toContainText('Totale odd');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('past dates and past match pages do not display odds or a builder', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Wedstrijddatum').fill('2026-09-11');
+  await expect(page.getByRole('heading', { name: 'Uitslagen & terugblik' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Odds en combibouwer' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Spotlight' })).toHaveCount(0);
+  await page.locator('.fixture-row').first().click();
+  await expect(page.getByRole('heading', { name: 'Arsenal', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Bookmakervergelijking' })).toHaveCount(0);
+  await expect(page.getByLabel('Betbuilder concept')).toHaveCount(0);
 });

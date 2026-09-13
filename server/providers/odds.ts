@@ -21,7 +21,7 @@ export function csvOdds(doc: SourceDocument): OddsSnapshot {
     SKB: 'Sky Bet',
   };
   for (const row of rows) {
-    if (row.Div !== 'E0') continue;
+    if (!['E0', 'SP1'].includes(row.Div)) continue;
     const home = canonicalClubName(row.HomeTeam ?? ''),
       away = canonicalClubName(row.AwayTeam ?? '');
     const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(row.Date ?? '');
@@ -137,7 +137,7 @@ export function normalizeOdds(raw: unknown, now = new Date().toISOString()): Odd
 async function comparisonOdds(service: FootballService): Promise<OddsSnapshot> {
   const key = process.env.ODDS_API_KEY?.trim();
   if (!key)
-    return service.cached('odds:football-data:v2', 3600, async () =>
+    return service.cached('odds:football-data:v3', 3600, async () =>
       csvOdds(await downloadSource('https://www.football-data.co.uk/fixtures.csv')),
     );
   const region = z.enum(['eu', 'uk', 'us', 'au']).parse(process.env.ODDS_REGION ?? 'eu');

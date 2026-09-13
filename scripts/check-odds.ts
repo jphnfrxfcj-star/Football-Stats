@@ -29,7 +29,7 @@ try {
     await expect(markets.getByLabel('Bookmaker', { exact: true })).toHaveValue('Unibet België', {
       timeout: 60000,
     });
-    await expect(markets.locator('tbody tr')).toHaveCount(1);
+    await expect(markets.locator('tbody tr')).toHaveCount(2);
     await page.locator('.fixture-row').first().click();
     const work = page.getByLabel('Odds versus statistiek');
     await expect(work.getByLabel('Over 1.5 goals odd', { exact: true })).not.toHaveAttribute(

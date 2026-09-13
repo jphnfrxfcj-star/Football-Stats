@@ -1,3 +1,5 @@
+import { DayRecap } from './Recap';
+import { isUpcoming } from '../analysis/recap';
 import Markets from './Markets';
 import Spotlight from './Spotlight';
 import { useEffect, useState } from 'react';
@@ -30,7 +32,12 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     [leagues, setLeagues] = useState<League[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(''),
-    [retry, setRetry] = useState(0);
+    [retry, setRetry] = useState(0),
+    [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
@@ -102,8 +109,8 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             <Trophy size={20} />
           </span>
           <div>
-            <small>Ondersteunde competitie</small>
-            <strong>Premier League</strong>
+            <small>Ondersteunde competities</small>
+            <strong>{isDemo ? 'Premier League (demo)' : 'Premier League · La Liga'}</strong>
           </div>
         </div>
         <div className="overview-card">
@@ -176,10 +183,15 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
-      <Spotlight date={date} navigate={navigate} />
-      <Markets key={date} date={date} navigate={navigate} />
+      {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
+        <>
+          <Spotlight date={date} league={league} navigate={navigate} />
+          <Markets key={date} date={date} league={league} navigate={navigate} />
+        </>
+      )}
+      {!loading && !error && <DayRecap fixtures={filtered} />}
       <SectionTitle
-        title="Op het programma"
+        title={date < today() ? 'Uitslagen & terugblik' : 'Op het programma'}
         aside={<span className="subtle">Alle tijden in jouw tijdzone</span>}
       />
       <div className="filters">
@@ -272,8 +284,9 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             <span className="league-symbol">
               <Trophy size={18} />
             </span>
-            <strong>Premier League</strong>
-            <span>Engeland</span>
+            <strong>
+              {league === 'all' ? 'Alle competities' : leagues.find((l) => l.id === league)?.name}
+            </strong>
             <span className="fixture-count">{filtered.length} wedstrijden</span>
           </div>
           {filtered.map((f) => (
@@ -289,7 +302,9 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
                         ? 'Uitgesteld'
                         : f.status === 'cancelled'
                           ? 'Geannuleerd'
-                          : 'Gepland'}
+                          : Date.parse(f.kickoff) < now
+                            ? 'Uitslag volgt'
+                            : 'Gepland'}
                 </span>
               </div>
               <div className="fixture-team home">
@@ -307,10 +322,10 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
               </div>
               <span className="fixture-venue">
                 <MapPin size={14} />
-                {f.venue ?? 'Locatie onbekend'}
+                {f.league.name}
               </span>
               <span className="analyze-link">
-                Analyse <ArrowRight size={16} />
+                {f.status === 'finished' ? 'Recap' : 'Analyse'} <ArrowRight size={16} />
               </span>
             </button>
           ))}

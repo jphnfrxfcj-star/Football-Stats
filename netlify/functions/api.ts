@@ -1,3 +1,4 @@
+import { MultiLeagueProvider } from '../../server/providers/multi-league';
 import { buildMarkets } from '../../src/analysis/combinations';
 import { getOdds } from '../../server/providers/odds';
 import { canonicalClubName } from '../../src/domain/club-names';
@@ -8,7 +9,7 @@ import { timingSafeEqual, createHash } from 'node:crypto';
 import { z } from 'zod';
 import { ServiceError } from '../../server/errors';
 import { serverConfig } from '../../server/config';
-import { FreeFootballProvider, downloadSource } from '../../server/providers/free-football';
+import { downloadSource } from '../../server/providers/free-football';
 import { ApiFootballProvider } from '../../server/providers/api-football';
 import { Repository } from '../../server/repositories/supabase';
 import { BusyError, FootballService } from '../../server/service';
@@ -44,7 +45,7 @@ function getService() {
   const repository = new Repository(config.supabaseUrl, config.supabaseKey);
   const provider =
     config.provider === 'free-football'
-      ? new FreeFootballProvider(config.season, (url, ttl) =>
+      ? new MultiLeagueProvider(config.season, (url, ttl) =>
           service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
         )
       : new ApiFootballProvider(

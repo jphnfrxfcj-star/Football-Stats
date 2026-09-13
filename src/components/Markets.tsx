@@ -11,9 +11,11 @@ const columns = [
 ];
 export default function Markets({
   date,
+  league = 'all',
   navigate,
 }: {
   date: string;
+  league?: string;
   navigate: (path: string) => void;
 }) {
   const [window, setWindow] = useState(5),
@@ -42,39 +44,50 @@ export default function Markets({
     return () => c.abort();
   }, [date, window, attempt]);
   const cutoff = isDemo ? Date.parse(`${date}T00:00:00Z`) : now;
-  const fixtures = report?.fixtures.filter((row) => Date.parse(row.fixture.kickoff) > cutoff) ?? [];
+  const fixtures =
+    report?.fixtures.filter(
+      (row) =>
+        Date.parse(row.fixture.kickoff) > cutoff &&
+        (league === 'all' || row.fixture.league.id === league),
+    ) ?? [];
   const selections =
-    report?.selections.filter((row) => Date.parse(row.fixture.kickoff) > cutoff) ?? [];
+    report?.selections.filter(
+      (row) =>
+        Date.parse(row.fixture.kickoff) > cutoff &&
+        (league === 'all' || row.fixture.league.id === league),
+    ) ?? [];
   const books = [...new Set(fixtures.flatMap((row) => row.quotes.map((q) => q.bookmaker)))].sort();
   const selectedBook = books.includes(book) ? book : (books[0] ?? book.trim());
   const combos = useMemo(
     () =>
       suggestCombinations(
-        (report?.selections ?? []).map((s) => {
-          const decimal = Number((manual[`${selectedBook}:${s.id}`] ?? '').replace(',', '.'));
-          if (!selectedBook || !Number.isFinite(decimal) || decimal <= 1 || decimal > 1000)
-            return s;
-          return {
-            ...s,
-            quotes: [
-              ...s.quotes.filter((q) => q.bookmaker !== selectedBook),
-              {
-                home: s.fixture.home.name,
-                away: s.fixture.away.name,
-                date,
-                kickoff: s.fixture.kickoff,
-                market: s.market,
-                bookmaker: selectedBook,
-                decimal,
-                updatedAt: null,
-              },
-            ],
-          };
-        }),
+        (report?.selections ?? [])
+          .filter((s) => league === 'all' || s.fixture.league.id === league)
+          .map((s) => {
+            const decimal = Number((manual[`${selectedBook}:${s.id}`] ?? '').replace(',', '.'));
+            if (!selectedBook || !Number.isFinite(decimal) || decimal <= 1 || decimal > 1000)
+              return s;
+            return {
+              ...s,
+              quotes: [
+                ...s.quotes.filter((q) => q.bookmaker !== selectedBook),
+                {
+                  home: s.fixture.home.name,
+                  away: s.fixture.away.name,
+                  date,
+                  kickoff: s.fixture.kickoff,
+                  market: s.market,
+                  bookmaker: selectedBook,
+                  decimal,
+                  updatedAt: null,
+                },
+              ],
+            };
+          }),
         selectedBook,
         cutoff,
       ),
-    [report, selectedBook, cutoff, manual, date],
+    [report, selectedBook, cutoff, manual, date, league],
   );
   return (
     <section className="markets-section" aria-label="Odds en combibouwer">
