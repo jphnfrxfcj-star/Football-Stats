@@ -15,11 +15,19 @@ export interface AnalysisResponse {
   probabilities: Probability[];
 }
 export const api = {
-  markets: (date: string, window: number, signal?: AbortSignal): Promise<MarketsReport> =>
+  markets: (
+    date: string,
+    window: number,
+    signal?: AbortSignal,
+    days = 1,
+    minimumRate = 100,
+  ): Promise<MarketsReport> =>
     isDemo
       ? Promise.resolve(
           buildMarkets(
-            demoFixtures(date).map((f) => ({ ...demoMatch(f.id)!, fixture: f })),
+            Array.from({ length: days }, (_, i) =>
+              new Date(Date.parse(date) + i * 86400000).toISOString().slice(0, 10),
+            ).flatMap((day) => demoFixtures(day).map((f) => ({ ...demoMatch(f.id)!, fixture: f }))),
             {
               source: 'Demo',
               kind: 'snapshot',
@@ -29,9 +37,13 @@ export const api = {
             },
             window,
             Date.parse(`${date}T00:00:00Z`),
+            minimumRate,
           ),
         )
-      : get(`markets?date=${date}&window=${window}`, signal),
+      : get(
+          `markets?date=${date}&window=${window}&days=${days}&minimumRate=${minimumRate}`,
+          signal,
+        ),
   odds: (id: string, signal?: AbortSignal): Promise<OddsSnapshot> =>
     isDemo
       ? Promise.resolve({

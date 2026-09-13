@@ -76,7 +76,9 @@ test('spotlight links to its analysis and enrichment is clearly labelled in demo
   await page.goto('/');
   await expect(page.locator('.spotlight-card')).toHaveCount(3);
   await expect(page.locator('.spotlight-card').first()).toContainText('Modelkans');
-  await expect(page.locator('.spotlight-note').first()).toContainText('fictieve wedstrijden');
+  await expect(page.locator('.spotlight-section .spotlight-note').first()).toContainText(
+    'fictieve wedstrijden',
+  );
   await page.getByRole('button', { name: 'Bekijk onderbouwing' }).first().click();
   await expect(
     page.getByRole('heading', { name: 'Spelerstatistieken', exact: true }),
@@ -159,4 +161,19 @@ test('past dates and past match pages do not display odds or a builder', async (
   await expect(page.getByRole('heading', { name: 'Arsenal', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Bookmakervergelijking' })).toHaveCount(0);
   await expect(page.getByLabel('Betbuilder concept')).toHaveCount(0);
+});
+
+test('multi-day x2-x3 finder remains visible on an empty program date', async ({ page }) => {
+  await page.goto('/');
+  const finder = page.getByRole('region', { name: 'Combi x2 tot x3' });
+  await expect(finder.getByRole('heading', { name: 'Combi x2–x3' })).toBeVisible();
+  await expect(finder).toContainText('2026-09-12 t/m 2026-09-19');
+  await expect(finder.getByLabel('Combiboekmaker')).toHaveValue('Unibet België');
+  await expect(finder).toContainText('Geen passende combi');
+  await finder.getByLabel('Combi historie').selectOption('10');
+  await expect(finder).toContainText('laatste 10');
+  await page.getByPlaceholder('Zoek een team…').fill('nonexistent');
+  await expect(finder).toBeVisible();
+  await page.getByLabel('Wedstrijddatum').fill('2026-09-11');
+  await expect(finder).toHaveCount(0);
 });

@@ -117,3 +117,17 @@ it('serves combo evidence and validates the exact sample window', async () => {
     ).toBe(400);
   }
 });
+
+it('bounds multi-day searches and historical thresholds', async () => {
+  for (const query of ['days=30', 'minimumRate=0', 'minimumRate=99'])
+    expect(
+      (await handler(new Request(`http://localhost/api/markets?date=2026-09-14&${query}`), context))
+        .status,
+    ).toBe(400);
+  const r = await handler(
+    new Request('http://localhost/api/markets?date=2026-09-14&days=8&minimumRate=80'),
+    context,
+  );
+  expect(r.status).toBe(200);
+  expect((await r.json()).fixtures).toHaveLength(32);
+});

@@ -1,3 +1,4 @@
+import ComboFinder from './ComboFinder';
 import { DayRecap } from './Recap';
 import { isUpcoming } from '../analysis/recap';
 import Markets from './Markets';
@@ -183,6 +184,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
+      {date >= today() && <ComboFinder key={date} date={date} navigate={navigate} />}
       {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
         <>
           <Spotlight date={date} league={league} navigate={navigate} />

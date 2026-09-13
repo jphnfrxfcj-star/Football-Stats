@@ -46,6 +46,9 @@ export class MultiLeagueProvider implements FootballDataProvider {
   async previewData(date: string) {
     return (await Promise.all(this.providers.map((p) => p.previewData(date)))).flat();
   }
+  async previewRange(date: string, days: number) {
+    return (await Promise.all(this.providers.map((p) => p.previewRange(date, days)))).flat();
+  }
   async statistics(f: Fixture) {
     return f.statistics;
   }

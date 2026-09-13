@@ -56,7 +56,9 @@ export function buildMarkets(
   odds: OddsSnapshot,
   window = 5,
   now = Date.now(),
+  minimumRate = 100,
 ): MarketsReport {
+  if (![80, 90, 100].includes(minimumRate)) throw new Error('Ongeldige historische drempel');
   if (![5, 10, 20].includes(window)) throw new Error('Ongeldig analysevenster');
   const fixtures: MarketsReport['fixtures'] = [],
     selections: PerfectSelection[] = [];
@@ -74,11 +76,14 @@ export function buildMarkets(
       awayEvidence = history(data.awayHistory, f.away.id);
     if (homeEvidence.length !== window || awayEvidence.length !== window) continue;
     for (const market of comboMarkets) {
-      if (
-        !homeEvidence.every((row) => occurrence(row, f.home.id, market) === true) ||
-        !awayEvidence.every((row) => occurrence(row, f.away.id, market) === true)
-      )
-        continue;
+      const qualifies = (rows: Fixture[], team: string) => {
+        const values = rows.map((row) => occurrence(row, team, market));
+        return (
+          values.every((v) => v !== null) &&
+          values.filter((v) => v === true).length * 100 >= minimumRate * window
+        );
+      };
+      if (!qualifies(homeEvidence, f.home.id) || !qualifies(awayEvidence, f.away.id)) continue;
       selections.push({
         id: `${f.id}:${market}`,
         fixture: f,
@@ -98,6 +103,7 @@ export function suggestCombinations(
   selections: PerfectSelection[],
   bookmaker: string,
   now = Date.now(),
+  maxLegs = 6,
 ): Combination[] {
   const legs: ComboLeg[] = selections.flatMap((selection) => {
     if (Date.parse(selection.fixture.kickoff) <= now) return [];
@@ -120,8 +126,8 @@ export function suggestCombinations(
       found.push({ bookmaker, legs: picked, decimal });
       return;
     }
-    if (picked.length === 6) return;
-    for (let i = start; i < legs.length; i++) {
+    if (picked.length === Math.max(2, Math.min(8, maxLegs))) return;
+    for (let i = start; i < legs.length && visits < 50000; i++) {
       const leg = legs[i],
         next = decimal * leg.quote.decimal;
       if (next > 3 || picked.some((p) => p.selection.fixture.id === leg.selection.fixture.id))

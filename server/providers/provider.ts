@@ -21,6 +21,7 @@ export interface FootballDataProvider {
     awayHistory: Fixture[];
     h2h: Fixture[];
   }>;
+  previewRange?(date: string, days: number): Promise<MatchData[]>;
   previewData?(date: string): Promise<MatchData[]>;
   statistics(fixture: Fixture): Promise<{ home: TeamMetrics; away: TeamMetrics } | null>;
   events(fixtureExternalId: string): Promise<MatchEvent[]>;

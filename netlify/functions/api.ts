@@ -99,10 +99,20 @@ async function route(request: Request, context: Context) {
         .number()
         .refine((n) => [5, 10, 20].includes(n))
         .parse(url.searchParams.get('window') ?? 5);
-      if (!demo) return json(await svc!.markets(date, window));
+      const days = z.coerce
+        .number()
+        .refine((n) => [1, 8].includes(n))
+        .parse(url.searchParams.get('days') ?? 1);
+      const minimumRate = z.coerce
+        .number()
+        .refine((n) => [80, 90, 100].includes(n))
+        .parse(url.searchParams.get('minimumRate') ?? 100);
+      if (!demo) return json(await svc!.markets(date, window, days, minimumRate));
       return json(
         buildMarkets(
-          demoFixtures(date).map((f) => ({ ...demoMatch(f.id)!, fixture: f })),
+          Array.from({ length: days }, (_, i) =>
+            new Date(Date.parse(date) + i * 86400000).toISOString().slice(0, 10),
+          ).flatMap((day) => demoFixtures(day).map((f) => ({ ...demoMatch(f.id)!, fixture: f }))),
           {
             source: 'Demo',
             kind: 'snapshot',
@@ -112,6 +122,7 @@ async function route(request: Request, context: Context) {
           },
           window,
           Date.parse(`${date}T00:00:00Z`),
+          minimumRate,
         ),
       );
     }

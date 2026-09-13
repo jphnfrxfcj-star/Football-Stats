@@ -2899,3 +2899,52 @@ td {
   background: #e3f1e8;
   color: #176b43;
 }
+.combo-finder {
+  margin: 28px 0;
+  padding: 22px;
+  border: 2px solid #228759;
+  border-radius: 16px;
+  background: #eff7f2;
+}
+.combo-target {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #176b43;
+  color: white;
+  font-size: 13px;
+}
+.combo-total {
+  font-size: 30px;
+  font-weight: 750;
+}
+.finder-leg {
+  padding: 14px 0;
+  border-top: 1px solid #e7ece9;
+}
+.finder-leg > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+}
+.finder-leg small {
+  display: block;
+  color: #68796e;
+  font-size: 11px;
+}
+.finder-leg details {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.finder-leg summary {
+  cursor: pointer;
+}
+.combo-finder ol {
+  padding-left: 20px;
+}
+@media (max-width: 700px) {
+  .combo-finder {
+    padding: 16px;
+  }
+}

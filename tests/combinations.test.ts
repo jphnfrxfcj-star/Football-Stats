@@ -127,3 +127,37 @@ describe('historically perfect combinations', () => {
       expect(fixtureQuotes(fixtures[0], { ...odds, quotes: [wrong] })).toHaveLength(0);
   });
 });
+
+it('combines different dates and can reach the target with seven low-priced legs', () => {
+  const r = buildMarkets(data, odds, 5, now);
+  const base = r.selections.find((s) => s.market === 'over25')!;
+  const selections = Array.from({ length: 7 }, (_, i) => ({
+    ...base,
+    id: `future-${i}:over25`,
+    fixture: { ...base.fixture, id: `future-${i}`, kickoff: `2026-09-${13 + i}T14:00:00Z` },
+    quotes: [{ ...base.quotes[0], decimal: 1.11 }],
+  }));
+  expect(suggestCombinations(selections, 'A', now)).toHaveLength(0);
+  const combos = suggestCombinations(selections, 'A', now, 8);
+  expect(combos[0].legs).toHaveLength(7);
+  expect(combos[0].decimal).toBeCloseTo(1.11 ** 7);
+  expect(combos[0].decimal).toBeGreaterThanOrEqual(2);
+  expect(combos[0].decimal).toBeLessThanOrEqual(3);
+});
+
+it('only relaxes the historical threshold explicitly, with full observed windows', () => {
+  const d = structuredClone(data[0]);
+  d.homeHistory[0].homeGoals = 0;
+  d.homeHistory[0].awayGoals = 0;
+  expect(buildMarkets([d], odds, 5, now).selections.some((s) => s.market === 'over25')).toBe(false);
+  expect(buildMarkets([d], odds, 5, now, 80).selections.some((s) => s.market === 'over25')).toBe(
+    true,
+  );
+  expect(buildMarkets([d], odds, 5, now, 90).selections.some((s) => s.market === 'over25')).toBe(
+    false,
+  );
+  d.homeHistory[0].homeGoals = null;
+  expect(buildMarkets([d], odds, 5, now, 80).selections.some((s) => s.market === 'over25')).toBe(
+    false,
+  );
+});

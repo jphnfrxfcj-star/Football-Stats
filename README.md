@@ -216,3 +216,11 @@ De homepagina toont een dagrecap van de gefilterde afgelopen wedstrijden. De wed
 De worker is ook direct uitvoerbaar met `runNightlyRefresh()` uit `server/nightly-refresh.ts` wanneer servervariabelen in de procesomgeving staan. `scripts/check-recap.ts` controleert met echte gegevens beide competities, score-recaps, afwezigheid van oude oddsaanvragen en komende Spaanse Unibet-prijzen op desktop en mobiel. De daarin gekozen datums moeten worden aangepast wanneer de toekomstige testwedstrijd is verstreken.
 
 De jobrapportage telt opgeslagen eindstanden, inclusief behouden resultaten wanneer een bron achterloopt. `recentResultChecksFailed` vermeldt mislukte aanvullende ESPN-controles; `pendingResults` telt geplande wedstrijden waarvan de aftrap meer dan drie uur verstreken is en nog geen eindstand bekend is. Een geslaagde basisimport betekent dus niet dat elke secundaire bron al volledig is bijgewerkt.
+
+### Zichtbare Combi x2–x3
+
+De zelfstandige zoekkaart op de homepagina doorzoekt de gekozen datum en de volgende zeven kalenderdagen, over Premier League en La Liga. Ze blijft zichtbaar wanneer de daglijst leeg is; voor historische datums wordt ze verborgen. Unibet België is standaard geselecteerd. De kaart zoekt maximaal drie voorstellen met twee tot acht verschillende wedstrijden, prijzen van dezelfde bookmaker en een totale odd tussen 2 en 3. De begrensde zoekprocedure garandeert niet dat alle mogelijkheden worden gevonden.
+
+Standaard moet elke selectie bij beide teams in 100% van de laatste 5, 10 of 20 wedstrijden zijn uitgekomen. De gebruiker kan expliciet 90% of 80% kiezen; de volledige reeks blijft vereist, ontbrekende gegevens worden nooit als geslaagd beschouwd en beide teams moeten afzonderlijk de drempel halen. De kaart toont werkelijke aantallen en onderliggende uitslagen. Zonder passende prijzen verschijnt een lege toestand. Historische frequentie is geen voorspelde winstkans en de bookmaker moet de actuele combinatieprijs bevestigen.
+
+`GET /api/markets` accepteert aanvullend `days=8` en `minRate=80|90|100`; defaults blijven één dag en 100%. De ruwe wedstrijdhistorie wordt gedeeld gecachet tussen vensters en frequentiedrempels. `scripts/check-combo.ts` controleert de echte serverdata en combinaties op desktop en mobiel met credentials uitsluitend uit procesvariabelen.

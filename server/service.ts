@@ -210,16 +210,28 @@ export class FootballService {
       'analysis_results',
     );
   }
-  async markets(date: string, window: number) {
-    const matches = await this.cached(`${this.scope()}:markets-data:v1:${date}`, 900, async () => {
-      if (this.provider.previewData) return this.provider.previewData(date);
-      const rows: MatchData[] = [];
-      for (const fixture of (await this.fixtures(date)).slice(0, 10)) {
-        const data = await this.data(fixture.id);
-        if (data) rows.push(data);
-      }
-      return rows;
-    });
+  async markets(date: string, window: number, days = 1, minimumRate = 100) {
+    const matches = await this.cached(
+      `${this.scope()}:markets-data:v2:${date}:${days}`,
+      900,
+      async () => {
+        if (days > 1) {
+          if (!this.provider.previewRange)
+            throw new ServiceError(
+              'RANGE_UNSUPPORTED',
+              'Deze databron ondersteunt nog geen meerdaagse combi.',
+            );
+          return this.provider.previewRange(date, days);
+        }
+        if (this.provider.previewData) return this.provider.previewData(date);
+        const rows: MatchData[] = [];
+        for (const fixture of (await this.fixtures(date)).slice(0, 10)) {
+          const data = await this.data(fixture.id);
+          if (data) rows.push(data);
+        }
+        return rows;
+      },
+    );
     const odds = await (
       matches.some((m) => isUpcoming(m.fixture))
         ? getOdds(this)
@@ -238,7 +250,7 @@ export class FootballService {
       message:
         'Bookmakerodds zijn tijdelijk niet beschikbaar. Historische selecties blijven zichtbaar.',
     }));
-    return buildMarkets(matches, odds, window);
+    return buildMarkets(matches, odds, window, Date.now(), minimumRate);
   }
   async spotlight(date: string) {
     const matches = await this.cached(
