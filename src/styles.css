@@ -2754,3 +2754,106 @@ td {
 .manual-price small {
   color: #68796e;
 }
+.bet-workbench {
+  margin: 24px 0;
+}
+.odds-price-input {
+  width: 100px;
+  padding: 9px;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+}
+.quote-detail {
+  display: block;
+  white-space: normal;
+  max-width: 170px;
+  margin-top: 6px;
+  color: #68796e;
+}
+.bet-workbench td details {
+  max-width: 250px;
+  white-space: normal;
+}
+.bet-workbench td details ul {
+  min-width: 190px;
+  padding-left: 16px;
+}
+.builder-slip {
+  margin: 20px 0;
+}
+@media (max-width: 700px) {
+  .bet-workbench .player-table-scroll {
+    overflow: visible;
+    max-height: none;
+    border: none;
+  }
+  .bet-workbench .player-table,
+  .bet-workbench .player-table tbody {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+  .bet-workbench .player-table thead {
+    display: none;
+  }
+  .bet-workbench .player-table tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 14px;
+    border: 1px solid #dce3df;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+  }
+  .bet-workbench .player-table tbody th {
+    grid-column: 1 / -1;
+    position: static;
+    padding: 14px;
+    white-space: normal;
+  }
+  .bet-workbench .player-table tbody td {
+    display: block;
+    padding: 12px;
+    min-width: 0;
+    white-space: normal;
+    text-align: left;
+  }
+  .bet-workbench .player-table tbody td::before {
+    display: block;
+    font-size: 11px;
+    color: #68796e;
+    margin-bottom: 6px;
+  }
+  .bet-workbench .player-table td:nth-child(2)::before {
+    content: 'Bookmakerodd';
+  }
+  .bet-workbench .player-table td:nth-child(3)::before {
+    content: 'Impliciete kans';
+  }
+  .bet-workbench .player-table td:nth-child(4)::before {
+    content: 'Modelinschatting';
+  }
+  .bet-workbench .player-table td:nth-child(5)::before {
+    content: 'Modelverschil';
+  }
+  .bet-workbench .player-table td:nth-child(6)::before {
+    content: 'Historie thuisploeg';
+  }
+  .bet-workbench .player-table td:nth-child(7)::before {
+    content: 'Historie uitploeg';
+  }
+  .bet-workbench .player-table td:last-child {
+    grid-column: 1 / -1;
+  }
+  .bet-workbench td details ul {
+    min-width: 0;
+  }
+}
+.odds-reading-guide {
+  margin: 14px 0;
+}
+.odds-reading-guide summary {
+  cursor: pointer;
+  color: #68796e;
+  font-size: 13px;
+}

@@ -182,6 +182,7 @@ export default function MatchPage({
           <span>{w}</span>
         </div>
       ))}
+      <OddsComparison key={`odds-${id}`} id={id} response={response} />
       <section id="probabilities">
         <SectionTitle
           eyebrow="HET MODEL AAN HET WOORD"
@@ -244,7 +245,6 @@ export default function MatchPage({
           Transparante modelinschattingen, geen zekerheid. Klik op een kans voor de onderbouwing.
         </div>
       </section>
-      <OddsComparison key={`odds-${id}`} id={id} />
       <section className="trends-section">
         <SectionTitle
           title="Wat valt op?"

@@ -119,3 +119,29 @@ test('manual verified prices build a labelled same-book combo and can be removed
   await section.getByLabel('Handmatige odd Arsenal Over 0.5').fill('0.5');
   await expect(section.locator('.combo-card')).toHaveCount(0);
 });
+
+test('Unibet analysis compares prices and builds a joint-history concept without multiplying odds', async ({
+  page,
+}) => {
+  await page.goto('/match/demo-2026-09-14-0');
+  const work = page.getByLabel('Odds versus statistiek');
+  await expect(work.getByLabel('Analysebookmaker')).toHaveValue('Unibet België');
+  await work.getByLabel('Over 2.5 goals odd', { exact: true }).fill('2.0');
+  const row = work
+    .locator('tbody tr')
+    .filter({ has: page.getByLabel('Over 2.5 goals odd', { exact: true }) });
+  await expect(row).toContainText('50.0%');
+  await row.getByRole('button', { name: 'Toevoegen' }).click();
+  await work
+    .locator('tbody tr')
+    .filter({ has: page.getByLabel('Beide teams scoren odd', { exact: true }) })
+    .getByRole('button', { name: 'Toevoegen' })
+    .click();
+  const slip = work.getByLabel('Betbuilder concept');
+  await expect(slip).toContainText('Gecombineerde prijs nog niet bevestigd');
+  await slip.getByLabel('Gecombineerde bookmakerodd').fill('2,4');
+  await expect(slip).toContainText('Totale odd 2.40');
+  await slip.getByRole('button', { name: 'Verwijder Beide teams scoren' }).click();
+  await expect(slip).not.toContainText('Totale odd');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

@@ -1,3 +1,5 @@
+import BetWorkbench from './BetWorkbench';
+import type { AnalysisResponse } from '../api';
 import { useEffect, useState } from 'react';
 import { BarChart3 } from 'lucide-react';
 import { api } from '../api';
@@ -10,7 +12,13 @@ const markets = [
   ['over25', 'Over 2.5'],
   ['under25', 'Under 2.5'],
 ];
-export default function OddsComparison({ id }: { id: string }) {
+export default function OddsComparison({
+  id,
+  response,
+}: {
+  id: string;
+  response: AnalysisResponse;
+}) {
   const [report, setReport] = useState<OddsSnapshot | null>(null),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(false),
@@ -40,6 +48,7 @@ export default function OddsComparison({ id }: { id: string }) {
         title="Bookmakerodds"
         aside={<span className="subtle">90 minuten · decimale odds</span>}
       />
+      <BetWorkbench response={response} odds={report} />
       {!report && !loading && (
         <div className="player-invitation">
           <BarChart3 size={24} />

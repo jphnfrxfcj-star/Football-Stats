@@ -1,6 +1,9 @@
 import type { Fixture } from './models';
 import type { Probability } from '../analysis/probability';
 export interface OddsQuote {
+  eventId?: string;
+  outcomeId?: string;
+  betBuilderEligible?: boolean;
   home: string;
   away: string;
   date: string;

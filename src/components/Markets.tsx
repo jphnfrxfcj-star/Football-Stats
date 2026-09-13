@@ -17,7 +17,7 @@ export default function Markets({
   navigate: (path: string) => void;
 }) {
   const [window, setWindow] = useState(5),
-    [book, setBook] = useState(''),
+    [book, setBook] = useState('Unibet België'),
     [manual, setManual] = useState<Record<string, string>>({}),
     [report, setReport] = useState<MarketsReport | null>(null),
     [error, setError] = useState(''),
@@ -241,11 +241,10 @@ export default function Markets({
           <details className="perfect-details">
             <summary>Alle historische 100%-selecties ({selections.length}) en bewijs</summary>
             <p className="spotlight-note">
-              Selecties zonder bookmakerprijs kunnen niet in een berekende combi. De gratis bron
-              biedt vooral 1X2 en over/under 2,5; andere markten kunnen daarom zonder prijs
-              verschijnen. Klap een selectie open om een gecontroleerde prijs bij dezelfde bookmaker
-              in te vullen. Handmatige prijzen gelden alleen in dit scherm en worden niet
-              opgeslagen.
+              Selecties zonder bookmakerprijs kunnen niet in een berekende combi. Niet elke bron
+              biedt iedere markt; ontbrekende prijzen blijven leeg. Klap een selectie open om een
+              gecontroleerde prijs bij dezelfde bookmaker in te vullen. Handmatige prijzen gelden
+              alleen in dit scherm en worden niet opgeslagen.
             </p>
             {selections.map((s) => (
               <details key={s.id} className="selection-evidence">

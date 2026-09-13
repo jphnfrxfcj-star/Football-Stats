@@ -1,3 +1,4 @@
+import { unibetOdds } from './unibet';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import { canonicalClubName } from '../../src/domain/club-names';
@@ -133,7 +134,7 @@ export function normalizeOdds(raw: unknown, now = new Date().toISOString()): Odd
       'Bookmakerfeed wordt op aanvraag ververst en gedeeld gecacht. Alleen quoteringen van maximaal 15 minuten oud tellen als mogelijke value. Beschikbaarheid verschilt per bookmaker en regio.',
   };
 }
-export async function getOdds(service: FootballService): Promise<OddsSnapshot> {
+async function comparisonOdds(service: FootballService): Promise<OddsSnapshot> {
   const key = process.env.ODDS_API_KEY?.trim();
   if (!key)
     return service.cached('odds:football-data:v2', 3600, async () =>
@@ -166,4 +167,27 @@ export async function getOdds(service: FootballService): Promise<OddsSnapshot> {
       );
     }
   });
+}
+
+export async function getOdds(service: FootballService): Promise<OddsSnapshot> {
+  const [unibet, comparison] = await Promise.allSettled([
+    unibetOdds(service),
+    comparisonOdds(service),
+  ]);
+  if (unibet.status === 'fulfilled')
+    return {
+      ...unibet.value,
+      quotes: [
+        ...unibet.value.quotes,
+        ...(comparison.status === 'fulfilled' ? comparison.value.quotes : []),
+      ],
+      source: `${unibet.value.source}${comparison.status === 'fulfilled' ? ` + ${comparison.value.source}` : ''}`,
+      message: `${unibet.value.message} Andere bookmakers zijn vergelijkingsprijzen; CSV-prijzen zijn momentopnames met onbekend quoteringstijdstip.`,
+    };
+  if (comparison.status === 'fulfilled')
+    return {
+      ...comparison.value,
+      message: `Unibet België is tijdelijk niet beschikbaar. ${comparison.value.message}`,
+    };
+  throw new ServiceError('ODDS_UNAVAILABLE', 'Bookmakerodds zijn tijdelijk niet beschikbaar.');
 }
