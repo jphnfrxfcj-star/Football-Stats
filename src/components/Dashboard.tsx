@@ -371,8 +371,12 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
                 {showOdds && (
                   <span className="fixture-odds" aria-label="Wedstrijdodds">
                     {(['home', 'draw', 'away'] as const).map((market, i) => (
-                      <span className="fixture-odd" key={market}>
-                        <small>{['Thuis', 'Gelijk', 'Uit'][i]}</small>
+                      <span
+                        className="fixture-odd"
+                        key={market}
+                        title={['Thuis', 'Gelijk', 'Uit'][i]}
+                      >
+                        <small>{['1', 'X', '2'][i]}</small>
                         <strong>
                           {prices.quotes[market]?.decimal.toFixed(2) ?? (oddsLoading ? '…' : '—')}
                         </strong>

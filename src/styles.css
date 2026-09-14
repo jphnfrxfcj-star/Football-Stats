@@ -3076,51 +3076,119 @@ td {
   font-size: 12px;
   line-height: 1.6;
 }
+.fixture-row.has-odds {
+  display: grid;
+  grid-template-columns: 53px minmax(0, 1fr) 28px minmax(0, 1fr) 110px 80px;
+  gap: 7px 15px;
+  padding: 17px 20px;
+}
+.fixture-row.has-odds .fixture-time {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+.fixture-row.has-odds .fixture-team.home {
+  grid-column: 2;
+  grid-row: 1;
+}
+.fixture-row.has-odds .fixture-vs {
+  grid-column: 3;
+  grid-row: 1;
+}
+.fixture-row.has-odds .fixture-team.away {
+  grid-column: 4;
+  grid-row: 1;
+}
+.fixture-row.has-odds .fixture-venue {
+  grid-column: 5;
+  grid-row: 1 / 3;
+}
+.fixture-row.has-odds .analyze-link {
+  grid-column: 6;
+  grid-row: 1 / 3;
+}
 .fixture-odds {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  width: 180px;
-  flex-shrink: 0;
-}
-.fixture-odd {
-  display: grid;
-  gap: 4px;
-  padding: 7px 5px;
-  border: 1px solid #e2e9e3;
-  border-radius: 6px;
-  text-align: center;
-  background: #f5f9f5;
-}
-.fixture-odd small {
-  font-size: 9px;
-  color: #748378;
-}
-.fixture-odd strong {
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  color: #245b3d;
-}
-.fixture-odds-caption {
-  grid-column: 1/-1;
-  font-size: 9px;
-  color: #748378;
-  text-align: center;
+  grid-column: 2 / 5;
+  grid-row: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
   line-height: 1.4;
 }
+.fixture-odd {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+}
+.fixture-odd small {
+  font-size: 10px;
+  color: #89948c;
+}
+.fixture-odd strong {
+  font-size: 12px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  color: #42634e;
+}
+.fixture-odds-caption {
+  font-size: 9px;
+  color: #89948c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 160px;
+}
 @media (max-width: 1200px) {
+  .fixture-row.has-odds {
+    grid-template-columns: 53px minmax(0, 1fr) 28px minmax(0, 1fr) 80px;
+  }
   .fixture-row.has-odds .fixture-venue {
     display: none;
   }
+  .fixture-row.has-odds .analyze-link {
+    grid-column: 5;
+  }
 }
 @media (max-width: 700px) {
-  .fixture-row.has-odds .fixture-odds {
-    grid-column: 2/-1;
-    grid-row: 3;
-    width: auto;
-    margin-top: 8px;
+  .fixture-row.has-odds {
+    grid-template-columns: 43px minmax(0, 1fr) 27px;
+    padding: 14px 13px;
+    gap: 5px 10px;
   }
-  .fixture-row.has-odds .fixture-odd {
-    padding: 8px 5px;
+  .fixture-row.has-odds .fixture-team.home {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .fixture-row.has-odds .fixture-team.away {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .fixture-row.has-odds .fixture-vs {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .fixture-row.has-odds .analyze-link {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .fixture-row.has-odds .fixture-odds {
+    grid-column: 2 / -1;
+    grid-row: 3;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 3px;
+  }
+  .fixture-odds-caption {
+    max-width: 100px;
+    font-size: 8px;
+  }
+  .fixture-odd {
+    gap: 4px;
+  }
+  .fixture-odd strong {
+    font-size: 11px;
   }
 }

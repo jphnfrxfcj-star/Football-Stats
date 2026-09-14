@@ -97,9 +97,7 @@ test('program shows 1X2 prices without the old historical combo section', async 
   await expect(page.getByRole('region', { name: 'Combi x2 tot x3' })).toBeVisible();
   const row = page.locator('.fixture-row').first();
   await expect(row.locator('.fixture-odd')).toHaveCount(3);
-  await expect(row.locator('.fixture-odds')).toContainText('Thuis');
-  await expect(row.locator('.fixture-odds')).toContainText('Gelijk');
-  await expect(row.locator('.fixture-odds')).toContainText('Uit');
+  await expect(row.locator('.fixture-odd small')).toHaveText(['1', 'X', '2']);
   await expect(row.locator('.fixture-odds')).toContainText('Geen odds beschikbaar');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await row.click();
