@@ -213,7 +213,7 @@ async function route(request: Request, context: Context) {
         if (!result) return json({ error: 'Wedstrijd niet gevonden' }, 404);
         return json(
           await svc!.cached(
-            `players-report:v2:${svc!.provider.cacheNamespace ?? svc!.provider.name}:${id}:${result.data.fixture.kickoff}`,
+            `players-report:v3:${svc!.provider.cacheNamespace ?? svc!.provider.name}:${id}:${result.data.fixture.kickoff}`,
             300,
             () => playerReport(result.data, svc!),
           ),

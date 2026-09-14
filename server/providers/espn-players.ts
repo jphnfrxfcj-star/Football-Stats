@@ -97,9 +97,16 @@ async function read(path: string, league = 'eng.1'): Promise<unknown> {
       signal: AbortSignal.timeout(12000),
       headers: { 'User-Agent': 'Matchday/1.0' },
     });
-    if (!r.ok) throw new Error('Source unavailable');
+    if (!r.ok) {
+      console.warn('Player source HTTP failure', { league, status: r.status });
+      throw new ServiceError(
+        'PLAYER_SOURCE_HTTP_' + r.status,
+        'De spelerbron antwoordt met HTTP ' + r.status + '.',
+      );
+    }
     return await r.json();
-  } catch {
+  } catch (error) {
+    if (error instanceof ServiceError) throw error;
     throw new ServiceError(
       'PLAYER_SOURCE_UNAVAILABLE',
       'De bron voor spelerstatistieken is tijdelijk niet beschikbaar.',
@@ -178,9 +185,21 @@ export async function playerReport(
         byFixture.set(f.id, result.observations);
         observations.push(...result.observations);
       }
-    } catch {
+    } catch (error) {
+      const reason =
+        error instanceof ServiceError
+          ? error.message
+          : error instanceof z.ZodError
+            ? 'De brongegevens hebben een onverwacht formaat.'
+            : error instanceof Error && error.message === 'Match not mapped'
+              ? 'Geen overeenkomende wedstrijd bij de bron.'
+              : error instanceof Error && error.message === 'No observations'
+                ? 'De bron levert geen bevestigde spelersoptredens.'
+                : error instanceof Error && error.message === 'Source mismatch'
+                  ? 'Wedstrijddatum of teams komen niet overeen.'
+                  : 'Het ophalen van deze wedstrijd is niet gelukt.';
       warnings.push(
-        `Geen spelergegevens voor ${f.home.name} – ${f.away.name} (${f.sourceDate ?? f.kickoff.slice(0, 10)}).`,
+        `Geen spelergegevens voor ${f.home.name} – ${f.away.name} (${f.sourceDate ?? f.kickoff.slice(0, 10)}). ${reason}`,
       );
     }
   }
