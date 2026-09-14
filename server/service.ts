@@ -1,3 +1,4 @@
+import { packMarketHistory, unpackMarketHistory } from './market-history';
 import { isUpcoming } from '../src/analysis/recap';
 import { buildMarkets } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
@@ -211,8 +212,8 @@ export class FootballService {
     );
   }
   async markets(date: string, window: number, days = 1, minimumRate = 100) {
-    const matches = await this.cached(
-      `${this.scope()}:markets-data:v2:${date}:${days}`,
+    const packed = await this.cached(
+      `${this.scope()}:markets-data:v3:${date}:${days}`,
       900,
       async () => {
         if (days > 1) {
@@ -221,17 +222,19 @@ export class FootballService {
               'RANGE_UNSUPPORTED',
               'Deze databron ondersteunt nog geen meerdaagse combi.',
             );
-          return this.provider.previewRange(date, days);
+          return packMarketHistory(await this.provider.previewRange(date, days));
         }
-        if (this.provider.previewData) return this.provider.previewData(date);
+        if (this.provider.previewData)
+          return packMarketHistory(await this.provider.previewData(date));
         const rows: MatchData[] = [];
         for (const fixture of (await this.fixtures(date)).slice(0, 10)) {
           const data = await this.data(fixture.id);
           if (data) rows.push(data);
         }
-        return rows;
+        return packMarketHistory(rows);
       },
     );
+    const matches = unpackMarketHistory(packed);
     const odds = await (
       matches.some((m) => isUpcoming(m.fixture))
         ? getOdds(this)

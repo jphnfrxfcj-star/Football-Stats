@@ -47,6 +47,7 @@ export class Repository {
       .from(table)
       .select('data,expires_at')
       .eq('cache_key', key)
+      .gt('expires_at', new Date().toISOString())
       .maybeSingle();
     this.assert(error);
     return data && Date.parse(data.expires_at) > Date.now() ? (data.data as T) : null;
