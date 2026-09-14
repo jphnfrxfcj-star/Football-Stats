@@ -10,8 +10,8 @@ import {
 import { ServiceError } from '../errors';
 import type { FootballService } from '../service';
 const bases = [
-  'https://site.api.espn.com/apis/site/v2/sports/soccer/',
   'https://site.web.api.espn.com/apis/site/v2/sports/soccer/',
+  'https://site.api.espn.com/apis/site/v2/sports/soccer/',
 ];
 const team = z.object({ displayName: z.string() });
 const competitor = z.object({ homeAway: z.string(), team });
@@ -168,9 +168,13 @@ export async function playerReport(
         ),
       );
       if (!home || !away || !event) throw new Error('Match not mapped');
-      const result = await service.cached(`espn:players:v2:${event.id}`, 2592000, async () =>
-        normalizePlayerSummary(await readPlayerSource(`summary?event=${event.id}`, league)),
-      );
+      const result = await service.cached(`espn:players:v3:${event.id}`, 2592000, async () => {
+        const normalized = normalizePlayerSummary(
+          await readPlayerSource(`summary?event=${event.id}`, league),
+        );
+        if (!normalized.observations.length) throw new Error('No observations');
+        return normalized;
+      });
       if (
         result.eventId !== event.id ||
         result.home !== home ||

@@ -119,8 +119,8 @@ it('uses the secondary public ESPN endpoint when the primary rejects the server'
     .mockResolvedValueOnce(new Response(JSON.stringify(raw())));
   vi.stubGlobal('fetch', call);
   expect(await readPlayerSource('summary?event=123')).toEqual(raw());
-  expect(String(call.mock.calls[0][0])).toContain('site.api.espn.com');
-  expect(String(call.mock.calls[1][0])).toContain('site.web.api.espn.com');
+  expect(String(call.mock.calls[0][0])).toContain('site.web.api.espn.com');
+  expect(String(call.mock.calls[1][0])).toContain('site.api.espn.com');
 });
 it('reports unavailable player sources without manufacturing observations', async () => {
   vi.stubGlobal(

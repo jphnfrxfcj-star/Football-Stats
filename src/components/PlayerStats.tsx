@@ -49,7 +49,7 @@ export default function PlayerStats({ id }: { id: string }) {
       <SectionTitle
         eyebrow="INDIVIDUELE IMPACT"
         title="Spelerstatistieken"
-        aside={<span className="subtle">Laatste 5 beschikbare teamduels</span>}
+        aside={<span className="subtle">Laatste 5 teamduels vóór aftrap</span>}
       />
       <p className="section-intro">
         Schoten, schoten op doel en overtredingen per speler. Gemiddelden gelden per optreden met
