@@ -111,9 +111,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </span>
           <div>
             <small>Ondersteunde competities</small>
-            <strong>
-              {isDemo ? 'Premier League (demo)' : 'Premier League · La Liga · Serie A · Ligue 1'}
-            </strong>
+            <strong>{isDemo ? 'Premier League (demo)' : '4 competities'}</strong>
           </div>
         </div>
         <div className="overview-card">
