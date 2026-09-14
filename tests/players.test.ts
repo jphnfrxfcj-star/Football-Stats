@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { normalizePlayerSummary, playerReport } from '../server/providers/espn-players';
+import {
+  normalizePlayerSummary,
+  playerReport,
+  readPlayerSource,
+} from '../server/providers/espn-players';
 import { summarizePlayers } from '../src/domain/players';
 const raw = (complete = true) => ({
   header: {
@@ -106,4 +110,24 @@ it('checks event/date identity and counts available data independently for each 
   expect((await playerReport(data, service as never)).teams[0].available).toBe(0);
   source.header.competitions[0].date = '2026-09-13T14:00:00Z';
   expect((await playerReport(data, service as never)).teams[0].available).toBe(0);
+});
+
+it('uses the secondary public ESPN endpoint when the primary rejects the server', async () => {
+  const call = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(new Response('', { status: 403 }))
+    .mockResolvedValueOnce(new Response(JSON.stringify(raw())));
+  vi.stubGlobal('fetch', call);
+  expect(await readPlayerSource('summary?event=123')).toEqual(raw());
+  expect(String(call.mock.calls[0][0])).toContain('site.api.espn.com');
+  expect(String(call.mock.calls[1][0])).toContain('site.web.api.espn.com');
+});
+it('reports unavailable player sources without manufacturing observations', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn<typeof fetch>().mockImplementation(async () => new Response('', { status: 403 })),
+  );
+  await expect(readPlayerSource('summary?event=123')).rejects.toMatchObject({
+    code: 'PLAYER_SOURCE_UNAVAILABLE',
+  });
 });

@@ -9,7 +9,10 @@ import {
 } from '../../src/domain/players';
 import { ServiceError } from '../errors';
 import type { FootballService } from '../service';
-const base = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
+const bases = [
+  'https://site.api.espn.com/apis/site/v2/sports/soccer/',
+  'https://site.web.api.espn.com/apis/site/v2/sports/soccer/',
+];
 const team = z.object({ displayName: z.string() });
 const competitor = z.object({ homeAway: z.string(), team });
 const competition = z.object({
@@ -91,27 +94,28 @@ export function normalizePlayerSummary(raw: unknown): {
     observations,
   };
 }
-async function read(path: string, league = 'eng.1'): Promise<unknown> {
-  try {
-    const r = await fetch(base + league + '/' + path, {
-      signal: AbortSignal.timeout(12000),
-      headers: { 'User-Agent': 'Matchday/1.0' },
-    });
-    if (!r.ok) {
-      console.warn('Player source HTTP failure', { league, status: r.status });
-      throw new ServiceError(
-        'PLAYER_SOURCE_HTTP_' + r.status,
-        'De spelerbron antwoordt met HTTP ' + r.status + '.',
-      );
+export async function readPlayerSource(path: string, league = 'eng.1'): Promise<unknown> {
+  let status: number | undefined;
+  for (const base of bases) {
+    try {
+      const r = await fetch(base + league + '/' + path, {
+        signal: AbortSignal.timeout(6000),
+        headers: { 'User-Agent': 'Matchday/1.0' },
+      });
+      if (r.ok) return await r.json();
+      status = r.status;
+      await r.body?.cancel();
+      console.warn('Player source HTTP failure', { host: new URL(base).hostname, league, status });
+    } catch {
+      // Both are public ESPN data endpoints; no cookies, credentials or proxy involved.
     }
-    return await r.json();
-  } catch (error) {
-    if (error instanceof ServiceError) throw error;
-    throw new ServiceError(
-      'PLAYER_SOURCE_UNAVAILABLE',
-      'De bron voor spelerstatistieken is tijdelijk niet beschikbaar.',
-    );
   }
+  throw new ServiceError(
+    'PLAYER_SOURCE_UNAVAILABLE',
+    status
+      ? `De spelerbron is niet bereikbaar vanaf de server (HTTP ${status}).`
+      : 'De bron voor spelerstatistieken is tijdelijk niet beschikbaar.',
+  );
 }
 export async function playerReport(
   data: MatchData,
@@ -146,7 +150,7 @@ export async function playerReport(
                 z.object({ id: z.string().regex(/^\d+$/), competitions: z.array(competition) }),
               ),
             })
-            .parse(await read(`scoreboard?dates=${date}&limit=100`, league));
+            .parse(await readPlayerSource(`scoreboard?dates=${date}&limit=100`, league));
           return parsed.events;
         },
       );
@@ -165,7 +169,7 @@ export async function playerReport(
       );
       if (!home || !away || !event) throw new Error('Match not mapped');
       const result = await service.cached(`espn:players:v2:${event.id}`, 2592000, async () =>
-        normalizePlayerSummary(await read(`summary?event=${event.id}`, league)),
+        normalizePlayerSummary(await readPlayerSource(`summary?event=${event.id}`, league)),
       );
       if (
         result.eventId !== event.id ||
