@@ -1,3 +1,4 @@
+import { MemoryCache } from './memory-cache';
 import { preserveResult } from './preserve-result';
 import { databaseFetch, rollbackCodes } from './database-fetch';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
@@ -5,6 +6,7 @@ import { ServiceError } from '../errors';
 import type { Fixture, League, ProviderRef, Team } from '../../src/domain/models';
 export class Repository {
   readonly db: SupabaseClient;
+  private memory = new MemoryCache();
   constructor(url: string, key: string) {
     this.db = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -43,6 +45,9 @@ export class Repository {
     );
   }
   async cached<T>(key: string, table = 'provider_cache'): Promise<T | null> {
+    const localKey = `${table}:${key}`;
+    const local = this.memory.get<T>(localKey);
+    if (local !== null) return local;
     const { data, error } = await this.db
       .from(table)
       .select('data,expires_at')
@@ -50,15 +55,21 @@ export class Repository {
       .gt('expires_at', new Date().toISOString())
       .maybeSingle();
     this.assert(error);
-    return data && Date.parse(data.expires_at) > Date.now() ? (data.data as T) : null;
+    if (!data || Date.parse(data.expires_at) <= Date.now()) return null;
+    this.memory.set(localKey, data.data, Date.parse(data.expires_at));
+    return data.data as T;
   }
   async cache(key: string, data: unknown, ttl: number, table = 'provider_cache') {
+    const localKey = `${table}:${key}`;
+    this.memory.delete(localKey);
+    const expires = Date.now() + ttl * 1000;
     const { error } = await this.db.from(table).upsert({
       cache_key: key,
       data,
-      expires_at: new Date(Date.now() + ttl * 1000).toISOString(),
+      expires_at: new Date(expires).toISOString(),
     });
     this.assert(error);
+    this.memory.set(localKey, data, expires);
   }
   async lock(key: string) {
     const { data, error } = await this.db.rpc('acquire_sync_lock', { lock_key: key });
