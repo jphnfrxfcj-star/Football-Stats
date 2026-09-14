@@ -1,4 +1,5 @@
-import { unibetOdds } from './unibet';
+import type { Fixture } from '../../src/domain/models';
+import { unibetOdds, unibetMatchOdds } from './unibet';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import { canonicalClubName } from '../../src/domain/club-names';
@@ -169,9 +170,9 @@ async function comparisonOdds(service: FootballService): Promise<OddsSnapshot> {
   });
 }
 
-export async function getOdds(service: FootballService): Promise<OddsSnapshot> {
+export async function getOdds(service: FootballService, fixture?: Fixture): Promise<OddsSnapshot> {
   const [unibet, comparison] = await Promise.allSettled([
-    unibetOdds(service),
+    fixture ? unibetMatchOdds(service, fixture) : unibetOdds(service),
     comparisonOdds(service),
   ]);
   if (unibet.status === 'fulfilled')

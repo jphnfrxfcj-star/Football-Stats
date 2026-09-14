@@ -14,30 +14,27 @@ try {
   for (const width of [1440, 390]) {
     const page = await browser.newPage({ viewport: { width, height: 1000 } }),
       errors: string[] = [];
+    let comparisonOnly = false;
     page.on('pageerror', (e) => errors.push(e.message));
     await page.route('**/api/**', async (route) => {
       const r = await handler(new Request(route.request().url()), { ip: '127.0.0.1' } as never);
-      await route.fulfill({
-        status: r.status,
-        headers: Object.fromEntries(r.headers),
-        body: await r.text(),
-      });
+      let body = await r.text();
+      if (comparisonOnly && route.request().url().endsWith('/odds') && r.ok) {
+        const report = JSON.parse(body);
+        report.quotes = report.quotes.filter(
+          (q: { bookmaker: string }) => q.bookmaker !== 'Unibet België',
+        );
+        body = JSON.stringify(report);
+      }
+      await route.fulfill({ status: r.status, headers: Object.fromEntries(r.headers), body });
     });
-    await page.goto('http://127.0.0.1:5174');
-    await page.getByLabel('Wedstrijddatum').fill('2026-09-14');
-    const markets = page.getByRole('region', { name: 'Odds en combibouwer' });
-    await expect(markets.getByLabel('Bookmaker', { exact: true })).toHaveValue('Unibet België', {
-      timeout: 60000,
-    });
-    await expect(markets.locator('tbody tr')).toHaveCount(2);
-    await page.locator('.fixture-row').first().click();
+    await page.goto('http://127.0.0.1:5174/match/free-fixture-2026-leeds-vs-newcastle');
     const work = page.getByLabel('Odds versus statistiek');
-    await expect(work.getByLabel('Over 1.5 goals odd', { exact: true })).not.toHaveAttribute(
-      'placeholder',
-      'Geen prijs',
+    await expect(work.getByLabel('Over 1.5 goals odd', { exact: true })).toHaveText(
+      /^[0-9]+\.[0-9]{2}$/,
       { timeout: 60000 },
     );
-    await expect(work.getByLabel('Over 1.5 goals odd', { exact: true })).toBeVisible();
+    await expect(work.locator('input')).toHaveCount(0);
     await work
       .locator('tbody tr')
       .filter({ has: page.getByLabel('Over 1.5 goals odd', { exact: true }) })
@@ -58,12 +55,19 @@ try {
     console.log(
       JSON.stringify({
         width,
-        unibetOver15: await work
-          .getByLabel('Over 1.5 goals odd', { exact: true })
-          .getAttribute('placeholder'),
+        unibetOver15: await work.getByLabel('Over 1.5 goals odd', { exact: true }).textContent(),
         errors,
       }),
     );
+    comparisonOnly = true;
+    await page.reload();
+    await expect(work.getByLabel('Over 2.5 goals odd', { exact: true })).toHaveText(
+      /^[0-9]+\.[0-9]{2}$/,
+      { timeout: 60000 },
+    );
+    await expect(work.getByLabel('Analysebookmaker')).not.toHaveValue('Unibet België');
+    await expect(work.getByRole('status')).toContainText('Geen Unibet-prijzen');
+    await expect(work.locator('input')).toHaveCount(0);
     expect(errors).toEqual([]);
     await page.close();
   }

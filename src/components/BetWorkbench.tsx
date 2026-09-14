@@ -14,9 +14,8 @@ export default function BetWorkbench({
   response: AnalysisResponse;
   odds: OddsSnapshot | null;
 }) {
-  const [book, setBook] = useState('Unibet België'),
+  const [chosenBook, setBook] = useState<string | null>(null),
     [window, setWindow] = useState(10),
-    [manual, setManual] = useState<Record<string, string>>({}),
     [picked, setPicked] = useState<PricedMarket[]>([]),
     [builderPrice, setBuilderPrice] = useState(''),
     [now, setNow] = useState(Date.now());
@@ -31,7 +30,18 @@ export default function BetWorkbench({
     (data.fixture.status === 'scheduled' &&
       data.fixture.kickoffKnown !== false &&
       Date.parse(data.fixture.kickoff) > now);
-  const books = [...new Set(['Unibet België', ...(odds?.quotes.map((q) => q.bookmaker) ?? [])])];
+  const availableBooks = [...new Set(odds?.quotes.map((q) => q.bookmaker) ?? [])];
+  const books = availableBooks.length ? availableBooks : ['Unibet België'];
+  const book =
+    chosenBook && books.includes(chosenBook)
+      ? chosenBook
+      : books.includes('Unibet België')
+        ? 'Unibet België'
+        : books[0];
+  useEffect(() => {
+    setPicked([]);
+    setBuilderPrice('');
+  }, [book, data.fixture.id]);
   const joint = selectionEvidence(data, picked, window);
   const total = priceAssessment(Number(builderPrice.replace(',', '.')), null);
   function toggle(m: PricedMarket) {
@@ -45,6 +55,13 @@ export default function BetWorkbench({
         Begin bij de aangeboden prijs. Vergelijk de impliciete kans met het model en bekijk wat er
         in recente wedstrijden gebeurde.
       </p>
+      {odds && !availableBooks.includes('Unibet België') && (
+        <p className="odds-availability" role="status">
+          {availableBooks.length
+            ? `Geen Unibet-prijzen beschikbaar voor deze wedstrijd. Je bekijkt de prijzen van ${book}.`
+            : 'Voor deze wedstrijd zijn momenteel geen bookmakerprijzen beschikbaar. De historische analyse blijft beschikbaar.'}
+        </p>
+      )}
       <div className="market-controls">
         <label>
           Bookmaker{' '}
@@ -120,8 +137,7 @@ export default function BetWorkbench({
               const quote = active
                 ? odds?.quotes.find((q) => q.bookmaker === book && q.market === key)
                 : undefined;
-              const value = manual[`${book}:${key}`] ?? '';
-              const decimal = value ? Number(value.replace(',', '.')) : (quote?.decimal ?? NaN);
+              const decimal = quote?.decimal ?? NaN;
               const probability = response.probabilities.find((p) => p.key === key);
               const assessment = active
                 ? priceAssessment(
@@ -140,32 +156,30 @@ export default function BetWorkbench({
                 <tr key={key}>
                   <th scope="row">{label}</th>
                   <td>
-                    <input
-                      className="odds-price-input"
+                    <strong
+                      className={`market-odd${quote ? '' : ' market-odd-missing'}`}
                       aria-label={`${label} odd`}
-                      inputMode="decimal"
-                      maxLength={8}
-                      placeholder={quote?.decimal.toFixed(2) ?? 'Geen prijs'}
-                      value={value}
-                      disabled={!active}
-                      onChange={(e) => setManual({ ...manual, [`${book}:${key}`]: e.target.value })}
-                    />
+                    >
+                      {quote ? quote.decimal.toFixed(2) : 'Geen prijs'}
+                    </strong>
                     <small className="quote-detail">
-                      {value
-                        ? 'Handmatige invoer'
-                        : quote
-                          ? `Feed · ${quote.updatedAt ? new Date(quote.updatedAt).toLocaleString('nl-BE') : 'tijdstip onbekend'}`
-                          : 'Geen feedprijs'}
+                      {quote
+                        ? quote.updatedAt
+                          ? `Bijgewerkt ${new Date(quote.updatedAt).toLocaleString('nl-BE')}`
+                          : 'Momentopname · tijdstip onbekend'
+                        : 'Niet aangeboden in deze feed'}
                     </small>
-                    {value && !assessment && active && (
-                      <small>Gebruik een odd groter dan 1, maximaal 1000.</small>
-                    )}
                   </td>
                   <td>{assessment ? `${assessment.implied.toFixed(1)}%` : '—'}</td>
                   <td>
-                    {probability?.value !== null && probability?.value !== undefined
-                      ? `${probability.value.toFixed(1)}% · ${probability.confidence}`
-                      : 'Geen model'}
+                    {probability?.value !== null && probability?.value !== undefined ? (
+                      <>
+                        <strong>{probability.value.toFixed(1)}%</strong>
+                        <small>{probability.confidence}</small>
+                      </>
+                    ) : (
+                      'Geen model'
+                    )}
                   </td>
                   <td>
                     {assessment?.gap != null
@@ -246,18 +260,21 @@ export default function BetWorkbench({
               Dit is gezamenlijke historische frequentie, geen gecombineerde modelkans. Overlappende
               markten zijn afhankelijk; losse odds worden niet vermenigvuldigd.
             </p>
-            <label className="manual-price">
-              Gecombineerde bookmakerodd{' '}
-              <input
-                aria-label="Gecombineerde bookmakerodd"
-                inputMode="decimal"
-                maxLength={8}
-                placeholder="Prijs uit betbuilder"
-                value={builderPrice}
-                disabled={!active}
-                onChange={(e) => setBuilderPrice(e.target.value)}
-              />
-            </label>
+            <details className="builder-price-details">
+              <summary>Bookmakerprijs toevoegen (optioneel)</summary>
+              <label className="manual-price">
+                Gecombineerde bookmakerodd{' '}
+                <input
+                  aria-label="Gecombineerde bookmakerodd"
+                  inputMode="decimal"
+                  maxLength={8}
+                  placeholder="Prijs uit betbuilder"
+                  value={builderPrice}
+                  disabled={!active}
+                  onChange={(e) => setBuilderPrice(e.target.value)}
+                />
+              </label>
+            </details>
             {total && active ? (
               <p>
                 <strong>Totale odd {Number(builderPrice.replace(',', '.')).toFixed(2)}</strong> ·

@@ -26,6 +26,7 @@ export default function OddsComparison({
   useEffect(() => {
     const c = new AbortController();
     setLoading(true);
+    setReport(null);
     setError('');
     api
       .odds(id, c.signal)
@@ -48,7 +49,7 @@ export default function OddsComparison({
         title="Bookmakerodds"
         aside={<span className="subtle">90 minuten · decimale odds</span>}
       />
-      <BetWorkbench response={response} odds={report} />
+      {report && <BetWorkbench key={id} response={response} odds={report} />}
       {!report && !loading && (
         <div className="player-invitation">
           <BarChart3 size={24} />
@@ -67,43 +68,46 @@ export default function OddsComparison({
         <>
           <p className="section-intro">{report.message}</p>
           {books.length ? (
-            <div className="player-table-scroll" tabIndex={0} aria-label="Bookmakerodds tabel">
-              <table className="player-table">
-                <thead>
-                  <tr>
-                    <th>Bookmaker</th>
-                    {markets.map(([key, label]) => (
-                      <th key={key}>{label}</th>
-                    ))}
-                    <th>Quoteringstijdstip</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {books.map((book) => {
-                    const quotes = report.quotes.filter((q) => q.bookmaker === book);
-                    const timestamps = quotes.map((q) => q.updatedAt);
-                    const oldest = timestamps.every((t) => t !== null)
-                      ? timestamps.reduce((a, b) => (Date.parse(a!) < Date.parse(b!) ? a : b))!
-                      : null;
-                    return (
-                      <tr key={book}>
-                        <th scope="row">{book}</th>
-                        {markets.map(([key]) => (
-                          <td key={key}>
-                            {quotes.find((q) => q.market === key)?.decimal.toFixed(2) ?? '—'}
+            <details className="bookmaker-comparison">
+              <summary>Vergelijk alle bookmakers ({books.length})</summary>
+              <div className="player-table-scroll" tabIndex={0} aria-label="Bookmakerodds tabel">
+                <table className="player-table">
+                  <thead>
+                    <tr>
+                      <th>Bookmaker</th>
+                      {markets.map(([key, label]) => (
+                        <th key={key}>{label}</th>
+                      ))}
+                      <th>Quoteringstijdstip</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {books.map((book) => {
+                      const quotes = report.quotes.filter((q) => q.bookmaker === book);
+                      const timestamps = quotes.map((q) => q.updatedAt);
+                      const oldest = timestamps.every((t) => t !== null)
+                        ? timestamps.reduce((a, b) => (Date.parse(a!) < Date.parse(b!) ? a : b))!
+                        : null;
+                      return (
+                        <tr key={book}>
+                          <th scope="row">{book}</th>
+                          {markets.map(([key]) => (
+                            <td key={key}>
+                              {quotes.find((q) => q.market === key)?.decimal.toFixed(2) ?? '—'}
+                            </td>
+                          ))}
+                          <td>
+                            {oldest
+                              ? new Date(oldest).toLocaleString('nl-BE')
+                              : 'Onbekend · momentopname'}
                           </td>
-                        ))}
-                        <td>
-                          {oldest
-                            ? new Date(oldest).toLocaleString('nl-BE')
-                            : 'Onbekend · momentopname'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           ) : (
             <div className="spotlight-placeholder">
               Geen bookmakerodds voor deze wedstrijd beschikbaar bij de ingestelde bron.

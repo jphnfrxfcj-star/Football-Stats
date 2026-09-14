@@ -1,5 +1,5 @@
-import { expect, it } from 'vitest';
-import { normalizeUnibet } from '../server/providers/unibet';
+import { expect, it, vi, afterEach } from 'vitest';
+import { normalizeUnibet, unibetMatchOdds } from '../server/providers/unibet';
 const now = Date.parse('2026-09-13T10:00:00Z');
 const event = {
   id: 1,
@@ -75,4 +75,46 @@ it('maps full-time result and BTTS but does not confuse draw-no-bet with a win',
   expect(normalizeUnibet({ events: [event], betOffers: offers }, now).map((q) => q.market)).toEqual(
     ['home', 'btts'],
   );
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
+});
+it('loads only the requested event and rejects matching teams on a different date', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+  const { demoFixtures } = await import('../src/demo/data');
+  const fixture = {
+    ...demoFixtures('2026-09-14')[0],
+    kickoff: event.start,
+    home: { ...demoFixtures('2026-09-14')[0].home, name: 'Leeds' },
+    away: { ...demoFixtures('2026-09-14')[0].away, name: 'Newcastle' },
+  };
+  const call = vi
+    .fn<typeof fetch>()
+    .mockImplementation(
+      async (url) =>
+        new Response(
+          JSON.stringify(
+            String(url).includes('listView')
+              ? { events: [{ event: { ...event, id: 999, homeName: 'Arsenal' } }, { event }] }
+              : { events: [event], betOffers: [offer] },
+          ),
+        ),
+    );
+  vi.stubGlobal('fetch', call);
+  const service = {
+    cached: async (_key: string, _ttl: number, loader: () => Promise<unknown>) => loader(),
+  };
+  const report = await unibetMatchOdds(service as never, fixture);
+  expect(report.quotes).toHaveLength(1);
+  expect(call).toHaveBeenCalledTimes(2);
+  expect(String(call.mock.calls[1][0])).toContain('/event/1.json');
+  call.mockClear();
+  expect(
+    (await unibetMatchOdds(service as never, { ...fixture, kickoff: '2026-09-15T19:00:00Z' }))
+      .quotes,
+  ).toHaveLength(0);
+  expect(call).toHaveBeenCalledTimes(1);
 });

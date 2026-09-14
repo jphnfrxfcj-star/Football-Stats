@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { canonicalClubName } from '../../src/domain/club-names';
 import type { OddsQuote, OddsSnapshot } from '../../src/domain/spotlight';
 import type { FootballService } from '../service';
+import type { Fixture } from '../../src/domain/models';
 const root = 'https://eu.offering-api.kambicdn.com/offering/v2018/ubbe/';
 const eventSchema = z.object({
   id: z.number().int(),
@@ -140,4 +141,45 @@ export async function unibetOdds(service: FootballService): Promise<OddsSnapshot
       message: `Unibet België: beschikbare pre-matchprijzen voor de komende acht dagen, maximaal elke vijf minuten opgehaald. Quoteringstijdstip is de laatste prijswijziging. Geen automatische betbuilderprijs.${failed ? ' Sommige wedstrijden konden niet worden opgehaald.' : ''}`,
     };
   });
+}
+
+/** Fetch only the opened match; unrelated event failures must not remove its odds. */
+export async function unibetMatchOdds(
+  service: FootballService,
+  fixture: Fixture,
+): Promise<OddsSnapshot> {
+  const spanish = fixture.league.refs.some((r) => r.externalId === 'SP1' || r.externalId === '140');
+  const path = spanish ? 'football/spain/la_liga' : 'football/england/premier_league';
+  const events = await service.cached(
+    `odds:unibet-be:list:v1:${path}`,
+    300,
+    async () =>
+      z
+        .object({ events: z.array(z.object({ event: eventSchema })) })
+        .parse(await read(`listView/${path}/all/matches.json`)).events,
+  );
+  const event = events
+    .map((e) => e.event)
+    .find(
+      (e) =>
+        e.state === 'NOT_STARTED' &&
+        Date.parse(e.start) > Date.now() &&
+        canonicalClubName(e.homeName) === canonicalClubName(fixture.home.name) &&
+        canonicalClubName(e.awayName) === canonicalClubName(fixture.away.name) &&
+        Math.abs(Date.parse(e.start) - Date.parse(fixture.kickoff)) <= 60000,
+    );
+  const quotes = event
+    ? await service.cached(`odds:unibet-be:event:v2:${event.id}`, 300, async () =>
+        normalizeUnibet(await read(`betoffer/event/${event.id}.json`)),
+      )
+    : [];
+  return {
+    source: 'Unibet België · openbare sportsbookfeed',
+    kind: 'feed',
+    fetchedAt: new Date().toISOString(),
+    quotes,
+    message: event
+      ? 'Beschikbare Unibet-prijzen voor deze wedstrijd, maximaal elke vijf minuten opgehaald. De bookmaker bevestigt de actuele prijs.'
+      : 'Unibet levert momenteel geen gekoppelde pre-matchprijzen voor deze wedstrijd.',
+  };
 }

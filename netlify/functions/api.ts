@@ -185,7 +185,7 @@ async function route(request: Request, context: Context) {
             message:
               'Deze vergelijking is alleen beschikbaar vóór een bekende aftrap. In-playodds vereisen een afzonderlijk live model.',
           });
-        const odds = await getOdds(svc!);
+        const odds = await getOdds(svc!, fixture);
         return json({
           ...odds,
           quotes: odds.quotes.filter(

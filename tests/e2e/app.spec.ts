@@ -131,11 +131,11 @@ test('Unibet analysis compares prices and builds a joint-history concept without
   await page.goto('/match/demo-2026-09-14-0');
   const work = page.getByLabel('Odds versus statistiek');
   await expect(work.getByLabel('Analysebookmaker')).toHaveValue('Unibet België');
-  await work.getByLabel('Over 2.5 goals odd', { exact: true }).fill('2.0');
+  await expect(work.locator('input')).toHaveCount(0);
   const row = work
     .locator('tbody tr')
     .filter({ has: page.getByLabel('Over 2.5 goals odd', { exact: true }) });
-  await expect(row).toContainText('50.0%');
+  await expect(row.getByLabel('Over 2.5 goals odd', { exact: true })).toHaveText('Geen prijs');
   await row.getByRole('button', { name: 'Toevoegen' }).click();
   await work
     .locator('tbody tr')
@@ -144,6 +144,7 @@ test('Unibet analysis compares prices and builds a joint-history concept without
     .click();
   const slip = work.getByLabel('Betbuilder concept');
   await expect(slip).toContainText('Gecombineerde prijs nog niet bevestigd');
+  await slip.getByText('Bookmakerprijs toevoegen (optioneel)', { exact: true }).click();
   await slip.getByLabel('Gecombineerde bookmakerodd').fill('2,4');
   await expect(slip).toContainText('Totale odd 2.40');
   await slip.getByRole('button', { name: 'Verwijder Beide teams scoren' }).click();
