@@ -23,11 +23,11 @@ export function serverConfig(env: NodeJS.ProcessEnv = process.env) {
   if (
     provider === 'free-football' &&
     env.SUPPORTED_LEAGUE_ID &&
-    !['39', 'E0', '140', 'SP1'].includes(env.SUPPORTED_LEAGUE_ID)
+    !['39', 'E0', '140', 'SP1', '135', 'I1', '61', 'F1'].includes(env.SUPPORTED_LEAGUE_ID)
   )
     throw new ServiceError(
       'LEAGUE_UNSUPPORTED',
-      'De gratis bron ondersteunt Premier League en La Liga (39/E0 en 140/SP1).',
+      'De gratis bron ondersteunt Premier League, La Liga, Serie A en Ligue 1.',
     );
   const missing = names.filter((name) => !env[name]?.trim());
   if (missing.length)

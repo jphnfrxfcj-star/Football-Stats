@@ -1,3 +1,4 @@
+import { additionalLogos } from './additional-logos';
 import { spanishLogos } from './spanish-logos';
 // Identification assets; source and rights notice: public/clubs/CREDITS.md.
 const clubIds: Record<string, number> = {
@@ -34,6 +35,7 @@ const clubIds: Record<string, number> = {
 };
 
 export function clubLogo(name: string): string | null {
+  if (additionalLogos[name]) return additionalLogos[name];
   if (spanishLogos[name]) return spanishLogos[name];
   const id = clubIds[name];
   return id ? `/clubs/${id}.v1.png` : null;

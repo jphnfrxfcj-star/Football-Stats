@@ -71,9 +71,10 @@ export default function ComboFinder({
         aside={<span className="combo-target">Doelodd 2.00–3.00</span>}
       />
       <p className="section-intro">
-        Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League
-        en La Liga. Iedere selectie kwam voor in minstens {minimumRate}% van de laatste {window}{' '}
-        competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.
+        Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League,
+        La Liga, Serie A en Ligue 1. Iedere selectie kwam voor in minstens {minimumRate}% van de
+        laatste {window} competitieduels van elk team. Elke selectie heeft een odd van minimaal
+        1,10.
       </p>
       <div className="market-controls">
         <label>

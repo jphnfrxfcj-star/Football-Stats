@@ -1,3 +1,4 @@
+import { competitions, fixtureDivision } from '../../src/domain/competitions';
 import { z } from 'zod';
 import { canonicalClubName } from '../../src/domain/club-names';
 import type { OddsQuote, OddsSnapshot } from '../../src/domain/spotlight';
@@ -36,7 +37,7 @@ export function normalizeUnibet(raw: unknown, now = Date.now()): OddsQuote[] {
   for (const event of body.events) {
     if (
       event.sport !== 'FOOTBALL' ||
-      ![1000094985, 1000095049].includes(event.groupId) ||
+      !Object.values(competitions).some((c) => c.group === event.groupId) ||
       event.state !== 'NOT_STARTED' ||
       Date.parse(event.start) <= now
     )
@@ -92,10 +93,10 @@ async function read(path: string) {
   return JSON.parse(text) as unknown;
 }
 export async function unibetOdds(service: FootballService): Promise<OddsSnapshot> {
-  return service.cached('odds:unibet-be:v2', 300, async () => {
+  return service.cached('odds:unibet-be:v3', 300, async () => {
     const now = Date.now();
     const lists = await Promise.allSettled(
-      ['football/england/premier_league', 'football/spain/la_liga'].map((path) =>
+      Object.values(competitions).map(({ unibet: path }) =>
         read(`listView/${path}/all/matches.json`).then((raw) =>
           z.object({ events: z.array(z.object({ event: eventSchema })) }).parse(raw),
         ),
@@ -148,8 +149,7 @@ export async function unibetMatchOdds(
   service: FootballService,
   fixture: Fixture,
 ): Promise<OddsSnapshot> {
-  const spanish = fixture.league.refs.some((r) => r.externalId === 'SP1' || r.externalId === '140');
-  const path = spanish ? 'football/spain/la_liga' : 'football/england/premier_league';
+  const path = competitions[fixtureDivision(fixture)].unibet;
   const events = await service.cached(
     `odds:unibet-be:list:v1:${path}`,
     300,

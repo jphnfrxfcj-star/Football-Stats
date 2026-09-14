@@ -1,3 +1,4 @@
+import { divisions } from '../src/domain/competitions';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { serverConfig } from './config';
 import type { Fixture } from '../src/domain/models';
@@ -65,7 +66,7 @@ export async function runNightlyRefresh() {
       .update({ expires_at: new Date(Date.now() + 16 * 60000).toISOString() })
       .eq('cache_key', key);
     if (leaseError) throw new Error('Nightly lock extension failed');
-    for (const division of ['E0', 'SP1'] as const) {
+    for (const division of divisions) {
       try {
         results.push(await refreshLeague(repo, config.season, division));
       } catch {
@@ -78,7 +79,7 @@ export async function runNightlyRefresh() {
       const { error } = await repo.db
         .from(table)
         .delete()
-        .like('cache_key', `free-football:multi:v1:${config.season}:%`);
+        .like('cache_key', `free-football:multi:v2:${config.season}:%`);
       if (error) throw new Error('Derived cache invalidation failed');
     }
     const report = { updatedAt: new Date().toISOString(), results, failed };

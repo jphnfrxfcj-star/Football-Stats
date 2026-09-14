@@ -1,3 +1,10 @@
+import {
+  additionalClubs,
+  competitions,
+  competitionLeague,
+  type Division,
+} from '../../src/domain/competitions';
+export type { Division } from '../../src/domain/competitions';
 import { applyResults } from './espn-results';
 import { spanishClubs } from '../../src/domain/spanish-clubs';
 import { clubLogo } from '../../src/domain/club-assets';
@@ -25,6 +32,7 @@ export interface SourceDocument {
 export type SourceReader = (url: string, ttl: number) => Promise<SourceDocument>;
 const aliases: Record<string, string[]> = {
   ...spanishClubs,
+  ...additionalClubs,
   Arsenal: ['Arsenal FC'],
   'Aston Villa': ['Aston Villa FC'],
   Bournemouth: ['AFC Bournemouth'],
@@ -87,7 +95,7 @@ export const spanishLeague: League = {
   logo: null,
   refs: [{ provider: FREE_PROVIDER, externalId: 'SP1' }],
 };
-export type Division = 'E0' | 'SP1';
+
 export function fixtureKey(year: number, home: Team, away: Team) {
   return `${year}-${home.refs[0].externalId}-vs-${away.refs[0].externalId}`;
 }
@@ -146,14 +154,14 @@ function baseFixture(
       { provider: FREE_PROVIDER, externalId: key },
       { provider: stamp.name, externalId: key },
     ],
-    league: division === 'SP1' ? spanishLeague : freeLeague,
+    league: competitionLeague(division),
     home,
     away,
     sourceDate: date,
     ...londonKickoff(
       date,
       time,
-      division === 'SP1' && stamp.name === 'openfootball' ? 'Europe/Madrid' : 'Europe/London',
+      stamp.name === 'openfootball' ? competitions[division].timezone : 'Europe/London',
     ),
     venue: null,
     status: 'scheduled',
@@ -417,7 +425,7 @@ export async function downloadSource(url: string): Promise<SourceDocument> {
 export class FreeFootballProvider implements FootballDataProvider {
   readonly name = FREE_PROVIDER;
   get cacheNamespace() {
-    return `${this.name}:${this.division === 'E0' ? '39' : '140'}:${this.year}`;
+    return `${this.name}:${competitions[this.division].apiId}:${this.year}`;
   }
   readonly fixtureIdPrefix = 'free-fixture-';
   readonly statisticsProvider = CSV_PROVIDER;
@@ -459,7 +467,7 @@ export class FreeFootballProvider implements FootballDataProvider {
   }
   async seasonFixtures() {
     this.recentResultChecksFailed = 0;
-    const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/${this.division === 'E0' ? 'en' : 'es'}.1.json`;
+    const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/${competitions[this.division].file}.1.json`;
     const fixtureUrl = 'https://www.football-data.co.uk/fixtures.csv';
     const [schedule, results, upcoming] = await Promise.all([
       this.doc(url, 21600).then((d) => normalizeSchedule(d, this.year, url, this.division)),
@@ -486,7 +494,7 @@ export class FreeFootballProvider implements FootballDataProvider {
     for (let i = 0; i < dates.length; i += 2) {
       const batch = await Promise.allSettled(
         dates.slice(i, i + 2).map(async (date) => {
-          const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${this.division === 'SP1' ? 'esp.1' : 'eng.1'}/scoreboard?dates=${date.replaceAll('-', '')}&limit=100`;
+          const url = `https://site.web.api.espn.com/apis/site/v2/sports/soccer/${competitions[this.division].espn}/scoreboard?dates=${date.replaceAll('-', '')}&limit=100`;
           const doc = await this.doc(url, 300);
           return { date, url, doc };
         }),
@@ -530,7 +538,7 @@ export class FreeFootballProvider implements FootballDataProvider {
     );
   }
   async leagues() {
-    return [this.division === 'SP1' ? spanishLeague : freeLeague];
+    return [competitionLeague(this.division)];
   }
   async fixtures(date: string) {
     return (await this.seasonFixtures()).filter((f) => f.sourceDate === date);

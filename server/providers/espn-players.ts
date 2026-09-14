@@ -1,3 +1,4 @@
+import { competitions, fixtureDivision } from '../../src/domain/competitions';
 import { z } from 'zod';
 import { before, type MatchData, type Fixture } from '../../src/domain/models';
 import { canonicalClubName } from '../../src/domain/club-names';
@@ -121,11 +122,7 @@ export async function playerReport(
   data: MatchData,
   service: FootballService,
 ): Promise<PlayerReport> {
-  const league = data.fixture.league.refs.some(
-    (r) => r.externalId === 'SP1' || r.externalId === '140',
-  )
-    ? 'esp.1'
-    : 'eng.1';
+  const league = competitions[fixtureDivision(data.fixture)].espn;
   const cutoff = Date.parse(data.fixture.kickoff);
   const teams = [data.fixture.home, data.fixture.away];
   const histories = [data.homeHistory, data.awayHistory].map((rows, i) =>

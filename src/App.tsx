@@ -135,13 +135,14 @@ export default function App() {
           <span>Premier League</span>
           <span className="green-dot" />
         </div>
-        {!isDemo && (
-          <div className="league-nav">
-            <Trophy size={17} />
-            <span>La Liga</span>
-            <span className="green-dot" />
-          </div>
-        )}
+        {!isDemo &&
+          ['La Liga', 'Serie A', 'Ligue 1'].map((name) => (
+            <div className="league-nav" key={name}>
+              <Trophy size={17} />
+              <span>{name}</span>
+              <span className="green-dot" />
+            </div>
+          ))}
         <div className="sidebar-bottom">
           <div className="engine-card">
             <span className="engine-icon">

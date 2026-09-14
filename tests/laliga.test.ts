@@ -42,7 +42,12 @@ it('exposes both leagues and routes Spanish history only through SP1 sources', a
         : 'Div,Date,Time,HomeTeam,AwayTeam,FTHG,FTAG\n',
     );
   });
-  expect((await provider.leagues()).map((l) => l.name)).toEqual(['Premier League', 'La Liga']);
+  expect((await provider.leagues()).map((l) => l.name)).toEqual([
+    'Premier League',
+    'La Liga',
+    'Serie A',
+    'Ligue 1',
+  ]);
   await provider.history('barcelona', '2026-09-14T10:00:00Z');
   expect(urls.some((u) => u.endsWith('/SP1.csv'))).toBe(true);
   expect(urls.some((u) => u.endsWith('/E0.csv'))).toBe(false);

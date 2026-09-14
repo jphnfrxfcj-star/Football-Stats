@@ -1,3 +1,4 @@
+import { divisions } from '../../src/domain/competitions';
 import type { Fixture } from '../../src/domain/models';
 import { unibetOdds, unibetMatchOdds } from './unibet';
 import { parse } from 'csv-parse/sync';
@@ -22,7 +23,7 @@ export function csvOdds(doc: SourceDocument): OddsSnapshot {
     SKB: 'Sky Bet',
   };
   for (const row of rows) {
-    if (!['E0', 'SP1'].includes(row.Div)) continue;
+    if (!divisions.some((d) => d === row.Div)) continue;
     const home = canonicalClubName(row.HomeTeam ?? ''),
       away = canonicalClubName(row.AwayTeam ?? '');
     const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(row.Date ?? '');
