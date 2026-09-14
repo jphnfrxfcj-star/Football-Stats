@@ -3069,3 +3069,58 @@ td {
 .builder-slip > h3 {
   margin: 0 0 10px;
 }
+
+.program-odds-note {
+  margin: 0 0 14px;
+  color: #697b70;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.fixture-odds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 180px;
+  flex-shrink: 0;
+}
+.fixture-odd {
+  display: grid;
+  gap: 4px;
+  padding: 7px 5px;
+  border: 1px solid #e2e9e3;
+  border-radius: 6px;
+  text-align: center;
+  background: #f5f9f5;
+}
+.fixture-odd small {
+  font-size: 9px;
+  color: #748378;
+}
+.fixture-odd strong {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #245b3d;
+}
+.fixture-odds-caption {
+  grid-column: 1/-1;
+  font-size: 9px;
+  color: #748378;
+  text-align: center;
+  line-height: 1.4;
+}
+@media (max-width: 1200px) {
+  .fixture-row.has-odds .fixture-venue {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .fixture-row.has-odds .fixture-odds {
+    grid-column: 2/-1;
+    grid-row: 3;
+    width: auto;
+    margin-top: 8px;
+  }
+  .fixture-row.has-odds .fixture-odd {
+    padding: 8px 5px;
+  }
+}

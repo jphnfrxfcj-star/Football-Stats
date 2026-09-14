@@ -1,6 +1,6 @@
 import { packMarketHistory, unpackMarketHistory } from './market-history';
 import { isUpcoming } from '../src/analysis/recap';
-import { buildMarkets } from '../src/analysis/combinations';
+import { buildMarkets, fixtureQuotes } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
 import { ServiceError } from './errors';
 import { buildSpotlight } from '../src/analysis/spotlight';
@@ -210,6 +210,24 @@ export class FootballService {
       },
       'analysis_results',
     );
+  }
+  async programOdds(date: string) {
+    const fixtures = (await this.fixtures(date)).filter((f) => isUpcoming(f));
+    if (!fixtures.length)
+      return {
+        source: 'Geen pre-matchodds nodig',
+        kind: 'snapshot' as const,
+        fetchedAt: new Date().toISOString(),
+        quotes: [],
+        message: 'Geen komende wedstrijden.',
+      };
+    const report = await getOdds(this);
+    return {
+      ...report,
+      quotes: fixtures
+        .flatMap((f) => fixtureQuotes(f, report))
+        .filter((q) => ['home', 'draw', 'away'].includes(q.market)),
+    };
   }
   async markets(date: string, window: number, days = 1, minimumRate = 100) {
     const packed = await this.cached(

@@ -153,6 +153,20 @@ async function route(request: Request, context: Context) {
         ),
       );
     }
+    if (path[0] === 'odds' && path.length === 1) {
+      const date = dateSchema.parse(url.searchParams.get('date') ?? today());
+      return json(
+        demo
+          ? {
+              source: 'Demo',
+              kind: 'snapshot',
+              fetchedAt: new Date().toISOString(),
+              quotes: [],
+              message: 'Geen bookmakerprijzen in de demo.',
+            }
+          : await svc!.programOdds(date),
+      );
+    }
     if (path[0] === 'fixtures' && path.length === 1) {
       const date = dateSchema.parse(url.searchParams.get('date') ?? today());
       return json(demo ? demoFixtures(date) : await svc!.fixtures(date));

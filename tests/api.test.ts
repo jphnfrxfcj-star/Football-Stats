@@ -131,3 +131,12 @@ it('bounds multi-day searches and historical thresholds', async () => {
   expect(r.status).toBe(200);
   expect((await r.json()).fixtures).toHaveLength(32);
 });
+
+it('serves the lightweight program odds endpoint and validates dates', async () => {
+  const response = await handler(new Request('http://localhost/api/odds?date=2026-09-14'), context);
+  expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({ quotes: [], source: 'Demo' });
+  expect(
+    (await handler(new Request('http://localhost/api/odds?date=invalid'), context)).status,
+  ).toBe(400);
+});

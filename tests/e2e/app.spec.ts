@@ -91,38 +91,26 @@ test('spotlight links to its analysis and enrichment is clearly labelled in demo
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('odds and combo section exposes sample settings and honest demo prices', async ({ page }) => {
+test('program shows 1X2 prices without the old historical combo section', async ({ page }) => {
   await page.goto('/');
-  const section = page.getByRole('region', { name: 'Odds en combibouwer' });
-  await expect(section.getByRole('heading', { name: 'Odds & combi', exact: true })).toBeVisible();
-  await expect(section).toContainText('Geen combi tussen 2 en 3');
-  await expect(section.locator('tbody tr')).toHaveCount(4);
-  await section.getByLabel('Historie').selectOption('10');
-  await expect(section).toContainText('10/10 voor beide teams');
-  await section.getByText(/Alle historische 100%-selecties/).click();
-  await expect(section).toContainText('Selecties zonder bookmakerprijs');
+  await expect(page.getByRole('region', { name: 'Odds en combibouwer' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Combi x2 tot x3' })).toBeVisible();
+  const row = page.locator('.fixture-row').first();
+  await expect(row.locator('.fixture-odd')).toHaveCount(3);
+  await expect(row.locator('.fixture-odds')).toContainText('Thuis');
+  await expect(row.locator('.fixture-odds')).toContainText('Gelijk');
+  await expect(row.locator('.fixture-odds')).toContainText('Uit');
+  await expect(row.locator('.fixture-odds')).toContainText('Geen odds beschikbaar');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await row.click();
+  await expect(page.getByLabel('Odds versus statistiek')).toBeVisible();
 });
 
-test('manual verified prices build a labelled same-book combo and can be removed', async ({
-  page,
-}) => {
+test('past programs show results without prematch price cells', async ({ page }) => {
   await page.goto('/');
-  await page.getByLabel('Wedstrijddatum').fill('2026-09-12');
-  const section = page.getByRole('region', { name: 'Odds en combibouwer' });
-  await section.getByLabel('Bookmaker voor handmatige odds').fill('Test bookmaker');
-  await section.getByText(/Alle historische 100%-selecties/).click();
-  await section.locator('.selection-evidence summary').nth(0).click();
-  await section.locator('.selection-evidence summary').nth(1).click();
-  await section.getByLabel('Handmatige odd Arsenal Over 0.5').fill('1,6');
-  await section.getByLabel('Handmatige odd Manchester City Over 0.5').fill('1.6');
-  await expect(section.locator('.combo-card')).toHaveCount(1);
-  await expect(section.locator('.combo-card')).toContainText('Totale odd 2.56');
-  await expect(section.locator('.combo-card').getByText(/Handmatig ingevoerd/)).toHaveCount(2);
-  await section.getByLabel('Handmatige odd Arsenal Over 0.5').fill('');
-  await expect(section.locator('.combo-card')).toHaveCount(0);
-  await section.getByLabel('Handmatige odd Arsenal Over 0.5').fill('0.5');
-  await expect(section.locator('.combo-card')).toHaveCount(0);
+  await page.getByLabel('Wedstrijddatum').fill('2026-09-11');
+  await expect(page.locator('.fixture-row').first()).toContainText('Uitslag volgt');
+  await expect(page.locator('.fixture-odds')).toHaveCount(0);
 });
 
 test('Unibet analysis compares prices and builds a joint-history concept without multiplying odds', async ({

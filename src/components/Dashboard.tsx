@@ -1,7 +1,8 @@
+import { programPrices } from '../analysis/program-prices';
+import type { OddsSnapshot } from '../domain/spotlight';
 import ComboFinder from './ComboFinder';
 import { DayRecap } from './Recap';
 import { isUpcoming } from '../analysis/recap';
-import Markets from './Markets';
 import Spotlight from './Spotlight';
 import { useEffect, useState } from 'react';
 import {
@@ -58,6 +59,32 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       });
     return () => controller.abort();
   }, [date, retry]);
+  const [odds, setOdds] = useState<{ date: string; report: OddsSnapshot } | null>(null),
+    [oddsLoading, setOddsLoading] = useState(false),
+    [oddsError, setOddsError] = useState(''),
+    [oddsRetry, setOddsRetry] = useState(0);
+  const hasUpcoming =
+    !loading && !error && date >= today() && fixtures.some((f) => isUpcoming(f, now));
+  useEffect(() => {
+    const c = new AbortController();
+    setOdds(null);
+    setOddsError('');
+    setOddsLoading(false);
+    if (!hasUpcoming) return () => c.abort();
+    setOddsLoading(true);
+    api
+      .programOdds(date, c.signal)
+      .then((report) => {
+        if (!c.signal.aborted) setOdds({ date, report });
+      })
+      .catch((e) => {
+        if (!c.signal.aborted) setOddsError(e.message);
+      })
+      .finally(() => {
+        if (!c.signal.aborted) setOddsLoading(false);
+      });
+    return () => c.abort();
+  }, [date, hasUpcoming, oddsRetry]);
   const filtered = fixtures.filter(
     (f) =>
       (league === 'all' || f.league.id === league) &&
@@ -186,10 +213,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       </div>
       {date >= today() && <ComboFinder key={date} date={date} navigate={navigate} />}
       {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
-        <>
-          <Spotlight date={date} league={league} navigate={navigate} />
-          <Markets key={date} date={date} league={league} navigate={navigate} />
-        </>
+        <Spotlight date={date} league={league} navigate={navigate} />
       )}
       {!loading && !error && <DayRecap fixtures={filtered} />}
       <SectionTitle
@@ -247,6 +271,21 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           )}
         </label>
       </div>
+      {hasUpcoming && (
+        <p className="program-odds-note">
+          Thuis · Gelijk · Uit. Voorkeur voor Unibet; de bookmaker staat bij elke wedstrijd.
+          {oddsError ? (
+            <>
+              <span role="status"> Odds tijdelijk niet beschikbaar.</span>{' '}
+              <button className="text-button" onClick={() => setOddsRetry((n) => n + 1)}>
+                Odds opnieuw laden
+              </button>
+            </>
+          ) : (
+            ' Open een wedstrijd voor de volledige analyse.'
+          )}
+        </p>
+      )}
       {isDemo && (
         <div className="demo-note">
           <Info size={15} />
@@ -291,46 +330,70 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             </strong>
             <span className="fixture-count">{filtered.length} wedstrijden</span>
           </div>
-          {filtered.map((f) => (
-            <button className="fixture-row" key={f.id} onClick={() => navigate(`/match/${f.id}`)}>
-              <div className="fixture-time">
-                <strong>{f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff)}</strong>
-                <span>
-                  {f.status === 'finished'
-                    ? 'Afgelopen'
-                    : f.status === 'live'
-                      ? 'Bezig'
-                      : f.status === 'postponed'
-                        ? 'Uitgesteld'
-                        : f.status === 'cancelled'
-                          ? 'Geannuleerd'
-                          : Date.parse(f.kickoff) < now
-                            ? 'Uitslag volgt'
-                            : 'Gepland'}
+          {filtered.map((f) => {
+            const showOdds = isUpcoming(f, now);
+            const prices = programPrices(f, odds?.date === date ? odds.report : null, now);
+            return (
+              <button
+                className={`fixture-row${showOdds ? ' has-odds' : ''}`}
+                key={f.id}
+                onClick={() => navigate(`/match/${f.id}`)}
+              >
+                <div className="fixture-time">
+                  <strong>{f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff)}</strong>
+                  <span>
+                    {f.status === 'finished'
+                      ? 'Afgelopen'
+                      : f.status === 'live'
+                        ? 'Bezig'
+                        : f.status === 'postponed'
+                          ? 'Uitgesteld'
+                          : f.status === 'cancelled'
+                            ? 'Geannuleerd'
+                            : Date.parse(f.kickoff) < now
+                              ? 'Uitslag volgt'
+                              : 'Gepland'}
+                  </span>
+                </div>
+                <div className="fixture-team home">
+                  <span>{f.home.name}</span>
+                  <Badge team={f.home} />
+                </div>
+                <span className="fixture-vs">
+                  {f.homeGoals !== null && f.awayGoals !== null
+                    ? `${f.homeGoals} – ${f.awayGoals}`
+                    : 'vs'}
                 </span>
-              </div>
-              <div className="fixture-team home">
-                <span>{f.home.name}</span>
-                <Badge team={f.home} />
-              </div>
-              <span className="fixture-vs">
-                {f.homeGoals !== null && f.awayGoals !== null
-                  ? `${f.homeGoals} – ${f.awayGoals}`
-                  : 'vs'}
-              </span>
-              <div className="fixture-team away">
-                <Badge team={f.away} />
-                <span>{f.away.name}</span>
-              </div>
-              <span className="fixture-venue">
-                <MapPin size={14} />
-                {f.league.name}
-              </span>
-              <span className="analyze-link">
-                {f.status === 'finished' ? 'Recap' : 'Analyse'} <ArrowRight size={16} />
-              </span>
-            </button>
-          ))}
+                <div className="fixture-team away">
+                  <Badge team={f.away} />
+                  <span>{f.away.name}</span>
+                </div>
+                {showOdds && (
+                  <span className="fixture-odds" aria-label="Wedstrijdodds">
+                    {(['home', 'draw', 'away'] as const).map((market, i) => (
+                      <span className="fixture-odd" key={market}>
+                        <small>{['Thuis', 'Gelijk', 'Uit'][i]}</small>
+                        <strong>
+                          {prices.quotes[market]?.decimal.toFixed(2) ?? (oddsLoading ? '…' : '—')}
+                        </strong>
+                      </span>
+                    ))}
+                    <span className="fixture-odds-caption" title={prices.detail}>
+                      {prices.bookmaker ?? (oddsLoading ? 'Odds laden…' : 'Geen odds beschikbaar')}
+                      {prices.bookmaker && prices.snapshot && ' · momentopname'}
+                    </span>
+                  </span>
+                )}
+                <span className="fixture-venue">
+                  <MapPin size={14} />
+                  {f.league.name}
+                </span>
+                <span className="analyze-link">
+                  {f.status === 'finished' ? 'Recap' : 'Analyse'} <ArrowRight size={16} />
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
       <div className="bottom-info">

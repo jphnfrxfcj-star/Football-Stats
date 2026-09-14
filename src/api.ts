@@ -15,6 +15,16 @@ export interface AnalysisResponse {
   probabilities: Probability[];
 }
 export const api = {
+  programOdds: (date: string, signal?: AbortSignal): Promise<OddsSnapshot> =>
+    isDemo
+      ? Promise.resolve({
+          source: 'Demo',
+          kind: 'snapshot',
+          fetchedAt: new Date().toISOString(),
+          quotes: [],
+          message: 'Geen bookmakerprijzen in de demo.',
+        })
+      : get(`odds?date=${date}`, signal),
   markets: (
     date: string,
     window: number,
