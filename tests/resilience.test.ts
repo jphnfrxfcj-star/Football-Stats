@@ -138,3 +138,70 @@ it('sends new secret keys through apikey without treating them as JWTs', async (
     'Bearer legacy-jwt',
   );
 });
+
+const clockFailure = () =>
+  new Response(JSON.stringify({ code: 'PGRST303', message: 'JWT issued at future' }), {
+    status: 401,
+  });
+it('recovers from gateway clock rejection before a lock RPC executes', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const call = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(clockFailure())
+    .mockResolvedValueOnce(new Response('true'));
+  const wait = vi.fn(async (_ms: number) => {});
+  const response = await databaseFetch(call, wait)(url.replace('teams', 'rpc/acquire_sync_lock'), {
+    method: 'POST',
+    headers: { apikey: 'sb_secret_test' },
+    body: '{}',
+  });
+  expect(response.status).toBe(200);
+  expect(call).toHaveBeenCalledTimes(2);
+  expect(wait.mock.calls[0][0]).toBeGreaterThanOrEqual(1000);
+});
+it('bounds gateway clock retries and reports exhausted attempts as temporary', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const call = vi.fn<typeof fetch>().mockImplementation(async () => clockFailure());
+  const response = await databaseFetch(call, async () => {})(url, {
+    headers: { apikey: 'sb_secret_test' },
+  });
+  expect(call).toHaveBeenCalledTimes(3);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toMatchObject({ code: 'GATEWAY_CLOCK_SKEW' });
+});
+it('does not retry other JWT failures or a user JWT as gateway clock skew', async () => {
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  for (const [headers, message] of [
+    [{ apikey: 'sb_secret_test' }, 'JWT expired'],
+    [{ apikey: 'sb_secret_test', authorization: 'Bearer user-jwt' }, 'JWT issued at future'],
+    [{ apikey: 'legacy-jwt' }, 'JWT issued at future'],
+  ] as [Record<string, string>, string][]) {
+    const call = vi
+      .fn<typeof fetch>()
+      .mockImplementation(
+        async () => new Response(JSON.stringify({ code: 'PGRST303', message }), { status: 401 }),
+      );
+    expect((await databaseFetch(call, async () => {})(url, { headers })).status).toBe(401);
+    expect(call).toHaveBeenCalledTimes(1);
+  }
+});
+
+it('exposes exhausted gateway clock failures as recoverable through the repository', async () => {
+  const { Repository } = await import('../server/repositories/supabase');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn<typeof fetch>().mockImplementation(
+      async () =>
+        new Response(JSON.stringify({ code: 'GATEWAY_CLOCK_SKEW', message: 'temporary' }), {
+          status: 503,
+        }),
+    ),
+  );
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.useFakeTimers();
+  const result = expect(
+    new Repository('https://example.supabase.co', 'sb_secret_test').cached('test'),
+  ).rejects.toMatchObject({ code: 'SUPABASE_TEMPORARY_UNAVAILABLE' });
+  await vi.runAllTimersAsync();
+  await result;
+});

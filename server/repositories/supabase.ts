@@ -29,6 +29,7 @@ export class Repository {
         'Een Supabase-tabel of databasefunctie ontbreekt. Voer de volledige database-migratie uit.',
       );
     if (
+      code === 'GATEWAY_CLOCK_SKEW' ||
       rollbackCodes.has(code) ||
       /fetch failed|network|timeout|timed out|aborterror/i.test(error.message)
     )

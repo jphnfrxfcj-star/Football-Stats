@@ -44,7 +44,7 @@ function orderedBody(resource: string, init: RequestInit): RequestInit {
   });
   return { ...init, body: JSON.stringify(rows) };
 }
-/** Retry a confirmed rolled-back DB request; never replay an ambiguous POST network failure. */
+/** Retry confirmed pre-execution/rolled-back failures; never replay ambiguous POST transport failures. */
 export function databaseFetch(
   fetchImpl: typeof fetch = fetch,
   wait: typeof sleep = sleep,
@@ -100,9 +100,25 @@ export function databaseFetch(
         typeof body?.code === 'string' && /^[A-Z0-9]{5,12}$/.test(body.code)
           ? body.code
           : 'UNKNOWN';
+      // The gateway mints its own JWT for secret keys. A future-issued rejection
+      // happens before SQL executes, so even an RPC can safely be retried here.
+      const gatewayClockFailure =
+        response.status === 401 &&
+        code === 'PGRST303' &&
+        body?.message === 'JWT issued at future' &&
+        apiKey?.startsWith('sb_secret_') === true &&
+        !headers.has('authorization');
       const transient =
-        rollbackCodes.has(code) || (read && [429, 502, 503, 504, 520].includes(response.status));
-      const delay = retryDelay(attempt, response.headers.get('retry-after'), 2000);
+        gatewayClockFailure ||
+        rollbackCodes.has(code) ||
+        (read && [429, 502, 503, 504, 520].includes(response.status));
+      const baseDelay = retryDelay(attempt, response.headers.get('retry-after'), 2000);
+      const delay =
+        baseDelay === null
+          ? null
+          : gatewayClockFailure
+            ? Math.max(1000 * (attempt + 1), baseDelay)
+            : baseDelay;
       console.warn('Database request failed', {
         resource: safeResource,
         method,
@@ -111,7 +127,23 @@ export function databaseFetch(
         attempt,
         retrying: transient && attempt < 2 && delay !== null,
       });
-      if (!transient || attempt >= 2 || delay === null) return response;
+      if (!transient || attempt >= 2 || delay === null) {
+        if (gatewayClockFailure) {
+          await response.body?.cancel();
+          // Internal-only classification; no upstream details or credentials escape.
+          return new Response(
+            JSON.stringify({
+              code: 'GATEWAY_CLOCK_SKEW',
+              message: 'Temporary database authentication failure',
+            }),
+            {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          );
+        }
+        return response;
+      }
       await response.body?.cancel();
       await wait(delay, request.signal ?? undefined);
     }
