@@ -1,5 +1,5 @@
 import { MultiLeagueProvider } from '../../server/providers/multi-league';
-import { buildMarkets } from '../../src/analysis/combinations';
+import { buildMarkets, comboRates } from '../../src/analysis/combinations';
 import { getOdds } from '../../server/providers/odds';
 import { canonicalClubName } from '../../src/domain/club-names';
 import { playerReport } from '../../server/providers/espn-players';
@@ -105,7 +105,7 @@ async function route(request: Request, context: Context) {
         .parse(url.searchParams.get('days') ?? 1);
       const minimumRate = z.coerce
         .number()
-        .refine((n) => [80, 90, 100].includes(n))
+        .refine((n) => comboRates.some((rate) => rate === n))
         .parse(url.searchParams.get('minimumRate') ?? 100);
       if (!demo) return json(await svc!.markets(date, window, days, minimumRate));
       return json(

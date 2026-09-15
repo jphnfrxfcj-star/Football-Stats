@@ -3,6 +3,7 @@ import { canonicalClubName } from '../domain/club-names';
 import type { OddsQuote, OddsSnapshot } from '../domain/spotlight';
 import { occurrence, marketLabels, type Market } from './engine';
 
+export const comboRates = [50, 60, 70, 80, 90, 100] as const;
 export const comboMarkets: Market[] = [
   'over05',
   'over15',
@@ -58,7 +59,8 @@ export function buildMarkets(
   now = Date.now(),
   minimumRate = 100,
 ): MarketsReport {
-  if (![80, 90, 100].includes(minimumRate)) throw new Error('Ongeldige historische drempel');
+  if (!comboRates.some((rate) => rate === minimumRate))
+    throw new Error('Ongeldige historische drempel');
   if (![5, 10, 20].includes(window)) throw new Error('Ongeldig analysevenster');
   const fixtures: MarketsReport['fixtures'] = [],
     selections: PerfectSelection[] = [];
@@ -104,8 +106,19 @@ export function suggestCombinations(
   bookmaker: string,
   now = Date.now(),
   maxLegs = 6,
-  options: { limit?: number; diverse?: boolean } = {},
+  options: { limit?: number; diverse?: boolean; minOdd?: number; maxOdd?: number } = {},
 ): Combination[] {
+  const minOdd = options.minOdd ?? 2,
+    maxOdd = options.maxOdd ?? 3;
+  if (
+    !Number.isFinite(minOdd) ||
+    !Number.isFinite(maxOdd) ||
+    minOdd < 2 ||
+    maxOdd > 20 ||
+    minOdd > maxOdd
+  )
+    return [];
+  const target = (minOdd + maxOdd) / 2;
   const legs: ComboLeg[] = selections.flatMap((selection) => {
     if (Date.parse(selection.fixture.kickoff) <= now) return [];
     const quote = selection.quotes
@@ -114,7 +127,7 @@ export function suggestCombinations(
           q.bookmaker === bookmaker &&
           Number.isFinite(q.decimal) &&
           q.decimal >= 1.1 &&
-          q.decimal <= 3,
+          q.decimal <= maxOdd,
       )
       .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
     return quote ? [{ selection, quote }] : [];
@@ -123,7 +136,7 @@ export function suggestCombinations(
   let visits = 0;
   function visit(start: number, picked: ComboLeg[], decimal: number) {
     if (++visits > 50000) return;
-    if (picked.length >= 2 && decimal >= 2 && decimal <= 3) {
+    if (picked.length >= 2 && decimal >= minOdd && decimal <= maxOdd) {
       found.push({ bookmaker, legs: picked, decimal });
       return;
     }
@@ -133,7 +146,7 @@ export function suggestCombinations(
         next = decimal * leg.quote.decimal;
       const fixture = leg.selection.fixture;
       if (
-        next > 3 ||
+        next > maxOdd ||
         picked.some(
           ({ selection: { fixture: other } }) =>
             other.id === fixture.id ||
@@ -149,7 +162,7 @@ export function suggestCombinations(
   visit(0, [], 1);
   const ranked = found.sort(
     (a, b) =>
-      Math.abs(a.decimal - 2.5) - Math.abs(b.decimal - 2.5) || a.legs.length - b.legs.length,
+      Math.abs(a.decimal - target) - Math.abs(b.decimal - target) || a.legs.length - b.legs.length,
   );
   const limit = Math.max(1, Math.min(12, options.limit ?? 3));
   if (!options.diverse) return ranked.slice(0, limit);
@@ -170,7 +183,7 @@ export function suggestCombinations(
         markets.size / combo.legs.length -
         repetition * 2 -
         marketRepetition * 0.5 -
-        Math.abs(combo.decimal - 2.5) * 0.1;
+        Math.abs(combo.decimal - target) * 0.1;
       if (score > bestScore) {
         best = combo;
         bestScore = score;

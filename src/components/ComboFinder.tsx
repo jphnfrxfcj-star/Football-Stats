@@ -2,7 +2,7 @@ import { saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { api, isDemo } from '../api';
-import { suggestCombinations, type MarketsReport } from '../analysis/combinations';
+import { suggestCombinations, comboRates, type MarketsReport } from '../analysis/combinations';
 import { SectionTitle, Loading } from './ui';
 export default function ComboFinder({
   date,
@@ -15,6 +15,16 @@ export default function ComboFinder({
   date: string;
   navigate: (path: string) => void;
 }) {
+  const [minimumOdd, setMinimumOdd] = useState('2');
+  const [maximumOdd, setMaximumOdd] = useState('3');
+  const minOdd = compact ? Number(minimumOdd) : 2,
+    maxOdd = compact ? Number(maximumOdd) : 3;
+  const validTarget =
+    Number.isFinite(minOdd) &&
+    Number.isFinite(maxOdd) &&
+    minOdd >= 2 &&
+    maxOdd <= 20 &&
+    minOdd <= maxOdd;
   const [diverse, setDiverse] = useState(compact);
   const Evidence = compact ? 'details' : 'div';
   const [started, setStarted] = useState(false);
@@ -56,8 +66,10 @@ export default function ComboFinder({
       suggestCombinations(report?.selections ?? [], book, cutoff, 8, {
         limit: compact ? 9 : 3,
         diverse,
+        minOdd,
+        maxOdd,
       }),
-    [report, book, cutoff, compact, diverse],
+    [report, book, cutoff, compact, diverse, minOdd, maxOdd],
   );
   useEffect(() => {
     if (isDemo) return;
@@ -78,7 +90,7 @@ export default function ComboFinder({
               q.bookmaker === book &&
               Number.isFinite(q.decimal) &&
               q.decimal >= 1.1 &&
-              q.decimal <= 3,
+              q.decimal <= maxOdd,
           ),
         )
         .map((s) => s.fixture.id),
@@ -88,12 +100,16 @@ export default function ComboFinder({
   return (
     <section
       className={`combo-finder${compact ? ' combo-finder-compact' : ''}`}
-      aria-label="Combi x2 tot x3"
+      aria-label={compact ? 'Combivoorstellen zoeken' : 'Combi x2 tot x3'}
     >
       <SectionTitle
         eyebrow="VERSCHILLENDE WEDSTRIJDEN · ÉÉN BOOKMAKER"
-        title="Combi x2–x3"
-        aside={<span className="combo-target">Doelodd 2.00–3.00</span>}
+        title={compact ? 'Stel je combi samen' : 'Combi x2–x3'}
+        aside={
+          <span className="combo-target">
+            Doelodd {validTarget ? `${minOdd.toFixed(2)}–${maxOdd.toFixed(2)}` : 'instellen'}
+          </span>
+        }
       />
       <p className="section-intro">
         Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League,
@@ -108,7 +124,48 @@ export default function ComboFinder({
           geen hogere winstkans.
         </p>
       )}
+      {compact && (
+        <p className="spotlight-note">
+          Je kunt doelodds tussen 2 en 20 kiezen en de historische drempel verlagen tot 50%. Dit
+          percentage geldt per selectie en per team; het is niet de slaagkans van je volledige
+          combi.
+        </p>
+      )}
+      {!validTarget && (
+        <p role="alert">
+          Kies een minimum en maximum tussen 2 en 20. Het maximum moet minstens gelijk zijn aan het
+          minimum.
+        </p>
+      )}
       <div className="market-controls">
+        {compact && (
+          <>
+            <label>
+              Minimale doelodd{' '}
+              <input
+                aria-label="Minimale doelodd"
+                type="number"
+                min="2"
+                max="20"
+                step="0.1"
+                value={minimumOdd}
+                onChange={(e) => setMinimumOdd(e.target.value)}
+              />
+            </label>
+            <label>
+              Maximale doelodd{' '}
+              <input
+                aria-label="Maximale doelodd"
+                type="number"
+                min="2"
+                max="20"
+                step="0.1"
+                value={maximumOdd}
+                onChange={(e) => setMaximumOdd(e.target.value)}
+              />
+            </label>
+          </>
+        )}
         {compact && (
           <label>
             Rangschikking{' '}
@@ -118,7 +175,7 @@ export default function ComboFinder({
               onChange={(e) => setDiverse(e.target.value === 'variety')}
             >
               <option value="variety">Meer variatie</option>
-              <option value="target">Dichtst bij 2,50</option>
+              <option value="target">Dichtst bij het midden</option>
             </select>
           </label>
         )}
@@ -161,7 +218,7 @@ export default function ComboFinder({
               setMinimumRate(Number(e.target.value));
             }}
           >
-            {[100, 90, 80].map((n) => (
+            {(compact ? [...comboRates].reverse() : [100, 90, 80]).map((n) => (
               <option key={n} value={n}>
                 {n}% per team
               </option>
@@ -170,6 +227,7 @@ export default function ComboFinder({
         </label>
         <button
           className="secondary-button"
+          disabled={!validTarget}
           onClick={() => {
             setStarted(true);
             setAttempt(attempt + 1);
@@ -299,7 +357,7 @@ export default function ComboFinder({
               <p>
                 {priced < 2
                   ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
-                  : 'De beschikbare prijzen leveren met maximaal acht wedstrijden zonder terugkerende ploegen geen totaal tussen 2 en 3 op.'}{' '}
+                  : `Geen voorstel gevonden binnen ${minOdd.toFixed(2)}–${maxOdd.toFixed(2)} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.`}{' '}
                 Probeer een andere bookmaker of startdatum. Met de ingestelde {minimumRate}%-eis
                 verzinnen we geen prijzen.
               </p>

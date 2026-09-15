@@ -266,3 +266,45 @@ it('offers market variation within the same odds and team constraints', () => {
     [],
   );
 });
+
+it('finds higher target odds without changing the homepage defaults and archives them', async () => {
+  const { saveProposal, readHistory } = await import('../src/domain/combo-history');
+  const selections = buildMarkets(data, odds, 5, now)
+    .selections.filter((s) => s.market === 'over25')
+    .map((s) => ({ ...s, quotes: s.quotes.map((q) => ({ ...q, decimal: 2.5 })) }));
+  expect(suggestCombinations(selections, 'A', now)).toHaveLength(0);
+  const combos = suggestCombinations(selections, 'A', now, 8, {
+    minOdd: 5,
+    maxOdd: 7,
+    limit: 9,
+    diverse: true,
+  });
+  expect(combos.length).toBeGreaterThan(0);
+  expect(combos.every((c) => c.decimal === 6.25)).toBe(true);
+  const saved = saveProposal(combos[0], 5, 60, now);
+  expect(saved).not.toBeNull();
+  expect(readHistory(JSON.stringify({ version: 1, combos: [saved] }))[0].minimumRate).toBe(60);
+  for (const [minOdd, maxOdd] of [
+    [1, 3],
+    [5, 4],
+    [2, 21],
+    [NaN, 3],
+  ])
+    expect(suggestCombinations(selections, 'A', now, 8, { minOdd, maxOdd })).toHaveLength(0);
+});
+it('applies lower historical thresholds only when explicitly selected', () => {
+  const d = structuredClone(data[0]);
+  for (const side of ['homeHistory', 'awayHistory'] as const)
+    for (const i of [0, 1]) {
+      d[side][i].homeGoals = 0;
+      d[side][i].awayGoals = 0;
+    }
+  expect(buildMarkets([d], odds, 5, now, 60).selections.some((s) => s.market === 'over25')).toBe(
+    true,
+  );
+  expect(buildMarkets([d], odds, 5, now, 70).selections.some((s) => s.market === 'over25')).toBe(
+    false,
+  );
+  expect(buildMarkets([d], odds, 5, now).selections.some((s) => s.market === 'over25')).toBe(false);
+  expect(() => buildMarkets([d], odds, 5, now, 40)).toThrow();
+});

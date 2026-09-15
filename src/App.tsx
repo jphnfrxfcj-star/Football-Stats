@@ -17,6 +17,7 @@ import Dashboard from './components/Dashboard';
 import { analysisWeights as w } from './analysis/config';
 import MatchPage from './components/MatchPage';
 const CombinationsPage = lazy(() => import('./components/CombinationsPage'));
+const MatchPicker = lazy(() => import('./components/MatchPicker'));
 function Modal({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -115,9 +116,9 @@ export default function App() {
             Wedstrijden<span className="nav-count">01</span>
           </button>
           <button
-            className={matchId ? 'nav-item active' : 'nav-item'}
+            className={matchId || route === '/analyse' ? 'nav-item active' : 'nav-item'}
             onClick={() =>
-              matchId ? window.scrollTo({ top: 0, behavior: 'smooth' }) : setMethod(true)
+              matchId ? window.scrollTo({ top: 0, behavior: 'smooth' }) : navigate('/analyse')
             }
           >
             <BarChart3 size={19} />
@@ -178,7 +179,11 @@ export default function App() {
           <div className="breadcrumb">
             Workspace <ChevronRight size={14} />
             <strong>
-              {matchId ? 'Matchanalyse' : route === '/combis' ? 'Combivoorstellen' : 'Wedstrijden'}
+              {matchId || route === '/analyse'
+                ? 'Matchanalyse'
+                : route === '/combis'
+                  ? 'Combivoorstellen'
+                  : 'Wedstrijden'}
             </strong>
           </div>
           <div className="topbar-right">
@@ -199,6 +204,10 @@ export default function App() {
         <main>
           {matchId ? (
             <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
+          ) : route === '/analyse' ? (
+            <Suspense fallback={<p role="status">Pagina laden…</p>}>
+              <MatchPicker navigate={navigate} />
+            </Suspense>
           ) : route === '/combis' ? (
             <Suspense fallback={<p role="status">Pagina laden…</p>}>
               <CombinationsPage navigate={navigate} />

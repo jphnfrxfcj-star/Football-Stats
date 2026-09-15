@@ -1892,9 +1892,6 @@ td {
     width: 18px;
     height: 18px;
   }
-  .nav-item:nth-child(2) {
-    display: none;
-  }
   .app-shell {
     display: block;
   }
@@ -3282,4 +3279,34 @@ td {
   .compact-combo-legs span {
     flex-wrap: wrap;
   }
+}
+
+.match-picker-list {
+  display: grid;
+  gap: 10px;
+}
+.match-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 16px;
+  background: white;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.match-picker-row > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.match-picker-row small {
+  display: block;
+  margin-top: 5px;
+  color: #68796e;
+}
+.match-picker-row > span:last-child {
+  font-size: 12px;
 }

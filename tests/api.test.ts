@@ -154,3 +154,25 @@ it('returns batched results and limits invalid or oversized requests', async () 
     ).toBe(400);
   }
 });
+
+it('accepts explicitly lower combination history thresholds but rejects unsupported ones', async () => {
+  for (const rate of [50, 60, 70])
+    expect(
+      (
+        await handler(
+          new Request(
+            `http://localhost/api/markets?date=2026-09-12&window=5&days=8&minimumRate=${rate}`,
+          ),
+          context,
+        )
+      ).status,
+    ).toBe(200);
+  expect(
+    (
+      await handler(
+        new Request('http://localhost/api/markets?date=2026-09-12&minimumRate=40'),
+        context,
+      )
+    ).status,
+  ).toBe(400);
+});

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { occurrence } from '../analysis/engine';
-import { comboMarkets, type Combination } from '../analysis/combinations';
+import { comboMarkets, comboRates, type Combination } from '../analysis/combinations';
 import type { Fixture } from './models';
 const legSchema = z.object({
   fixtureId: z.string(),
@@ -20,7 +20,7 @@ const legSchema = z.object({
     'firstHalf05',
     'firstHalf15',
   ]),
-  decimal: z.number().finite().min(1.1).max(3),
+  decimal: z.number().finite().min(1.1).max(20),
   homeHits: z.number().int().nonnegative(),
   awayHits: z.number().int().nonnegative(),
   quoteUpdatedAt: z.string().nullable(),
@@ -31,7 +31,7 @@ export const savedComboSchema = z
     savedAt: z.string().datetime(),
     bookmaker: z.string(),
     window: z.union([z.literal(5), z.literal(10), z.literal(20)]),
-    minimumRate: z.union([z.literal(80), z.literal(90), z.literal(100)]),
+    minimumRate: z.number().refine((n) => comboRates.some((rate) => rate === n)),
     legs: z.array(legSchema).min(2).max(8),
   })
   .refine(
@@ -107,7 +107,7 @@ export function saveProposal(
   )
     return null;
   const decimal = parsed.data.legs.reduce((n, l) => n * l.decimal, 1);
-  return decimal >= 2 && decimal <= 3 ? parsed.data : null;
+  return decimal >= 2 && decimal <= 20 ? parsed.data : null;
 }
 export function evaluateProposal(combo: SavedCombo, results: Map<string, ComboResult>) {
   const legs = combo.legs.map((leg) => {
