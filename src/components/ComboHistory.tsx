@@ -1,3 +1,4 @@
+import { tr, t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { marketLabels } from '../analysis/engine';
@@ -59,26 +60,33 @@ export default function ComboHistory({
     );
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'matchday-combihistoriek.json';
+    a.download =
+      locale() === 'en-GB' ? 'matchday-combination-history.json' : 'matchday-combihistoriek.json';
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   return (
-    <section className="combo-history" id="combo-history" aria-label="Combihistoriek">
+    <section className="combo-history" id="combo-history" aria-label={t('Combihistoriek')}>
       <details open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
         <summary>
-          Combihistoriek <span>({combos.length} bewaard)</span>
+          {t('Combihistoriek ')}
+          <span>
+            {'('}
+            {t(combos.length)}
+            {t(' bewaard)')}
+          </span>
         </summary>
         <p className="section-intro">
-          Getoonde voorstellen worden vóór de aftrap automatisch bewaard in deze browser op dit
-          toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van
-          wedstrijdresultaten, geen afrekening door de bookmaker.
+          {t(
+            'Getoonde voorstellen worden vóór de aftrap automatisch bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.',
+          )}
         </p>
-        {error && <p role="alert">{error}</p>}
+        {error && <p role="alert">{t(error)}</p>}
         {!combos.length ? (
           <p>
-            Nog geen voorstellen bewaard. Eerdere voorstellen kunnen we niet achteraf reconstrueren.
-            Demovoorstellen worden niet opgeslagen.
+            {t(
+              'Nog geen voorstellen bewaard. Eerdere voorstellen kunnen we niet achteraf reconstrueren. Demovoorstellen worden niet opgeslagen.',
+            )}
           </p>
         ) : (
           <>
@@ -88,17 +96,23 @@ export default function ComboHistory({
                 disabled={loading}
                 onClick={() => setAttempt((n) => n + 1)}
               >
-                {loading ? 'Uitslagen laden…' : 'Uitslagen verversen'}
+                {t(loading ? 'Uitslagen laden…' : 'Uitslagen verversen')}
               </button>
               <button className="secondary-button" onClick={download}>
-                Historiek exporteren
+                {t('Historiek exporteren')}
               </button>
             </div>
-            {failure && <p role="alert">{failure} Eerder geladen uitslagen blijven zichtbaar.</p>}
+            {failure && (
+              <p role="alert">
+                {t(failure)}
+                {t(' Eerder geladen uitslagen blijven zichtbaar.')}
+              </p>
+            )}
             {checked && (
               <p className="spotlight-note">
-                Laatst gecontroleerd: {new Date(checked).toLocaleString('nl-BE')}. Nieuwe uitslagen
-                verschijnen na de gegevensupdate.
+                {t('Laatst gecontroleerd: ')}
+                {t(new Date(checked).toLocaleString(locale()))}
+                {t('. Nieuwe uitslagen verschijnen na de gegevensupdate.')}
               </p>
             )}
             <div className="combo-grid">
@@ -107,14 +121,23 @@ export default function ComboHistory({
                 return (
                   <article className="combo-card" key={combo.id}>
                     <div className="combo-heading">
-                      <strong>{historyLabels[evaluated.status]}</strong>
-                      <span className="combo-total">×{evaluated.decimal.toFixed(2)}</span>
+                      <strong>{t(historyLabels[evaluated.status])}</strong>
+                      <span className="combo-total">
+                        {t('×')}
+                        {t(evaluated.decimal.toFixed(2))}
+                      </span>
                     </div>
                     <p>
-                      {combo.bookmaker} · bewaard {new Date(combo.savedAt).toLocaleString('nl-BE')}
+                      {t(combo.bookmaker)}
+                      {t(' · bewaard ')}
+                      {t(new Date(combo.savedAt).toLocaleString(locale()))}
                     </p>
                     <small>
-                      Minstens {combo.minimumRate}% in de laatste {combo.window} duels per team
+                      {t('Minstens ')}
+                      {t(combo.minimumRate)}
+                      {t('% in de laatste ')}
+                      {t(combo.window)}
+                      {t(' duels per team')}
                     </small>
                     <ol>
                       {evaluated.legs.map(({ leg, result, status }) => (
@@ -123,27 +146,44 @@ export default function ComboHistory({
                             className="text-button"
                             onClick={() => navigate(`/match/${leg.fixtureId}`)}
                           >
-                            {leg.home} – {leg.away}
+                            {t(leg.home)}
+                            {' – '}
+                            {t(leg.away)}
                           </button>
-                          <small>{new Date(leg.kickoff).toLocaleString('nl-BE')}</small>
+                          <small>{t(new Date(leg.kickoff).toLocaleString(locale()))}</small>
                           <div>
-                            <strong>{marketLabels[leg.market]}</strong>
-                            <strong>{leg.decimal.toFixed(2)}</strong>
+                            <strong>{t(marketLabels[leg.market])}</strong>
+                            <strong>{t(leg.decimal.toFixed(2))}</strong>
                           </div>
                           <small>
-                            Historie: {leg.homeHits}/{combo.window} thuisploeg · {leg.awayHits}/
-                            {combo.window} uitploeg
+                            {t('Historie: ')}
+                            {t(leg.homeHits)}
+                            {'/'}
+                            {t(combo.window)}
+                            {t(' thuisploeg · ')}
+                            {t(leg.awayHits)}
+                            {'/'}
+                            {t(combo.window)}
+                            {t(' uitploeg')}
                           </small>
                           <small>
-                            {historyLabels[status]}
-                            {result?.status === 'finished' &&
-                              ` · Uitslag ${result.homeGoals ?? '–'}–${result.awayGoals ?? '–'}${leg.market.startsWith('firstHalf') ? ` (rust ${result.halfHomeGoals ?? '–'}–${result.halfAwayGoals ?? '–'})` : ''}`}
+                            {t(historyLabels[status])}
+                            {t(
+                              result?.status === 'finished' &&
+                                tr(' · Uitslag {0}–{1}{2}', [
+                                  result.homeGoals ?? '–',
+                                  result.awayGoals ?? '–',
+                                  leg.market.startsWith('firstHalf')
+                                    ? ` (rust ${result.halfHomeGoals ?? '–'}–${result.halfAwayGoals ?? '–'})`
+                                    : '',
+                                ]),
+                            )}
                           </small>
                         </li>
                       ))}
                     </ol>
                     <button className="text-button" onClick={() => remove(combo.id)}>
-                      Verwijderen uit historiek
+                      {t('Verwijderen uit historiek')}
                     </button>
                   </article>
                 );
@@ -152,7 +192,7 @@ export default function ComboHistory({
           </>
         )}
       </details>
-      {!open && error && <p role="alert">{error}</p>}
+      {!open && error && <p role="alert">{t(error)}</p>}
     </section>
   );
 }

@@ -1,3 +1,4 @@
+import { tr, t, locale } from '../i18n';
 import { useState } from 'react';
 import { clubLogo } from '../domain/club-assets';
 import { ShieldCheck, Info } from 'lucide-react';
@@ -6,10 +7,10 @@ import type { Frequency } from '../analysis/engine';
 export const pct = (n: number | null) => (n === null ? '—' : `${Math.round(n)}%`);
 export const num = (n: number | null, decimals = 1) => (n === null ? '—' : n.toFixed(decimals));
 export const time = (date: string) =>
-  new Date(date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
+  new Date(date).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 export const dateLabel = (date: string, short = false) =>
   new Date(`${date.slice(0, 10)}T12:00:00`).toLocaleDateString(
-    'nl-BE',
+    locale(),
     short ? { day: 'numeric', month: 'short' } : { weekday: 'long', day: 'numeric', month: 'long' },
   );
 export function Badge({
@@ -29,7 +30,7 @@ export function Badge({
       {logo && failedLogo !== logo ? (
         <img
           src={logo}
-          alt=""
+          alt={''}
           decoding="async"
           width={size === 'large' ? 50 : size === 'small' ? 23 : 30}
           height={size === 'large' ? 50 : size === 'small' ? 23 : 30}
@@ -38,7 +39,7 @@ export function Badge({
       ) : (
         <ShieldCheck size={size === 'large' ? 36 : 21} />
       )}
-      <span>{team.shortName}</span>
+      <span>{t(team.shortName)}</span>
     </span>
   );
 }
@@ -52,9 +53,9 @@ export function Form({ results }: { results: string[] }) {
           <span
             key={i}
             className={`form-result ${r}`}
-            title={r === 'W' ? 'Winst' : r === 'D' ? 'Gelijk' : 'Verlies'}
+            title={t(r === 'W' ? 'Winst' : r === 'D' ? 'Gelijk' : 'Verlies')}
           >
-            {r}
+            {t(r)}
           </span>
         ))}
     </span>
@@ -72,18 +73,20 @@ export function SectionTitle({
   return (
     <div className="section-title">
       <div>
-        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-        <h2>{title}</h2>
+        {eyebrow && <div className="eyebrow">{t(eyebrow)}</div>}
+        <h2>{t(title)}</h2>
       </div>
-      {aside}
+      {t(aside)}
     </div>
   );
 }
 export function FrequencyCell({ value }: { value: Frequency }) {
   return (
     <div className="frequency-cell">
-      <span>{pct(value.percentage)}</span>
-      <small>{value.total ? `${value.successes}/${value.total} duels` : 'Onvoldoende data'}</small>
+      <span>{t(pct(value.percentage))}</span>
+      <small>
+        {t(value.total ? tr('{0}/{1} duels', [value.successes, value.total]) : 'Onvoldoende data')}
+      </small>
       <div className="tiny-track">
         <i style={{ width: `${value.percentage ?? 0}%` }} />
       </div>
@@ -94,7 +97,7 @@ export function Loading() {
   return (
     <div className="loading" role="status">
       <span className="spinner" />
-      Wedstrijdgegevens laden…
+      {t('Wedstrijdgegevens laden…')}
     </div>
   );
 }
@@ -102,10 +105,10 @@ export function ErrorBox({ message, retry }: { message: string; retry: () => voi
   return (
     <div className="empty-state" role="alert">
       <Info size={25} />
-      <h3>Gegevens niet beschikbaar</h3>
-      <p>{message}</p>
+      <h3>{t('Gegevens niet beschikbaar')}</h3>
+      <p>{t(message)}</p>
       <button className="secondary-button" onClick={retry}>
-        Opnieuw proberen
+        {t('Opnieuw proberen')}
       </button>
     </div>
   );

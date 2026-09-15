@@ -1,3 +1,4 @@
+import { tr, t, locale } from '../i18n';
 import { saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
@@ -100,50 +101,59 @@ export default function ComboFinder({
   return (
     <section
       className={`combo-finder${compact ? ' combo-finder-compact' : ''}`}
-      aria-label={compact ? 'Combivoorstellen zoeken' : 'Combi x2 tot x3'}
+      aria-label={t(compact ? 'Combivoorstellen zoeken' : 'Combi x2 tot x3')}
     >
       <SectionTitle
-        eyebrow="VERSCHILLENDE WEDSTRIJDEN · ÉÉN BOOKMAKER"
-        title={compact ? 'Stel je combi samen' : 'Combi x2–x3'}
+        eyebrow={t('VERSCHILLENDE WEDSTRIJDEN · ÉÉN BOOKMAKER')}
+        title={t(compact ? 'Stel je combi samen' : 'Combi x2–x3')}
         aside={
           <span className="combo-target">
-            Doelodd {validTarget ? `${minOdd.toFixed(2)}–${maxOdd.toFixed(2)}` : 'instellen'}
+            {t('Doelodd ')}
+            {t(validTarget ? `${minOdd.toFixed(2)}–${maxOdd.toFixed(2)}` : 'instellen')}
           </span>
         }
       />
       <p className="section-intro">
-        Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League,
-        La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere
-        selectie kwam voor in minstens {minimumRate}% van de laatste {window} competitieduels van
-        elk team. Elke selectie heeft een odd van minimaal 1,10.
+        {t('Van ')}
+        {t(date)}
+        {t(' t/m ')}
+        {t(end)}
+        {t(
+          '. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens ',
+        )}
+        {t(minimumRate)}
+        {t('% van de laatste ')}
+        {t(window)}
+        {t(' competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.')}
       </p>
       {compact && (
         <p className="spotlight-note">
-          Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder
-          herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is
-          geen hogere winstkans.
+          {t(
+            'Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is geen hogere winstkans.',
+          )}
         </p>
       )}
       {compact && (
         <p className="spotlight-note">
-          Je kunt doelodds tussen 2 en 20 kiezen en de historische drempel verlagen tot 50%. Dit
-          percentage geldt per selectie en per team; het is niet de slaagkans van je volledige
-          combi.
+          {t(
+            'Je kunt doelodds tussen 2 en 20 kiezen en de historische drempel verlagen tot 50%. Dit percentage geldt per selectie en per team; het is niet de slaagkans van je volledige combi.',
+          )}
         </p>
       )}
       {!validTarget && (
         <p role="alert">
-          Kies een minimum en maximum tussen 2 en 20. Het maximum moet minstens gelijk zijn aan het
-          minimum.
+          {t(
+            'Kies een minimum en maximum tussen 2 en 20. Het maximum moet minstens gelijk zijn aan het minimum.',
+          )}
         </p>
       )}
       <div className="market-controls">
         {compact && (
           <>
             <label>
-              Minimale doelodd{' '}
+              {t('Minimale doelodd')}{' '}
               <input
-                aria-label="Minimale doelodd"
+                aria-label={t('Minimale doelodd')}
                 type="number"
                 min="2"
                 max="20"
@@ -153,9 +163,9 @@ export default function ComboFinder({
               />
             </label>
             <label>
-              Maximale doelodd{' '}
+              {t('Maximale doelodd')}{' '}
               <input
-                aria-label="Maximale doelodd"
+                aria-label={t('Maximale doelodd')}
                 type="number"
                 min="2"
                 max="20"
@@ -168,33 +178,35 @@ export default function ComboFinder({
         )}
         {compact && (
           <label>
-            Rangschikking{' '}
+            {t('Rangschikking')}{' '}
             <select
-              aria-label="Combi rangschikking"
+              aria-label={t('Combi rangschikking')}
               value={diverse ? 'variety' : 'target'}
               onChange={(e) => setDiverse(e.target.value === 'variety')}
             >
-              <option value="variety">Meer variatie</option>
-              <option value="target">Dichtst bij het midden</option>
+              <option value="variety">{t('Meer variatie')}</option>
+              <option value="target">{t('Dichtst bij het midden')}</option>
             </select>
           </label>
         )}
         <label>
-          Bookmaker{' '}
+          {t('Bookmaker')}{' '}
           <select
-            aria-label="Combiboekmaker"
+            aria-label={t('Combiboekmaker')}
             value={book}
             onChange={(e) => setBook(e.target.value)}
           >
             {books.map((b) => (
-              <option key={b}>{b}</option>
+              <option key={b} value={b}>
+                {t(b)}
+              </option>
             ))}
           </select>
         </label>
         <label>
-          Historische reeks{' '}
+          {t('Historische reeks')}{' '}
           <select
-            aria-label="Combi historie"
+            aria-label={t('Combi historie')}
             value={window}
             onChange={(e) => {
               setReport(null);
@@ -203,15 +215,17 @@ export default function ComboFinder({
           >
             {[5, 10, 20].map((n) => (
               <option value={n} key={n}>
-                Laatste {n} duels
+                {t('Laatste ')}
+                {t(n)}
+                {t(' duels')}
               </option>
             ))}
           </select>
         </label>
         <label>
-          Minimale historische frequentie{' '}
+          {t('Minimale historische frequentie')}{' '}
           <select
-            aria-label="Combi minimumfrequentie"
+            aria-label={t('Combi minimumfrequentie')}
             value={minimumRate}
             onChange={(e) => {
               setReport(null);
@@ -220,7 +234,8 @@ export default function ComboFinder({
           >
             {(compact ? [...comboRates].reverse() : [100, 90, 80]).map((n) => (
               <option key={n} value={n}>
-                {n}% per team
+                {t(n)}
+                {t('% per team')}
               </option>
             ))}
           </select>
@@ -233,23 +248,35 @@ export default function ComboFinder({
             setAttempt(attempt + 1);
           }}
         >
-          {started ? 'Combi zoeken / verversen' : 'Doe een voorstel'}
+          {t(started ? 'Combi zoeken / verversen' : 'Doe een voorstel')}
         </button>
       </div>
       {!started ? (
         <p className="spotlight-note">
-          Kies je voorkeuren en klik op ‘Doe een voorstel’. De combianalyse wordt pas dan geladen.
+          {t(
+            'Kies je voorkeuren en klik op ‘Doe een voorstel’. De combianalyse wordt pas dan geladen.',
+          )}
         </p>
       ) : error ? (
-        <p role="alert">{error} Probeer opnieuw met ‘Combi zoeken / verversen’.</p>
+        <p role="alert">
+          {t(error)}
+          {t(' Probeer opnieuw met ‘Combi zoeken / verversen’.')}
+        </p>
       ) : !report ? (
         <Loading />
       ) : (
         <>
           <p className="spotlight-note">
-            {report.fixtures.filter((f) => Date.parse(f.fixture.kickoff) > cutoff).length} komende
-            wedstrijden onderzocht · {eligible.length} selecties met minstens {minimumRate}%
-            historie · {priced} wedstrijden met passende prijzen bij {book}.
+            {t(report.fixtures.filter((f) => Date.parse(f.fixture.kickoff) > cutoff).length)}
+            {t(' komende wedstrijden onderzocht · ')}
+            {t(eligible.length)}
+            {t(' selecties met minstens ')}
+            {t(minimumRate)}
+            {t('% historie · ')}
+            {t(priced)}
+            {t(' wedstrijden met passende prijzen bij ')}
+            {t(book)}
+            {'.'}
           </p>
           {combos.length ? (
             <div className="combo-grid">
@@ -257,14 +284,21 @@ export default function ComboFinder({
                 <article className="combo-card" key={i}>
                   <div className="combo-heading">
                     <strong>
-                      Combi {i + 1} · {combo.legs.length} wedstrijden
+                      {t('Combi ')}
+                      {t(i + 1)}
+                      {' · '}
+                      {t(combo.legs.length)}
+                      {t(' wedstrijden')}
                     </strong>
-                    <span className="combo-total">×{combo.decimal.toFixed(2)}</span>
+                    <span className="combo-total">
+                      {t('×')}
+                      {t(combo.decimal.toFixed(2))}
+                    </span>
                   </div>
                   <p>
-                    {combo.bookmaker} ·{' '}
-                    {combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × ')} ={' '}
-                    {combo.decimal.toFixed(2)}
+                    {t(combo.bookmaker)}
+                    {' ·'} {t(combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × '))}
+                    {' ='} {t(combo.decimal.toFixed(2))}
                   </p>
                   {compact && (
                     <ul className="compact-combo-legs">
@@ -274,18 +308,20 @@ export default function ComboFinder({
                             className="text-button"
                             onClick={() => navigate(`/match/${s.fixture.id}`)}
                           >
-                            {s.fixture.home.name} – {s.fixture.away.name}
+                            {t(s.fixture.home.name)}
+                            {' – '}
+                            {t(s.fixture.away.name)}
                           </button>
                           <span>
-                            {s.label} <b>{q.decimal.toFixed(2)}</b>
+                            {t(s.label)} <b>{t(q.decimal.toFixed(2))}</b>
                           </span>
-                          <small>{new Date(s.fixture.kickoff).toLocaleString('nl-BE')}</small>
+                          <small>{t(new Date(s.fixture.kickoff).toLocaleString(locale()))}</small>
                         </li>
                       ))}
                     </ul>
                   )}
                   <Evidence className="combo-evidence">
-                    {compact && <summary>Historie en onderbouwing</summary>}
+                    {compact && <summary>{t('Historie en onderbouwing')}</summary>}
                     <ol>
                       {combo.legs.map(({ selection: s, quote: q }) => (
                         <li key={s.id} className="finder-leg">
@@ -293,51 +329,68 @@ export default function ComboFinder({
                             className="text-button"
                             onClick={() => navigate(`/match/${s.fixture.id}`)}
                           >
-                            {s.fixture.home.name} – {s.fixture.away.name}
+                            {t(s.fixture.home.name)}
+                            {' – '}
+                            {t(s.fixture.away.name)}
                           </button>
                           <small>
-                            {new Date(s.fixture.kickoff).toLocaleString('nl-BE')} ·{' '}
-                            {s.fixture.league.name}
+                            {t(new Date(s.fixture.kickoff).toLocaleString(locale()))}
+                            {' ·'} {t(s.fixture.league.name)}
                           </small>
                           <div>
-                            <strong>{s.label}</strong>
-                            <strong>{q.decimal.toFixed(2)}</strong>
+                            <strong>{t(s.label)}</strong>
+                            <strong>{t(q.decimal.toFixed(2))}</strong>
                           </div>
                           <small>
-                            Historie:{' '}
-                            {
+                            {t('Historie:')}{' '}
+                            {t(
                               s.homeEvidence.filter(
                                 (f) => occurrence(f, s.fixture.home.id, s.market) === true,
-                              ).length
-                            }
-                            /{window} thuisploeg ·{' '}
-                            {
+                              ).length,
+                            )}
+                            {'/'}
+                            {t(window)}
+                            {t(' thuisploeg ·')}{' '}
+                            {t(
                               s.awayEvidence.filter(
                                 (f) => occurrence(f, s.fixture.away.id, s.market) === true,
-                              ).length
-                            }
-                            /{window} uitploeg · prijswijziging{' '}
-                            {q.updatedAt
-                              ? new Date(q.updatedAt).toLocaleString('nl-BE')
-                              : 'onbekend'}
+                              ).length,
+                            )}
+                            {'/'}
+                            {t(window)}
+                            {t(' uitploeg · prijswijziging')}{' '}
+                            {t(
+                              q.updatedAt
+                                ? new Date(q.updatedAt).toLocaleString(locale())
+                                : 'onbekend',
+                            )}
                           </small>
                           <details>
                             <summary>
-                              Bekijk de {window}+{window} onderliggende duels
+                              {t('Bekijk de ')}
+                              {t(window)}
+                              {'+'}
+                              {t(window)}
+                              {t(' onderliggende duels')}
                             </summary>
                             {[
                               { team: s.fixture.home, rows: s.homeEvidence },
                               { team: s.fixture.away, rows: s.awayEvidence },
                             ].map(({ team, rows }) => (
                               <div key={team.id}>
-                                <strong>{team.name}</strong>
+                                <strong>{t(team.name)}</strong>
                                 <ul>
                                   {rows.map((f) => (
                                     <li key={f.id}>
-                                      {f.kickoff.slice(0, 10)} · {f.home.name} {f.homeGoals}–
-                                      {f.awayGoals} {f.away.name}
-                                      {s.market.startsWith('firstHalf') &&
-                                        ` (rust ${f.halfHomeGoals}–${f.halfAwayGoals})`}
+                                      {t(f.kickoff.slice(0, 10))}
+                                      {' · '}
+                                      {t(f.home.name)} {t(f.homeGoals)}
+                                      {'–'}
+                                      {t(f.awayGoals)} {t(f.away.name)}
+                                      {t(
+                                        s.market.startsWith('firstHalf') &&
+                                          tr(' (rust {0}–{1})', [f.halfHomeGoals, f.halfAwayGoals]),
+                                      )}
                                     </li>
                                   ))}
                                 </ul>
@@ -353,13 +406,23 @@ export default function ComboFinder({
             </div>
           ) : (
             <div className="spotlight-placeholder">
-              <strong>Geen passende combi bij {book} in deze periode.</strong>
+              <strong>
+                {t('Geen passende combi bij ')}
+                {t(book)}
+                {t(' in deze periode.')}
+              </strong>
               <p>
-                {priced < 2
-                  ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
-                  : `Geen voorstel gevonden binnen ${minOdd.toFixed(2)}–${maxOdd.toFixed(2)} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.`}{' '}
-                Probeer een andere bookmaker of startdatum. Met de ingestelde {minimumRate}%-eis
-                verzinnen we geen prijzen.
+                {t(
+                  priced < 2
+                    ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
+                    : tr(
+                        'Geen voorstel gevonden binnen {0}–{1} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.',
+                        [minOdd.toFixed(2), maxOdd.toFixed(2)],
+                      ),
+                )}{' '}
+                {t('Probeer een andere bookmaker of startdatum. Met de ingestelde ')}
+                {t(minimumRate)}
+                {t('%-eis verzinnen we geen prijzen.')}
               </p>
               {minimumRate === 100 && (
                 <button
@@ -369,17 +432,19 @@ export default function ComboFinder({
                     setMinimumRate(80);
                   }}
                 >
-                  Zoek met minstens 80% historie
+                  {t('Zoek met minstens 80% historie')}
                 </button>
               )}
             </div>
           )}
           <p className="spotlight-note">
-            Bron: {report.odds.source} · opgehaald{' '}
-            {new Date(report.odds.fetchedAt).toLocaleString('nl-BE')}. Prijzen zijn indicatief;
-            controleer de actuele combiprijs bij de bookmaker. Historische frequentie is geen
-            voorspelde winstkans. Onderlinge duels kunnen in beide reeksen voorkomen.{' '}
-            {isDemo && 'Demo: fictieve historie, geen bookmakerprijzen.'}
+            {t('Bron: ')}
+            {t(report.odds.source)}
+            {t(' · opgehaald')} {t(new Date(report.odds.fetchedAt).toLocaleString(locale()))}
+            {t(
+              '. Prijzen zijn indicatief; controleer de actuele combiprijs bij de bookmaker. Historische frequentie is geen voorspelde winstkans. Onderlinge duels kunnen in beide reeksen voorkomen.',
+            )}{' '}
+            {t(isDemo && 'Demo: fictieve historie, geen bookmakerprijzen.')}
           </p>
         </>
       )}

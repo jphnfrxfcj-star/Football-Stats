@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { today } from '../demo/data';
@@ -31,18 +32,18 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
     `${f.home.name} ${f.away.name} ${f.league.name}`.toLowerCase().includes(query.toLowerCase()),
   );
   return (
-    <section aria-label="Wedstrijd kiezen voor analyse">
+    <section aria-label={t('Wedstrijd kiezen voor analyse')}>
       <div className="page-heading">
         <div>
-          <h1>Matchanalyse</h1>
-          <p>Kies een wedstrijd om statistieken, odds en onderbouwing te bekijken.</p>
+          <h1>{t('Matchanalyse')}</h1>
+          <p>{t('Kies een wedstrijd om statistieken, odds en onderbouwing te bekijken.')}</p>
         </div>
       </div>
       <div className="market-controls">
         <label>
-          Datum{' '}
+          {t('Datum')}{' '}
           <input
-            aria-label="Analysedatum"
+            aria-label={t('Analysedatum')}
             type="date"
             value={date}
             onChange={(e) => {
@@ -51,9 +52,9 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           />
         </label>
         <label>
-          Team of competitie{' '}
+          {t('Team of competitie')}{' '}
           <input
-            aria-label="Zoek wedstrijd voor analyse"
+            aria-label={t('Zoek wedstrijd voor analyse')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -63,9 +64,9 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
         <Loading />
       ) : error ? (
         <p role="alert">
-          {error}{' '}
+          {t(error)}{' '}
           <button className="text-button" onClick={() => setRetry((n) => n + 1)}>
-            Opnieuw proberen
+            {t('Opnieuw proberen')}
           </button>
         </p>
       ) : (
@@ -80,20 +81,26 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
                 <Badge team={f.home} />
                 <span>
                   <strong>
-                    {f.home.name} – {f.away.name}
+                    {t(f.home.name)}
+                    {' – '}
+                    {t(f.away.name)}
                   </strong>
                   <small>
-                    {f.league.name} · {time(f.kickoff)}
-                    {f.status === 'finished'
-                      ? ` · ${f.homeGoals ?? '–'}–${f.awayGoals ?? '–'}`
-                      : ''}
+                    {t(f.league.name)}
+                    {' · '}
+                    {t(time(f.kickoff))}
+                    {t(
+                      f.status === 'finished'
+                        ? ` · ${f.homeGoals ?? '–'}–${f.awayGoals ?? '–'}`
+                        : '',
+                    )}
                   </small>
                 </span>
-                <span>Analyse →</span>
+                <span>{t('Analyse →')}</span>
               </button>
             ))
           ) : (
-            <p>Geen wedstrijden gevonden voor deze datum en zoekopdracht.</p>
+            <p>{t('Geen wedstrijden gevonden voor deze datum en zoekopdracht.')}</p>
           )}
         </div>
       )}

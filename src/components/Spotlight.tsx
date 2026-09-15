@@ -1,3 +1,4 @@
+import { tr, t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { ArrowRight, Sparkles, Clock3 } from 'lucide-react';
 import { api, isDemo } from '../api';
@@ -46,32 +47,38 @@ export default function Spotlight({
         (league === 'all' || c.fixture.league.id === league),
     ) ?? [];
   return (
-    <section className="spotlight-section" aria-label="Spotlight">
+    <section className="spotlight-section" aria-label={t('Spotlight')}>
       <SectionTitle
-        eyebrow="UITGELICHT"
-        title="Spotlight"
-        aside={<span className="subtle">{dateLabel(date, true)} · vóór de aftrap</span>}
+        eyebrow={t('UITGELICHT')}
+        title={t('Spotlight')}
+        aside={
+          <span className="subtle">
+            {t(dateLabel(date, true))}
+            {t(' · vóór de aftrap')}
+          </span>
+        }
       />
       <p className="section-intro">
-        Modelkansen met voldoende historie. Actuele odds kunnen een mogelijk prijsvoordeel laten
-        zien.
+        {t(
+          'Modelkansen met voldoende historie. Actuele odds kunnen een mogelijk prijsvoordeel laten zien.',
+        )}
       </p>
       {!report && !error && (
         <div className="spotlight-placeholder" role="status">
-          <Sparkles size={18} /> Spotlight wordt berekend… De wedstrijdlijst kun je alvast
-          gebruiken.
+          <Sparkles size={18} />
+          {t(' Spotlight wordt berekend… De wedstrijdlijst kun je alvast gebruiken.')}
         </div>
       )}
       {error && (
         <div className="spotlight-placeholder">
-          Spotlight is tijdelijk niet beschikbaar.{' '}
+          {t('Spotlight is tijdelijk niet beschikbaar.')}{' '}
           <button className="text-button" onClick={() => setRetry(retry + 1)}>
-            Opnieuw proberen
+            {t('Opnieuw proberen')}
           </button>
         </div>
       )}
       <button className="text-button" disabled={loading} onClick={() => setRetry((n) => n + 1)}>
-        {loading ? 'Spotlight laden…' : 'Spotlight en odds opnieuw laden'}
+        {t(loading ? 'Spotlight laden…' : 'Spotlight en odds opnieuw laden')}
       </button>
       {report && (
         <>
@@ -87,58 +94,70 @@ export default function Spotlight({
                   <article className="spotlight-card" key={c.fixture.id}>
                     <div className="spotlight-top">
                       <span className={value ? 'value-tag' : 'small-tag'}>
-                        {value ? 'Mogelijke value' : 'Modelkans'}
+                        {t(value ? 'Mogelijke value' : 'Modelkans')}
                       </span>
                       <span className="subtle">
-                        {c.probability.sampleSize} duels · {c.probability.confidence.toLowerCase()}{' '}
-                        vertrouwen
+                        {t(c.probability.sampleSize)}
+                        {t(' duels · ')}
+                        {t(c.probability.confidence.toLowerCase())} {t('vertrouwen')}
                       </span>
                     </div>
                     <div className="spotlight-teams">
                       <Badge team={c.fixture.home} />
                       <span>
-                        {c.fixture.home.name}
-                        <small>tegen {c.fixture.away.name}</small>
+                        {t(c.fixture.home.name)}
+                        <small>
+                          {t('tegen ')}
+                          {t(c.fixture.away.name)}
+                        </small>
                       </span>
                       <Badge team={c.fixture.away} />
                     </div>
                     <div className="spotlight-pick">
-                      <h3>{c.probability.label}</h3>
-                      <strong>{pct(c.probability.value)}</strong>
+                      <h3>{t(c.probability.label)}</h3>
+                      <strong>{t(pct(c.probability.value))}</strong>
                     </div>
                     <div className="spotlight-prices">
                       <span>
-                        Modelquotering <b>{c.fairOdds.toFixed(2)}</b>
+                        {t('Modelquotering ')}
+                        <b>{t(c.fairOdds.toFixed(2))}</b>
                       </span>
                       <span>
-                        {c.quote?.bookmaker ?? 'Bookmakerodds'}{' '}
-                        <b>{c.quote?.decimal.toFixed(2) ?? '—'}</b>
+                        {t(c.quote?.bookmaker ?? 'Bookmakerodds')}{' '}
+                        <b>{t(c.quote?.decimal.toFixed(2) ?? '—')}</b>
                       </span>
                     </div>
                     {!c.quote && (
                       <p className="quote-age">
-                        Geen bookmakerprijs voor deze selectie beschikbaar.
+                        {t('Geen bookmakerprijs voor deze selectie beschikbaar.')}
                       </p>
                     )}
                     {c.quote && (
                       <p className="quote-age">
                         <Clock3 size={12} />
-                        {c.quote.updatedAt
-                          ? `Quotering ${new Date(c.quote.updatedAt).toLocaleString('nl-BE')}${fresh ? '' : ' · verouderd'}`
-                          : 'Momentopname · quoteringstijdstip onbekend'}
+                        {t(
+                          c.quote.updatedAt
+                            ? tr('Quotering {0}{1}', [
+                                new Date(c.quote.updatedAt).toLocaleString(locale()),
+                                fresh ? '' : ' · verouderd',
+                              ])
+                            : 'Momentopname · quoteringstijdstip onbekend',
+                        )}
                       </p>
                     )}
                     {value && (
                       <p className="value-explanation">
-                        Modelvoordeel +{c.edgePercent!.toFixed(1)}% · kans × odds − 1. Een
-                        modelsignaal, geen gegarandeerd rendement.
+                        {t('Modelvoordeel +')}
+                        {t(c.edgePercent!.toFixed(1))}
+                        {t('% · kans × odds − 1. Een modelsignaal, geen gegarandeerd rendement.')}
                       </p>
                     )}
                     <button
                       className="spotlight-link"
                       onClick={() => navigate(`/match/${c.fixture.id}`)}
                     >
-                      Bekijk onderbouwing <ArrowRight size={16} />
+                      {t('Bekijk onderbouwing ')}
+                      <ArrowRight size={16} />
                     </button>
                   </article>
                 );
@@ -146,14 +165,16 @@ export default function Spotlight({
             </div>
           ) : (
             <div className="spotlight-placeholder">
-              Geen geschikte wedstrijden: alleen komende duels met een bekende aftraptijd en
-              minstens 10 recente wedstrijden per team komen in aanmerking.
+              {t(
+                'Geen geschikte wedstrijden: alleen komende duels met een bekende aftraptijd en minstens 10 recente wedstrijden per team komen in aanmerking.',
+              )}
             </div>
           )}
           <p className="spotlight-note">
-            {report.message} {report.checked} wedstrijden gecontroleerd. Rangschikking: eerst
-            positief modelvoordeel met recente odds, daarna modelkansen met bookmakerodds en overige
-            modelkansen; maximaal één selectie per wedstrijd.
+            {t(report.message)} {t(report.checked)}
+            {t(
+              ' wedstrijden gecontroleerd. Rangschikking: eerst positief modelvoordeel met recente odds, daarna modelkansen met bookmakerodds en overige modelkansen; maximaal één selectie per wedstrijd.',
+            )}
           </p>
         </>
       )}

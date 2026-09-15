@@ -1,3 +1,4 @@
+import { tr, t, useLanguage, setLanguage } from './i18n';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   Activity,
@@ -28,14 +29,15 @@ function Modal({ onClose }: { onClose: () => void }) {
         className="modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="icon-button close" onClick={onClose} aria-label="Sluiten" autoFocus>
+        <button className="icon-button close" onClick={onClose} aria-label={t('Sluiten')} autoFocus>
           <X size={20} />
         </button>
-        <div className="eyebrow">TRANSPARANT VANAF DE AFTRAP</div>
-        <h2 id="model-title">De data achter de kansen.</h2>
+        <div className="eyebrow">{t('TRANSPARANT VANAF DE AFTRAP')}</div>
+        <h2 id="model-title">{t('De data achter de kansen.')}</h2>
         <p>
-          Matchday berekent zelf trends en modelkansen uit historische wedstrijden. We gebruiken
-          geen prediction-endpoints, odds of machine learning.
+          {t(
+            'Matchday berekent zelf trends en modelkansen uit historische wedstrijden. We gebruiken geen prediction-endpoints, odds of machine learning.',
+          )}
         </p>
         <div className="weight-list">
           {[
@@ -44,24 +46,25 @@ function Modal({ onClose }: { onClose: () => void }) {
             ['Wedstrijden 11–20', w.recent20.toFixed(2)],
             ['Relevante thuis/uitwedstrijd', `× ${w.homeAway.toFixed(2)}`],
             ['Recente H2H', w.h2hRecent.toFixed(2)],
-            [`H2H ouder dan ${w.oldH2HDays} dagen`, w.h2hOld.toFixed(2)],
+            [tr('H2H ouder dan {0} dagen', [w.oldH2HDays]), w.h2hOld.toFixed(2)],
           ].map(([k, v]) => (
             <div key={k}>
-              <span>{k}</span>
-              <strong>{v}</strong>
+              <span>{t(k)}</span>
+              <strong>{t(v)}</strong>
             </div>
           ))}
         </div>
         <p>
-          Gedeelde duels tellen één keer mee. Goalmarkten gebruiken gewogen frequenties met een
-          Beta(1,1)-prior. De 1/X/2-kansen komen uit een Poisson-model met gewogen goals voor en
-          tegen.
+          {t(
+            'Gedeelde duels tellen één keer mee. Goalmarkten gebruiken gewogen frequenties met een Beta(1,1)-prior. De 1/X/2-kansen komen uit een Poisson-model met gewogen goals voor en tegen.',
+          )}
         </p>
         <div className="notice">
           <Info size={18} />
           <span>
-            Deze kansen zijn ongekalibreerde modelinschattingen, geen zekerheid. De confidence
-            beschrijft de hoeveelheid data, niet bewezen voorspelkracht.
+            {t(
+              'Deze kansen zijn ongekalibreerde modelinschattingen, geen zekerheid. De confidence beschrijft de hoeveelheid data, niet bewezen voorspelkracht.',
+            )}
           </span>
         </div>
       </div>
@@ -69,6 +72,19 @@ function Modal({ onClose }: { onClose: () => void }) {
   );
 }
 export default function App() {
+  const language = useLanguage();
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.title = 'Matchday — Football Intelligence';
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute(
+        'content',
+        language === 'en'
+          ? 'Matchday — transparent football analysis based on historical match data.'
+          : 'Matchday — transparante voetbalanalyse op basis van historische wedstrijddata.',
+      );
+  }, [language]);
   const [route, setRoute] = useState(window.location.pathname);
   const [method, setMethod] = useState(false);
   useEffect(() => {
@@ -104,16 +120,18 @@ export default function App() {
           <span className="brand-mark">
             <Activity size={25} />
           </span>
-          matchday<span className="brand-dot">.</span>
+          {t('matchday')}
+          <span className="brand-dot">{'.'}</span>
         </a>
-        <div className="workspace-label">FOOTBALL INTELLIGENCE</div>
+        <div className="workspace-label">{t('FOOTBALL INTELLIGENCE')}</div>
         <nav>
           <button
             className={route === '/' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('/')}
           >
             <LayoutDashboard size={19} />
-            Wedstrijden<span className="nav-count">01</span>
+            {t('Wedstrijden')}
+            <span className="nav-count">{'01'}</span>
           </button>
           <button
             className={matchId || route === '/analyse' ? 'nav-item active' : 'nav-item'}
@@ -122,33 +140,33 @@ export default function App() {
             }
           >
             <BarChart3 size={19} />
-            Matchanalyse
+            {t('Matchanalyse')}
           </button>
           <button
             className={route === '/combis' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('/combis')}
           >
             <Layers3 size={19} />
-            Combivoorstellen
+            {t('Combivoorstellen')}
           </button>
           <button className="nav-item" onClick={() => setMethod(true)}>
             <Layers3 size={19} />
-            Ons model
+            {t('Ons model')}
             <ArrowDownRight size={15} className="nav-end" />
           </button>
         </nav>
         <div className="sidebar-divider" />
-        <div className="workspace-label">COMPETITIES</div>
+        <div className="workspace-label">{t('COMPETITIES')}</div>
         <div className="league-nav">
           <Trophy size={17} />
-          <span>Premier League</span>
+          <span>{t('Premier League')}</span>
           <span className="green-dot" />
         </div>
         {!isDemo &&
           ['La Liga', 'Serie A', 'Ligue 1'].map((name) => (
             <div className="league-nav" key={name}>
               <Trophy size={17} />
-              <span>{name}</span>
+              <span>{t(name)}</span>
               <span className="green-dot" />
             </div>
           ))}
@@ -157,59 +175,74 @@ export default function App() {
             <span className="engine-icon">
               <Activity size={18} />
             </span>
-            <strong>Data. Geen giswerk.</strong>
+            <strong>{t('Data. Geen giswerk.')}</strong>
             <p>
-              Elke kans heeft een verhaal.
+              {t('Elke kans heeft een verhaal.')}
               <br />
-              Ontdek hoe we rekenen.
+              {t('Ontdek hoe we rekenen.')}
             </p>
             <button onClick={() => setMethod(true)}>
-              Bekijk ons model <ArrowRight size={15} />
+              {t('Bekijk ons model ')}
+              <ArrowRight size={15} />
             </button>
           </div>
           <div className="source-status">
             <span className="green-dot" />
-            {isDemo ? 'Demo-omgeving' : 'Databronnen via server'}
-            <span>v1.0</span>
+            {t(isDemo ? 'Demo-omgeving' : 'Databronnen via server')}
+            <span>{t('v1.0')}</span>
           </div>
         </div>
       </aside>
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
-            Workspace <ChevronRight size={14} />
+            {t('Workspace ')}
+            <ChevronRight size={14} />
             <strong>
-              {matchId || route === '/analyse'
-                ? 'Matchanalyse'
-                : route === '/combis'
-                  ? 'Combivoorstellen'
-                  : 'Wedstrijden'}
+              {t(
+                matchId || route === '/analyse'
+                  ? 'Matchanalyse'
+                  : route === '/combis'
+                    ? 'Combivoorstellen'
+                    : 'Wedstrijden',
+              )}
             </strong>
           </div>
           <div className="topbar-right">
+            <label className="language-control">
+              <span className="sr-only">{language === 'en' ? 'Language' : 'Taal'}</span>
+              <select
+                aria-label={language === 'en' ? 'Language' : 'Taal'}
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as 'nl' | 'en')}
+              >
+                <option value="nl">NL</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
             <span className="data-label">
               <span className="green-dot" />
-              {isDemo ? 'Voorbeelddata' : 'Historische data'}
+              {t(isDemo ? 'Voorbeelddata' : 'Historische data')}
             </span>
             <button
               className="icon-button"
-              aria-label="Hoe werkt het model?"
+              aria-label={t('Hoe werkt het model?')}
               onClick={() => setMethod(true)}
             >
               <CircleHelp size={19} />
             </button>
-            <span className="avatar">MD</span>
+            <span className="avatar">{t('MD')}</span>
           </div>
         </header>
         <main>
           {matchId ? (
             <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
           ) : route === '/analyse' ? (
-            <Suspense fallback={<p role="status">Pagina laden…</p>}>
+            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
               <MatchPicker navigate={navigate} />
             </Suspense>
           ) : route === '/combis' ? (
-            <Suspense fallback={<p role="status">Pagina laden…</p>}>
+            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
               <CombinationsPage navigate={navigate} />
             </Suspense>
           ) : (
@@ -218,13 +251,14 @@ export default function App() {
         </main>
         <footer>
           <span>
-            matchday<span className="brand-dot">.</span>{' '}
-            <span className="footer-text">Meer inzicht. Beter voorbereid.</span>
+            {t('matchday')}
+            <span className="brand-dot">{'.'}</span>{' '}
+            <span className="footer-text">{t('Meer inzicht. Beter voorbereid.')}</span>
           </span>
           <span>
-            Modelinschattingen zijn geen zekerheid.{' '}
+            {t('Modelinschattingen zijn geen zekerheid.')}{' '}
             <a href="/clubs/CREDITS.md" target="_blank" rel="noreferrer">
-              Clublogo’s: bron en rechten
+              {t('Clublogo’s: bron en rechten')}
             </a>
           </span>
         </footer>

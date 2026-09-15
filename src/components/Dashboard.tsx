@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
 import { programPrices } from '../analysis/program-prices';
@@ -119,16 +120,18 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       <div className="page-heading">
         <div>
           <div className="eyebrow">
-            <span className="green-dot" /> JOUW VOORSPRONG BEGINT HIER
+            <span className="green-dot" />
+            {t(' JOUW VOORSPRONG BEGINT HIER')}
           </div>
           <h1>
-            Elke wedstrijd. Meer inzicht<span>.</span>
+            {t('Elke wedstrijd. Meer inzicht')}
+            <span>{'.'}</span>
           </h1>
-          <p>Ontdek de vorm, herken de trends en duik in de cijfers.</p>
+          <p>{t('Ontdek de vorm, herken de trends en duik in de cijfers.')}</p>
         </div>
         <span className="date-pill">
           <CalendarDays size={16} />
-          {dateLabel(date, true)}
+          {t(dateLabel(date, true))}
         </span>
       </div>
       <div className="overview-grid">
@@ -137,10 +140,10 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             <CalendarDays size={20} />
           </span>
           <div>
-            <small>Wedstrijden op deze dag</small>
+            <small>{t('Wedstrijden op deze dag')}</small>
             <strong>
-              {loading ? '—' : fixtures.length}
-              <span>duels</span>
+              {t(loading ? '—' : fixtures.length)}
+              <span>{t('duels')}</span>
             </strong>
           </div>
           <span className="mini-bars">
@@ -156,8 +159,8 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             <Trophy size={20} />
           </span>
           <div>
-            <small>Ondersteunde competities</small>
-            <strong>{isDemo ? 'Premier League (demo)' : '4 competities'}</strong>
+            <small>{t('Ondersteunde competities')}</small>
+            <strong>{t(isDemo ? 'Premier League (demo)' : '4 competities')}</strong>
           </div>
         </div>
         <div className="overview-card">
@@ -165,35 +168,38 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             <ShieldCheck size={20} />
           </span>
           <div>
-            <small>Eigen analyse-engine</small>
+            <small>{t('Eigen analyse-engine')}</small>
             <strong>
-              100%<span>uitlegbaar</span>
+              {'100%'}
+              <span>{t('uitlegbaar')}</span>
             </strong>
           </div>
-          <span className="small-tag">RULE-BASED</span>
+          <span className="small-tag">{t('RULE-BASED')}</span>
         </div>
       </div>
       <div className="feature-banner">
         <div className="feature-copy">
           <span className="feature-tag">
-            <Sparkles size={13} /> KIJK VERDER DAN DE UITSLAG
+            <Sparkles size={13} />
+            {t(' KIJK VERDER DAN DE UITSLAG')}
           </span>
           <h2>
-            Het verhaal achter
+            {t('Het verhaal achter')}
             <br />
-            de volgende aftrap.
+            {t('de volgende aftrap.')}
           </h2>
           <p>
-            Recente vorm, thuisvoordeel en onderlinge duels.
+            {t('Recente vorm, thuisvoordeel en onderlinge duels.')}
             <br />
-            Samengebracht in één heldere analyse.
+            {t('Samengebracht in één heldere analyse.')}
           </p>
           <button
             className="primary-button"
             disabled={!fixtures.length || loading || !!error}
             onClick={() => navigate(`/match/${fixtures[0].id}`)}
           >
-            Ontdek een matchanalyse <ArrowRight size={17} />
+            {t('Ontdek een matchanalyse ')}
+            <ArrowRight size={17} />
           </button>
         </div>
         <div className="pitch-art" aria-hidden="true">
@@ -223,8 +229,8 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
               <TrendingUp size={19} />
             </span>
             <div>
-              <small>Jouw volgende inzicht</small>
-              <strong>Van data naar context</strong>
+              <small>{t('Jouw volgende inzicht')}</small>
+              <strong>{t('Van data naar context')}</strong>
             </div>
             <span className="live-spark" />
           </div>
@@ -235,38 +241,38 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       )}
       {!loading && !error && <DayRecap fixtures={filtered} />}
       <SectionTitle
-        title={date < today() ? 'Uitslagen & terugblik' : 'Op het programma'}
-        aside={<span className="subtle">Alle tijden in jouw tijdzone</span>}
+        title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
+        aside={<span className="subtle">{t('Alle tijden in jouw tijdzone')}</span>}
       />
       <div className="filters">
         <div className="date-switch">
-          <button className="icon-button" onClick={() => shift(-1)} aria-label="Vorige dag">
+          <button className="icon-button" onClick={() => shift(-1)} aria-label={t('Vorige dag')}>
             <ChevronLeft size={17} />
           </button>
           <label>
             <CalendarDays size={16} />
             <input
-              aria-label="Wedstrijddatum"
+              aria-label={t('Wedstrijddatum')}
               type="date"
               value={date}
               onChange={(e) => e.target.value && setDate(e.target.value)}
             />
           </label>
-          <button className="icon-button" onClick={() => shift(1)} aria-label="Volgende dag">
+          <button className="icon-button" onClick={() => shift(1)} aria-label={t('Volgende dag')}>
             <ChevronRight size={17} />
           </button>
         </div>
         <div className="select-wrap">
           <SlidersHorizontal size={16} />
           <select
-            aria-label="Filter op competitie"
+            aria-label={t('Filter op competitie')}
             value={league}
             onChange={(e) => setLeague(e.target.value)}
           >
-            <option value="all">Alle competities</option>
+            <option value="all">{t('Alle competities')}</option>
             {leagues.map((l) => (
               <option key={l.id} value={l.id}>
-                {l.name}
+                {t(l.name)}
               </option>
             ))}
           </select>
@@ -274,14 +280,14 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         <label className="search">
           <Search size={17} />
           <input
-            placeholder="Zoek een team…"
+            placeholder={t('Zoek een team…')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {query && (
             <button
               className="icon-button"
-              aria-label="Zoekopdracht wissen"
+              aria-label={t('Zoekopdracht wissen')}
               onClick={() => setQuery('')}
             >
               <X size={14} />
@@ -291,20 +297,20 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       </div>
       {hasUpcoming && (
         <p className="program-odds-note">
-          Thuis · Gelijk · Uit. Voorkeur voor Unibet; de bookmaker staat bij elke wedstrijd.
+          {t('Thuis · Gelijk · Uit. Voorkeur voor Unibet; de bookmaker staat bij elke wedstrijd.')}
           {oddsError ? (
             <>
-              <span role="status"> Odds tijdelijk niet beschikbaar.</span>{' '}
+              <span role="status">{t(' Odds tijdelijk niet beschikbaar.')}</span>{' '}
             </>
           ) : (
-            ' Open een wedstrijd voor de volledige analyse.'
+            t(' Open een wedstrijd voor de volledige analyse.')
           )}{' '}
           <button
             className="text-button"
             disabled={oddsLoading}
             onClick={() => setOddsRetry((n) => n + 1)}
           >
-            {oddsLoading ? 'Odds laden…' : 'Odds opnieuw laden'}
+            {t(oddsLoading ? 'Odds laden…' : 'Odds opnieuw laden')}
           </button>
         </p>
       )}
@@ -312,7 +318,9 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         <div className="demo-note">
           <Info size={15} />
           <span>
-            Demo-omgeving · Alle wedstrijden en statistieken hieronder zijn fictieve voorbeelddata.
+            {t(
+              'Demo-omgeving · Alle wedstrijden en statistieken hieronder zijn fictieve voorbeelddata.',
+            )}
           </span>
         </div>
       )}
@@ -323,11 +331,11 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           <Search size={30} />
-          <h3>Geen wedstrijden gevonden</h3>
-          <p>Probeer een andere datum, competitie of teamnaam.</p>
+          <h3>{t('Geen wedstrijden gevonden')}</h3>
+          <p>{t('Probeer een andere datum, competitie of teamnaam.')}</p>
           {!query && (
             <button className="secondary-button" onClick={() => shift(1)}>
-              Volgende dag bekijken
+              {t('Volgende dag bekijken')}
             </button>
           )}
           <button
@@ -338,7 +346,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
               setDate(today());
             }}
           >
-            Filters herstellen
+            {t('Filters herstellen')}
           </button>
         </div>
       ) : (
@@ -348,9 +356,14 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
               <Trophy size={18} />
             </span>
             <strong>
-              {league === 'all' ? 'Alle competities' : leagues.find((l) => l.id === league)?.name}
+              {t(
+                league === 'all' ? 'Alle competities' : leagues.find((l) => l.id === league)?.name,
+              )}
             </strong>
-            <span className="fixture-count">{filtered.length} wedstrijden</span>
+            <span className="fixture-count">
+              {t(filtered.length)}
+              {t(' wedstrijden')}
+            </span>
           </div>
           {filtered.map((f) => {
             const showOdds = isUpcoming(f, now);
@@ -362,60 +375,68 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
                 onClick={() => navigate(`/match/${f.id}`)}
               >
                 <div className="fixture-time">
-                  <strong>{f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff)}</strong>
+                  <strong>{t(f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff))}</strong>
                   <span>
-                    {f.status === 'finished'
-                      ? 'Afgelopen'
-                      : f.status === 'live'
-                        ? 'Bezig'
-                        : f.status === 'postponed'
-                          ? 'Uitgesteld'
-                          : f.status === 'cancelled'
-                            ? 'Geannuleerd'
-                            : Date.parse(f.kickoff) < now
-                              ? 'Uitslag volgt'
-                              : 'Gepland'}
+                    {t(
+                      f.status === 'finished'
+                        ? 'Afgelopen'
+                        : f.status === 'live'
+                          ? 'Bezig'
+                          : f.status === 'postponed'
+                            ? 'Uitgesteld'
+                            : f.status === 'cancelled'
+                              ? 'Geannuleerd'
+                              : Date.parse(f.kickoff) < now
+                                ? 'Uitslag volgt'
+                                : 'Gepland',
+                    )}
                   </span>
                 </div>
                 <div className="fixture-team home">
-                  <span>{f.home.name}</span>
+                  <span>{t(f.home.name)}</span>
                   <Badge team={f.home} />
                 </div>
                 <span className="fixture-vs">
-                  {f.homeGoals !== null && f.awayGoals !== null
-                    ? `${f.homeGoals} – ${f.awayGoals}`
-                    : 'vs'}
+                  {t(
+                    f.homeGoals !== null && f.awayGoals !== null
+                      ? `${f.homeGoals} – ${f.awayGoals}`
+                      : 'vs',
+                  )}
                 </span>
                 <div className="fixture-team away">
                   <Badge team={f.away} />
-                  <span>{f.away.name}</span>
+                  <span>{t(f.away.name)}</span>
                 </div>
                 {showOdds && (
-                  <span className="fixture-odds" aria-label="Wedstrijdodds">
+                  <span className="fixture-odds" aria-label={t('Wedstrijdodds')}>
                     {(['home', 'draw', 'away'] as const).map((market, i) => (
                       <span
                         className="fixture-odd"
                         key={market}
-                        title={['Thuis', 'Gelijk', 'Uit'][i]}
+                        title={t(['Thuis', 'Gelijk', 'Uit'][i])}
                       >
-                        <small>{['1', 'X', '2'][i]}</small>
+                        <small>{t(['1', 'X', '2'][i])}</small>
                         <strong>
-                          {prices.quotes[market]?.decimal.toFixed(2) ?? (oddsLoading ? '…' : '—')}
+                          {t(
+                            prices.quotes[market]?.decimal.toFixed(2) ?? (oddsLoading ? '…' : '—'),
+                          )}
                         </strong>
                       </span>
                     ))}
-                    <span className="fixture-odds-caption" title={prices.detail}>
-                      {prices.bookmaker ?? (oddsLoading ? 'Odds laden…' : 'Geen odds beschikbaar')}
-                      {prices.bookmaker && prices.snapshot && ' · momentopname'}
+                    <span className="fixture-odds-caption" title={t(prices.detail)}>
+                      {t(
+                        prices.bookmaker ?? (oddsLoading ? 'Odds laden…' : 'Geen odds beschikbaar'),
+                      )}
+                      {t(prices.bookmaker && prices.snapshot && ' · momentopname')}
                     </span>
                   </span>
                 )}
                 <span className="fixture-venue">
                   <MapPin size={14} />
-                  {f.league.name}
+                  {t(f.league.name)}
                 </span>
                 <span className="analyze-link">
-                  {f.status === 'finished' ? 'Recap' : 'Analyse'} <ArrowRight size={16} />
+                  {t(f.status === 'finished' ? 'Recap' : 'Analyse')} <ArrowRight size={16} />
                 </span>
               </button>
             );
@@ -427,7 +448,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       )}
       {date >= today() && (
         <button className="text-button" onClick={() => navigate('/combis')}>
-          Meer combivoorstellen en variatie →
+          {t('Meer combivoorstellen en variatie →')}
         </button>
       )}
       <ComboHistory
@@ -440,12 +461,13 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         <div>
           <Database size={20} />
           <div>
-            <strong>Meerdere perspectieven. Eén analyse.</strong>
-            <p>Tot 20 recente duels, thuis- en uitvorm en historische ontmoetingen.</p>
+            <strong>{t('Meerdere perspectieven. Eén analyse.')}</strong>
+            <p>{t('Tot 20 recente duels, thuis- en uitvorm en historische ontmoetingen.')}</p>
           </div>
         </div>
         <span>
-          <Check size={14} /> Geen externe predictions
+          <Check size={14} />
+          {t(' Geen externe predictions')}
         </span>
       </div>
     </>

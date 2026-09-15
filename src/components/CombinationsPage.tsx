@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useState } from 'react';
 import { today } from '../demo/data';
 import ComboFinder from './ComboFinder';
@@ -10,15 +11,15 @@ export default function CombinationsPage({ navigate }: { navigate: (path: string
     <div className="combinations-page">
       <div className="page-heading">
         <div>
-          <h1>Combivoorstellen</h1>
-          <p>Vergelijk compacte voorstellen met verschillende markten en wedstrijden.</p>
+          <h1>{t('Combivoorstellen')}</h1>
+          <p>{t('Vergelijk compacte voorstellen met verschillende markten en wedstrijden.')}</p>
         </div>
       </div>
       <label className="combo-start-date">
-        Vanaf{' '}
+        {t('Vanaf')}{' '}
         <input
           type="date"
-          aria-label="Startdatum combivoorstellen"
+          aria-label={t('Startdatum combivoorstellen')}
           min={today()}
           value={date}
           onChange={(e) => {

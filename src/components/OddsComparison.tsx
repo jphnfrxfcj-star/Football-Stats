@@ -1,3 +1,4 @@
+import { t, locale } from '../i18n';
 import BetWorkbench from './BetWorkbench';
 import type { AnalysisResponse } from '../api';
 import { useEffect, useState } from 'react';
@@ -43,42 +44,50 @@ export default function OddsComparison({
   }, [id, attempt]);
   const books = [...new Set(report?.quotes.map((q) => q.bookmaker) ?? [])];
   return (
-    <section className="odds-section" aria-label="Bookmakervergelijking">
+    <section className="odds-section" aria-label={t('Bookmakervergelijking')}>
       <SectionTitle
-        eyebrow="DE PRIJS MAAKT HET VERSCHIL"
-        title="Bookmakerodds"
-        aside={<span className="subtle">90 minuten · decimale odds</span>}
+        eyebrow={t('DE PRIJS MAAKT HET VERSCHIL')}
+        title={t('Bookmakerodds')}
+        aside={<span className="subtle">{t('90 minuten · decimale odds')}</span>}
       />
       {report && <BetWorkbench key={id} response={response} odds={report} />}
       {!report && !loading && (
         <div className="player-invitation">
           <BarChart3 size={24} />
           <div>
-            <strong>Vergelijk dezelfde markt</strong>
-            <p>Bekijk beschikbare quoteringen en de actualiteit van de bron.</p>
+            <strong>{t('Vergelijk dezelfde markt')}</strong>
+            <p>{t('Bekijk beschikbare quoteringen en de actualiteit van de bron.')}</p>
           </div>
           <button className="secondary-button" onClick={() => setAttempt(attempt + 1)}>
-            {error ? 'Opnieuw proberen' : 'Odds vergelijken'}
+            {t(error ? 'Opnieuw proberen' : 'Odds vergelijken')}
           </button>
         </div>
       )}
       {loading && <Loading />}
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{t(error)}</p>}
       {report && (
         <>
-          <p className="section-intro">{report.message}</p>
+          <p className="section-intro">{t(report.message)}</p>
           {books.length ? (
             <details className="bookmaker-comparison">
-              <summary>Vergelijk alle bookmakers ({books.length})</summary>
-              <div className="player-table-scroll" tabIndex={0} aria-label="Bookmakerodds tabel">
+              <summary>
+                {t('Vergelijk alle bookmakers (')}
+                {t(books.length)}
+                {')'}
+              </summary>
+              <div
+                className="player-table-scroll"
+                tabIndex={0}
+                aria-label={t('Bookmakerodds tabel')}
+              >
                 <table className="player-table">
                   <thead>
                     <tr>
-                      <th>Bookmaker</th>
+                      <th>{t('Bookmaker')}</th>
                       {markets.map(([key, label]) => (
-                        <th key={key}>{label}</th>
+                        <th key={key}>{t(label)}</th>
                       ))}
-                      <th>Quoteringstijdstip</th>
+                      <th>{t('Quoteringstijdstip')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -90,16 +99,18 @@ export default function OddsComparison({
                         : null;
                       return (
                         <tr key={book}>
-                          <th scope="row">{book}</th>
+                          <th scope="row">{t(book)}</th>
                           {markets.map(([key]) => (
                             <td key={key}>
-                              {quotes.find((q) => q.market === key)?.decimal.toFixed(2) ?? '—'}
+                              {t(quotes.find((q) => q.market === key)?.decimal.toFixed(2) ?? '—')}
                             </td>
                           ))}
                           <td>
-                            {oldest
-                              ? new Date(oldest).toLocaleString('nl-BE')
-                              : 'Onbekend · momentopname'}
+                            {t(
+                              oldest
+                                ? new Date(oldest).toLocaleString(locale())
+                                : 'Onbekend · momentopname',
+                            )}
                           </td>
                         </tr>
                       );
@@ -110,20 +121,24 @@ export default function OddsComparison({
             </details>
           ) : (
             <div className="spotlight-placeholder">
-              Geen bookmakerodds voor deze wedstrijd beschikbaar bij de ingestelde bron.
+              {t('Geen bookmakerodds voor deze wedstrijd beschikbaar bij de ingestelde bron.')}
             </div>
           )}
           <p className="spotlight-note">
-            Bron: {report.source} · opgehaald {new Date(report.fetchedAt).toLocaleString('nl-BE')}.
-            Beschikbare bookmakers zijn niet noodzakelijk toegankelijk in jouw land. Controleer de
-            actuele prijs en marktvoorwaarden bij de bookmaker.
+            {t('Bron: ')}
+            {t(report.source)}
+            {t(' · opgehaald ')}
+            {t(new Date(report.fetchedAt).toLocaleString(locale()))}
+            {t(
+              '. Beschikbare bookmakers zijn niet noodzakelijk toegankelijk in jouw land. Controleer de actuele prijs en marktvoorwaarden bij de bookmaker.',
+            )}
           </p>
           <button
             className="text-button"
             disabled={loading}
             onClick={() => setAttempt(attempt + 1)}
           >
-            Opnieuw laden
+            {t('Opnieuw laden')}
           </button>
         </>
       )}

@@ -1,3 +1,4 @@
+import { tr, t, locale } from '../i18n';
 import { MatchRecap } from './Recap';
 import { isUpcoming } from '../analysis/recap';
 import OddsComparison from './OddsComparison';
@@ -106,80 +107,89 @@ export default function MatchPage({
       <div className="match-topline">
         <button className="text-button" onClick={() => navigate('/')}>
           <ArrowLeft size={16} />
-          Alle wedstrijden
+          {t('Alle wedstrijden')}
         </button>
         <span className="subtle">
           <span className="green-dot" />
-          {data.source === 'demo' ? 'Voorbeeldanalyse' : 'Analyse bijgewerkt'} ·{' '}
-          {time(data.updatedAt)}
+          {t(data.source === 'demo' ? 'Voorbeeldanalyse' : 'Analyse bijgewerkt')}
+          {' ·'} {t(time(data.updatedAt))}
         </span>
       </div>
       <div className="match-hero">
         <div className="match-league">
           <Trophy size={15} />
-          {f.league.name}
-          <span>•</span>
-          {dateLabel(f.sourceDate ?? f.kickoff)}
+          {t(f.league.name)}
+          <span>{'•'}</span>
+          {t(dateLabel(f.sourceDate ?? f.kickoff))}
         </div>
         <div className="match-contest">
           <div className="contender">
             <Badge team={f.home} size="large" />
             <div>
-              <h1>{f.home.name}</h1>
-              <span>THUIS</span>
+              <h1>{t(f.home.name)}</h1>
+              <span>{t('THUIS')}</span>
             </div>
           </div>
           <div className="match-kickoff">
             <strong>
-              {f.homeGoals !== null && f.awayGoals !== null
-                ? `${f.homeGoals} – ${f.awayGoals}`
-                : f.kickoffKnown === false
-                  ? 'Tijd volgt'
-                  : time(f.kickoff)}
+              {t(
+                f.homeGoals !== null && f.awayGoals !== null
+                  ? `${f.homeGoals} – ${f.awayGoals}`
+                  : f.kickoffKnown === false
+                    ? 'Tijd volgt'
+                    : time(f.kickoff),
+              )}
             </strong>
             <span>
-              {f.status === 'finished'
-                ? 'AFGELOPEN'
-                : f.status === 'scheduled'
-                  ? Date.parse(f.kickoff) < now
-                    ? 'UITSLAG VOLGT'
-                    : 'AFTRAP'
-                  : f.status.toUpperCase()}
+              {t(
+                f.status === 'finished'
+                  ? 'AFGELOPEN'
+                  : f.status === 'scheduled'
+                    ? Date.parse(f.kickoff) < now
+                      ? 'UITSLAG VOLGT'
+                      : 'AFTRAP'
+                    : f.status.toUpperCase(),
+              )}
             </span>
           </div>
           <div className="contender right">
             <div>
-              <h1>{f.away.name}</h1>
-              <span>UIT</span>
+              <h1>{t(f.away.name)}</h1>
+              <span>{t('UIT')}</span>
             </div>
             <Badge team={f.away} size="large" />
           </div>
         </div>
         <div className="match-venue">
           <MapPin size={13} />
-          {f.venue ?? 'Stadion niet beschikbaar'}
-          <span>•</span>
+          {t(f.venue ?? 'Stadion niet beschikbaar')}
+          <span>{'•'}</span>
           <Clock3 size={13} />
-          90 minuten · reguliere speeltijd
+          {t('90 minuten · reguliere speeltijd')}
         </div>
       </div>
       <div className="match-tabs">
         <a href="#probabilities" className="selected">
-          Overzicht
+          {t('Overzicht')}
         </a>
-        <a href="#form">Recente vorm</a>
-        <a href="#goals">Goals & BTTS</a>
-        <a href="#metrics">Wedstrijdstatistieken</a>
-        <a href="#h2h">Head-to-head</a>
+        <a href="#form">{t('Recente vorm')}</a>
+        <a href="#goals">{t('Goals & BTTS')}</a>
+        <a href="#metrics">{t('Wedstrijdstatistieken')}</a>
+        <a href="#h2h">{t('Head-to-head')}</a>
       </div>
       {data.sourceLabel && (
         <div className="demo-note">
           <Database size={15} />
           <span>
-            Bronnen: {data.sourceLabel}.{' '}
+            {t('Bronnen: ')}
+            {t(data.sourceLabel)}
+            {'.'}{' '}
             {f.provenance?.sources.map((source) => (
               <span key={source.url}>
-                {source.name}: opgehaald {new Date(source.fetchedAt).toLocaleString('nl-BE')}.{' '}
+                {t(source.name)}
+                {t(': opgehaald ')}
+                {t(new Date(source.fetchedAt).toLocaleString(locale()))}
+                {'.'}{' '}
               </span>
             ))}
           </span>
@@ -188,7 +198,7 @@ export default function MatchPage({
       {data.warnings.map((w) => (
         <div className="demo-note" key={w}>
           <Info size={15} />
-          <span>{w}</span>
+          <span>{t(w)}</span>
         </div>
       ))}
       {isUpcoming(f, now) && <OddsComparison key={`odds-${id}`} id={id} response={response} />}
@@ -196,19 +206,20 @@ export default function MatchPage({
       <section id="probabilities">
         {f.status === 'finished' && (
           <p className="spotlight-note">
-            Achteraf gereconstrueerd met de beschikbare historie vóór deze wedstrijd; geen
-            vastgelegde pre-matchvoorspelling.
+            {t(
+              'Achteraf gereconstrueerd met de beschikbare historie vóór deze wedstrijd; geen vastgelegde pre-matchvoorspelling.',
+            )}
           </p>
         )}
         <SectionTitle
-          eyebrow="HET MODEL AAN HET WOORD"
-          title={
-            f.status === 'finished' ? 'Historische modelinschatting' : 'Kansen in één oogopslag'
-          }
+          eyebrow={t('HET MODEL AAN HET WOORD')}
+          title={t(
+            f.status === 'finished' ? 'Historische modelinschatting' : 'Kansen in één oogopslag',
+          )}
           aside={
             <button className="text-button" onClick={showModel}>
               <CircleHelp size={15} />
-              Hoe werkt dit?
+              {t('Hoe werkt dit?')}
             </button>
           }
         />
@@ -220,11 +231,11 @@ export default function MatchPage({
               onClick={() => setDetail(detail?.key === p.key ? null : p)}
             >
               <div className="probability-label">
-                <span>{['1', 'X', '2', '2.5', 'BTTS'][i]}</span>
-                {p.label}
+                <span>{t(['1', 'X', '2', '2.5', 'BTTS'][i])}</span>
+                {t(p.label)}
                 <Info size={13} />
               </div>
-              <strong>{pct(p.value)}</strong>
+              <strong>{t(pct(p.value))}</strong>
               <div className="probability-track">
                 <i style={{ width: `${p.value ?? 0}%` }} />
               </div>
@@ -232,7 +243,8 @@ export default function MatchPage({
                 <span
                   className={`confidence-dot ${p.confidence === 'Gemiddeld' ? 'medium' : ''}`}
                 />
-                {p.confidence} vertrouwen
+                {t(p.confidence)}
+                {t(' vertrouwen')}
               </div>
             </button>
           ))}
@@ -241,11 +253,13 @@ export default function MatchPage({
           <div className="explanation">
             <div>
               <strong>
-                {detail.label} · {pct(detail.value)}
+                {t(detail.label)}
+                {' · '}
+                {t(pct(detail.value))}
               </strong>
               <button
                 className="icon-button"
-                aria-label="Uitleg sluiten"
+                aria-label={t('Uitleg sluiten')}
                 onClick={() => setDetail(null)}
               >
                 <X size={16} />
@@ -253,48 +267,56 @@ export default function MatchPage({
             </div>
             <ul>
               {detail.factors.map((factor) => (
-                <li key={factor}>{factor}</li>
+                <li key={factor}>{t(factor)}</li>
               ))}
             </ul>
           </div>
         )}
         <div className="model-note">
           <ShieldCheck size={14} />
-          Transparante modelinschattingen, geen zekerheid. Klik op een kans voor de onderbouwing.
+          {t(
+            'Transparante modelinschattingen, geen zekerheid. Klik op een kans voor de onderbouwing.',
+          )}
         </div>
       </section>
       <section className="trends-section">
         <SectionTitle
-          title="Wat valt op?"
+          title={t('Wat valt op?')}
           aside={
             <span className="small-tag">
               <Sparkles size={12} />
-              STERKSTE TRENDS
+              {t('STERKSTE TRENDS')}
             </span>
           }
         />
         <div className="trends-grid">
           {analysis.trends.length ? (
-            analysis.trends.map((t, i) => (
-              <div className="trend-card" key={t.text}>
-                <div className="trend-number">0{i + 1}</div>
+            analysis.trends.map((trend, i) => (
+              <div className="trend-card" key={trend.text}>
+                <div className="trend-number">
+                  {'0'}
+                  {t(i + 1)}
+                </div>
                 <div>
-                  <p>{t.text}</p>
+                  <p>{t(trend.text)}</p>
                   <span>
-                    {t.sampleSize} wedstrijden <span>·</span> {Math.round(t.percentage)}% frequentie
+                    {t(trend.sampleSize)}
+                    {t(' wedstrijden ')}
+                    <span>{'·'}</span> {t(Math.round(trend.percentage))}
+                    {t('% frequentie')}
                   </span>
                 </div>
                 <TrendingUp size={19} />
               </div>
             ))
           ) : (
-            <p className="subtle">Onvoldoende data voor betrouwbare trends.</p>
+            <p className="subtle">{t('Onvoldoende data voor betrouwbare trends.')}</p>
           )}
         </div>
       </section>
       <section id="form">
         <SectionTitle
-          title="De vorm onder de loep"
+          title={t('De vorm onder de loep')}
           aside={
             <div className="segmented">
               {[5, 10, 20].map((n, i) => (
@@ -303,7 +325,8 @@ export default function MatchPage({
                   className={windowIndex === i ? 'active' : ''}
                   onClick={() => setWindowIndex(i)}
                 >
-                  Laatste {n}
+                  {t('Laatste ')}
+                  {t(n)}
                 </button>
               ))}
             </div>
@@ -313,23 +336,23 @@ export default function MatchPage({
           <div className="panel">
             <div className="panel-title">
               <BarChart3 size={17} />
-              <h3>Recente vorm</h3>
-              <span>Alle locaties</span>
+              <h3>{t('Recente vorm')}</h3>
+              <span>{t('Alle locaties')}</span>
             </div>
             <div className="comparison-head">
               <div>
                 <Badge team={f.home} size="small" />
-                <strong>{f.home.shortName}</strong>
+                <strong>{t(f.home.shortName)}</strong>
               </div>
-              <span>STATISTIEK</span>
+              <span>{t('STATISTIEK')}</span>
               <div>
-                <strong>{f.away.shortName}</strong>
+                <strong>{t(f.away.shortName)}</strong>
                 <Badge team={f.away} size="small" />
               </div>
             </div>
             <div className="comparison-row form-row">
               <Form results={h.results} />
-              <span>Vorm</span>
+              <span>{t('Vorm')}</span>
               <Form results={a.results} />
             </div>
             {[
@@ -346,29 +369,32 @@ export default function MatchPage({
               [ratio(h.failedToScore), 'Niet gescoord', ratio(a.failedToScore)],
             ].map(([v, l, r]) => (
               <div className="comparison-row" key={String(l)}>
-                <strong>{v ?? '—'}</strong>
-                <span>{l}</span>
-                <strong>{r ?? '—'}</strong>
+                <strong>{t(v ?? '—')}</strong>
+                <span>{t(l)}</span>
+                <strong>{t(r ?? '—')}</strong>
               </div>
             ))}
             <div className="panel-foot">
-              {h.available} / {a.available} wedstrijden beschikbaar · nieuwste vorm rechts
+              {t(h.available)}
+              {' / '}
+              {t(a.available)}
+              {t(' wedstrijden beschikbaar · nieuwste vorm rechts')}
             </div>
           </div>
           <div className="panel">
             <div className="panel-title">
               <Globe2 size={17} />
-              <h3>Thuis vs. uit</h3>
-              <span>Relevante locatie</span>
+              <h3>{t('Thuis vs. uit')}</h3>
+              <span>{t('Relevante locatie')}</span>
             </div>
             <div className="comparison-head">
               <div>
                 <Badge team={f.home} size="small" />
-                <strong>Thuis</strong>
+                <strong>{t('Thuis')}</strong>
               </div>
-              <span>STATISTIEK</span>
+              <span>{t('STATISTIEK')}</span>
               <div>
-                <strong>Uit</strong>
+                <strong>{t('Uit')}</strong>
                 <Badge team={f.away} size="small" />
               </div>
             </div>
@@ -386,53 +412,64 @@ export default function MatchPage({
               [pct(hs.markets.btts.percentage), 'BTTS', pct(as.markets.btts.percentage)],
             ].map(([v, l, r]) => (
               <div className="comparison-row" key={String(l)}>
-                <strong>{v}</strong>
-                <span>{l}</span>
-                <strong>{r}</strong>
+                <strong>{t(v)}</strong>
+                <span>{t(l)}</span>
+                <strong>{t(r)}</strong>
               </div>
             ))}
             <div className="split-callout">
               <MapPin size={15} />
-              Locatie geeft relevante wedstrijden × 1.1 gewicht.
+              {t('Locatie geeft relevante wedstrijden × 1.1 gewicht.')}
             </div>
             <div className="panel-foot">
-              {hs.available} thuisduels / {as.available} uitduels beschikbaar
+              {t(hs.available)}
+              {t(' thuisduels / ')}
+              {t(as.available)}
+              {t(' uitduels beschikbaar')}
             </div>
           </div>
         </div>
       </section>
       <section id="goals">
         <SectionTitle
-          eyebrow="VAN DOELPUNT TOT PATROON"
-          title="Goals & beide teams scoren"
-          aside={<span className="subtle">Steekproef: laatste {[5, 10, 20][windowIndex]}</span>}
+          eyebrow={t('VAN DOELPUNT TOT PATROON')}
+          title={t('Goals & beide teams scoren')}
+          aside={
+            <span className="subtle">
+              {t('Steekproef: laatste ')}
+              {t([5, 10, 20][windowIndex])}
+            </span>
+          }
         />
         <div className="panel table-scroll">
           <table className="market-table">
             <thead>
               <tr>
-                <th>Markt</th>
-                <th>{f.home.shortName}</th>
-                <th>{f.away.shortName}</th>
-                <th>Thuis</th>
-                <th>Uit</th>
-                <th>H2H · 10</th>
-                <th>Gewogen score</th>
+                <th>{t('Markt')}</th>
+                <th>{t(f.home.shortName)}</th>
+                <th>{t(f.away.shortName)}</th>
+                <th>{t('Thuis')}</th>
+                <th>{t('Uit')}</th>
+                <th>{t('H2H · 10')}</th>
+                <th>{t('Gewogen score')}</th>
               </tr>
             </thead>
             <tbody>
               {goalMarkets.map((m) => (
                 <tr key={m}>
-                  <td>{marketLabels[m]}</td>
+                  <td>{t(marketLabels[m])}</td>
                   {[h, a, hs, as, analysis.h2h[1]].map((s, i) => (
                     <td key={i}>
                       <FrequencyCell value={s.markets[m]} />
                     </td>
                   ))}
                   <td>
-                    <span className="weighted-score">{pct(analysis.combined[m].percentage)}</span>
+                    <span className="weighted-score">
+                      {t(pct(analysis.combined[m].percentage))}
+                    </span>
                     <small className="table-note">
-                      {analysis.combined[m].sampleSize} unieke duels
+                      {t(analysis.combined[m].sampleSize)}
+                      {t(' unieke duels')}
                     </small>
                   </td>
                 </tr>
@@ -446,13 +483,16 @@ export default function MatchPage({
             .map((p) => (
               <details key={p.key}>
                 <summary>
-                  {p.label}
-                  <strong>{pct(p.value)}</strong>
-                  <span>{p.confidence} vertrouwen</span>
+                  {t(p.label)}
+                  <strong>{t(pct(p.value))}</strong>
+                  <span>
+                    {t(p.confidence)}
+                    {t(' vertrouwen')}
+                  </span>
                 </summary>
                 <ul>
                   {p.factors.map((factor) => (
-                    <li key={factor}>{factor}</li>
+                    <li key={factor}>{t(factor)}</li>
                   ))}
                 </ul>
               </details>
@@ -461,18 +501,18 @@ export default function MatchPage({
       </section>
       <section id="metrics">
         <SectionTitle
-          title="Corners, kaarten & aanvallende cijfers"
-          aside={<span className="subtle">Gemiddelde per beschikbare wedstrijd</span>}
+          title={t('Corners, kaarten & aanvallende cijfers')}
+          aside={<span className="subtle">{t('Gemiddelde per beschikbare wedstrijd')}</span>}
         />
         <div className="panel table-scroll">
           <table className="metrics-table">
             <thead>
               <tr>
-                <th>Statistiek</th>
-                <th>{f.home.name}</th>
-                <th>Beschikbaar</th>
-                <th>{f.away.name}</th>
-                <th>Beschikbaar</th>
+                <th>{t('Statistiek')}</th>
+                <th>{t(f.home.name)}</th>
+                <th>{t('Beschikbaar')}</th>
+                <th>{t(f.away.name)}</th>
+                <th>{t('Beschikbaar')}</th>
               </tr>
             </thead>
             <tbody>
@@ -481,11 +521,11 @@ export default function MatchPage({
                   am = metricAverage(a.fixtures, f.away.id, key);
                 return (
                   <tr key={key}>
-                    <td>{label}</td>
-                    <td className="metric-value">{num(hm.value)}</td>
-                    <td>{hm.total ? `${hm.total} duels` : 'Onvoldoende data'}</td>
-                    <td className="metric-value">{num(am.value)}</td>
-                    <td>{am.total ? `${am.total} duels` : 'Onvoldoende data'}</td>
+                    <td>{t(label)}</td>
+                    <td className="metric-value">{t(num(hm.value))}</td>
+                    <td>{t(hm.total ? tr('{0} duels', [hm.total]) : 'Onvoldoende data')}</td>
+                    <td className="metric-value">{t(num(am.value))}</td>
+                    <td>{t(am.total ? tr('{0} duels', [am.total]) : 'Onvoldoende data')}</td>
                   </tr>
                 );
               })}
@@ -496,7 +536,7 @@ export default function MatchPage({
       <PlayerStats key={id} id={id} />
       <section id="h2h">
         <SectionTitle
-          title="Eerdere ontmoetingen"
+          title={t('Eerdere ontmoetingen')}
           aside={
             <div className="segmented">
               {[5, 10].map((n, i) => (
@@ -505,7 +545,8 @@ export default function MatchPage({
                   className={h2hIndex === i ? 'active' : ''}
                   onClick={() => setH2hIndex(i)}
                 >
-                  Laatste {n}
+                  {t('Laatste ')}
+                  {t(n)}
                 </button>
               ))}
             </div>
@@ -513,34 +554,46 @@ export default function MatchPage({
         />
         <div className="h2h-summary">
           <div>
-            <strong>{selectedH2h.available ? selectedH2h.wins : '—'}</strong>
-            <span>{f.home.name} wint</span>
-          </div>
-          <div>
-            <strong>{selectedH2h.available ? selectedH2h.draws : '—'}</strong>
-            <span>Gelijkspel</span>
-          </div>
-          <div>
-            <strong>{selectedH2h.available ? selectedH2h.losses : '—'}</strong>
-            <span>{f.away.name} wint</span>
-          </div>
-          <div>
-            <strong>{num(selectedH2h.averageTotalGoals)}</strong>
-            <span>Gem. totaal goals</span>
-          </div>
-          <div>
-            <strong>{pct(selectedH2h.markets.btts.percentage)}</strong>
+            <strong>{t(selectedH2h.available ? selectedH2h.wins : '—')}</strong>
             <span>
-              BTTS · {selectedH2h.markets.btts.successes}/{selectedH2h.markets.btts.total}
+              {t(f.home.name)}
+              {t(' wint')}
+            </span>
+          </div>
+          <div>
+            <strong>{t(selectedH2h.available ? selectedH2h.draws : '—')}</strong>
+            <span>{t('Gelijkspel')}</span>
+          </div>
+          <div>
+            <strong>{t(selectedH2h.available ? selectedH2h.losses : '—')}</strong>
+            <span>
+              {t(f.away.name)}
+              {t(' wint')}
+            </span>
+          </div>
+          <div>
+            <strong>{t(num(selectedH2h.averageTotalGoals))}</strong>
+            <span>{t('Gem. totaal goals')}</span>
+          </div>
+          <div>
+            <strong>{t(pct(selectedH2h.markets.btts.percentage))}</strong>
+            <span>
+              {t('BTTS · ')}
+              {t(selectedH2h.markets.btts.successes)}
+              {'/'}
+              {t(selectedH2h.markets.btts.total)}
             </span>
           </div>
         </div>
         <div className="h2h-markets">
           {(['over15', 'over25', 'over35'] as Market[]).map((m) => (
             <span key={m}>
-              {marketLabels[m]} <strong>{pct(selectedH2h.markets[m].percentage)}</strong>
+              {t(marketLabels[m])} <strong>{t(pct(selectedH2h.markets[m].percentage))}</strong>
               <small>
-                {selectedH2h.markets[m].successes}/{selectedH2h.markets[m].total} duels
+                {t(selectedH2h.markets[m].successes)}
+                {'/'}
+                {t(selectedH2h.markets[m].total)}
+                {t(' duels')}
               </small>
             </span>
           ))}
@@ -549,41 +602,51 @@ export default function MatchPage({
           {selectedH2h.fixtures.length ? (
             selectedH2h.fixtures.map((game) => (
               <div className="h2h-row" key={game.id}>
-                <span>{new Date(game.kickoff).toLocaleDateString('nl-BE')}</span>
-                <strong>{game.home.name}</strong>
+                <span>{t(new Date(game.kickoff).toLocaleDateString(locale()))}</span>
+                <strong>{t(game.home.name)}</strong>
                 <b>
-                  {game.homeGoals} – {game.awayGoals}
+                  {t(game.homeGoals)}
+                  {' – '}
+                  {t(game.awayGoals)}
                 </b>
-                <strong>{game.away.name}</strong>
+                <strong>{t(game.away.name)}</strong>
                 <span>
-                  {Date.parse(f.kickoff) - Date.parse(game.kickoff) > 730 * 86400000
-                    ? 'Lager gewicht'
-                    : 'Recent H2H'}
+                  {t(
+                    Date.parse(f.kickoff) - Date.parse(game.kickoff) > 730 * 86400000
+                      ? 'Lager gewicht'
+                      : 'Recent H2H',
+                  )}
                 </span>
               </div>
             ))
           ) : (
-            <p className="empty-state">Geen onderlinge duels beschikbaar.</p>
+            <p className="empty-state">{t('Geen onderlinge duels beschikbaar.')}</p>
           )}
         </div>
         <div className="model-note">
           <Info size={14} />
-          H2H ouder dan twee jaar weegt extra licht. Teams, trainers en omstandigheden veranderen.
+          {t(
+            'H2H ouder dan twee jaar weegt extra licht. Teams, trainers en omstandigheden veranderen.',
+          )}
         </div>
       </section>
       <details className="raw-data">
         <summary>
           <Database size={17} />
-          Bekijk de onderliggende wedstrijddata
+          {t('Bekijk de onderliggende wedstrijddata')}
           <span>
-            {before(data.homeHistory, f.kickoff).length +
-              before(data.awayHistory, f.kickoff).length}{' '}
-            teamobservaties
+            {t(
+              before(data.homeHistory, f.kickoff).length +
+                before(data.awayHistory, f.kickoff).length,
+            )}{' '}
+            {t('teamobservaties')}
           </span>
         </summary>
         <p>
-          Genormaliseerde brondata · modelversie {analysis.version} ·{' '}
-          {data.source === 'demo' ? 'synthetische demo' : (data.sourceLabel ?? 'API-Football')}
+          {t('Genormaliseerde brondata · modelversie ')}
+          {t(analysis.version)}
+          {' ·'}{' '}
+          {t(data.source === 'demo' ? 'synthetische demo' : (data.sourceLabel ?? 'API-Football'))}
         </p>
         <pre>{JSON.stringify({ home: h.fixtures, away: a.fixtures }, null, 2)}</pre>
       </details>

@@ -1,3 +1,4 @@
+import { t, locale } from '../i18n';
 import type { Fixture } from '../domain/models';
 import type { OddsQuote, OddsSnapshot } from '../domain/spotlight';
 import { fixtureQuotes } from './combinations';
@@ -29,7 +30,7 @@ export function programPrices(fixture: Fixture, report: OddsSnapshot | null, now
   const detail = selected
     .map(
       (q) =>
-        `${q.market === 'home' ? 'Thuis' : q.market === 'draw' ? 'Gelijk' : 'Uit'} ${q.decimal.toFixed(2)} · ${q.updatedAt ? new Date(q.updatedAt).toLocaleString('nl-BE') : 'tijdstip onbekend'}`,
+        `${t(q.market === 'home' ? 'Thuis' : q.market === 'draw' ? 'Gelijk' : 'Uit')} ${q.decimal.toFixed(2)} · ${q.updatedAt ? new Date(q.updatedAt).toLocaleString(locale()) : t('tijdstip onbekend')}`,
     )
     .join('\n');
   return { bookmaker, quotes, snapshot, detail };
