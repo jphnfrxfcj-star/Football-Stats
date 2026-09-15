@@ -134,7 +134,13 @@ it('combines different dates and can reach the target with seven low-priced legs
   const selections = Array.from({ length: 7 }, (_, i) => ({
     ...base,
     id: `future-${i}:over25`,
-    fixture: { ...base.fixture, id: `future-${i}`, kickoff: `2026-09-${13 + i}T14:00:00Z` },
+    fixture: {
+      ...base.fixture,
+      id: `future-${i}`,
+      home: { ...base.fixture.home, id: `home-${i}` },
+      away: { ...base.fixture.away, id: `away-${i}` },
+      kickoff: `2026-09-${13 + i}T14:00:00Z`,
+    },
     quotes: [{ ...base.quotes[0], decimal: 1.11 }],
   }));
   expect(suggestCombinations(selections, 'A', now)).toHaveLength(0);
@@ -167,7 +173,12 @@ it('excludes odds below 1.10 while including the boundary', () => {
   const selections = [1.03, 1.099, 1.1, 2].map((decimal, i) => ({
     ...base,
     id: `minimum-${i}:over25`,
-    fixture: { ...base.fixture, id: `minimum-${i}` },
+    fixture: {
+      ...base.fixture,
+      id: `minimum-${i}`,
+      home: { ...base.fixture.home, id: `home-${i}` },
+      away: { ...base.fixture.away, id: `away-${i}` },
+    },
     quotes: [{ ...base.quotes[0], bookmaker: 'A', decimal }],
   }));
   const combos = suggestCombinations(selections, 'A', now, 8);
@@ -175,3 +186,41 @@ it('excludes odds below 1.10 while including the boundary', () => {
   expect(combos[0].legs.map((leg) => leg.quote.decimal).sort()).toEqual([1.1, 2]);
   expect(combos[0].decimal).toBeCloseTo(2.2);
 });
+
+it.each(['home', 'away'] as const)(
+  'excludes a returning team on another date even when it plays %s',
+  (side) => {
+    const base = buildMarkets(data, odds, 5, now).selections.find((s) => s.market === 'over25')!;
+    const make = (id: string, home: string, away: string, day: number) => ({
+      ...base,
+      id,
+      fixture: {
+        ...base.fixture,
+        id,
+        kickoff: `2026-09-${day}T18:00:00Z`,
+        home: { ...base.fixture.home, id: home, name: home },
+        away: { ...base.fixture.away, id: away, name: away },
+      },
+      quotes: [{ ...base.quotes[0], decimal: 1.6 }],
+    });
+    const first = make('wednesday', 'rayo', 'espanyol', 16);
+    const repeated = make(
+      'saturday',
+      side === 'home' ? 'espanyol' : 'elche',
+      side === 'away' ? 'espanyol' : 'elche',
+      19,
+    );
+    expect(suggestCombinations([first, repeated], 'A', now)).toHaveLength(0);
+    const independent = make('independent', 'arsenal', 'chelsea', 19);
+    const combos = suggestCombinations([first, repeated, independent], 'A', now);
+    expect(combos).toHaveLength(2);
+    for (const combo of combos) {
+      const teams = combo.legs.flatMap((l) => [
+        l.selection.fixture.home.id,
+        l.selection.fixture.away.id,
+      ]);
+      expect(new Set(teams).size).toBe(teams.length);
+      expect(combo.decimal).toBeCloseTo(2.56);
+    }
+  },
+);

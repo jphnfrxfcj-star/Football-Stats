@@ -130,7 +130,17 @@ export function suggestCombinations(
     for (let i = start; i < legs.length && visits < 50000; i++) {
       const leg = legs[i],
         next = decimal * leg.quote.decimal;
-      if (next > 3 || picked.some((p) => p.selection.fixture.id === leg.selection.fixture.id))
+      const fixture = leg.selection.fixture;
+      if (
+        next > 3 ||
+        picked.some(
+          ({ selection: { fixture: other } }) =>
+            other.id === fixture.id ||
+            [other.home.id, other.away.id].some(
+              (id) => id === fixture.home.id || id === fixture.away.id,
+            ),
+        )
+      )
         continue;
       visit(i + 1, [...picked, leg], next);
     }

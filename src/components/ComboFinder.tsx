@@ -86,9 +86,9 @@ export default function ComboFinder({
       />
       <p className="section-intro">
         Van {date} t/m {end}. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League,
-        La Liga, Serie A en Ligue 1. Iedere selectie kwam voor in minstens {minimumRate}% van de
-        laatste {window} competitieduels van elk team. Elke selectie heeft een odd van minimaal
-        1,10.
+        La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere
+        selectie kwam voor in minstens {minimumRate}% van de laatste {window} competitieduels van
+        elk team. Elke selectie heeft een odd van minimaal 1,10.
       </p>
       <div className="market-controls">
         <label>
@@ -245,7 +245,7 @@ export default function ComboFinder({
               <p>
                 {priced < 2
                   ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
-                  : 'De beschikbare prijzen leveren met maximaal acht verschillende wedstrijden geen totaal tussen 2 en 3 op.'}{' '}
+                  : 'De beschikbare prijzen leveren met maximaal acht wedstrijden zonder terugkerende ploegen geen totaal tussen 2 en 3 op.'}{' '}
                 Probeer een andere bookmaker of startdatum. Met de ingestelde {minimumRate}%-eis
                 verzinnen we geen prijzen.
               </p>
