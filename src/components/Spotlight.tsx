@@ -14,7 +14,8 @@ export default function Spotlight({
 }) {
   const [report, setReport] = useState<SpotlightReport | null>(null),
     [error, setError] = useState(''),
-    [retry, setRetry] = useState(0);
+    [retry, setRetry] = useState(0),
+    [loading, setLoading] = useState(false);
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000);
@@ -23,6 +24,7 @@ export default function Spotlight({
   useEffect(() => {
     const c = new AbortController();
     setReport(null);
+    setLoading(true);
     setError('');
     api
       .spotlight(date, c.signal)
@@ -31,6 +33,9 @@ export default function Spotlight({
       })
       .catch((e) => {
         if (!c.signal.aborted) setError(e.message);
+      })
+      .finally(() => {
+        if (!c.signal.aborted) setLoading(false);
       });
     return () => c.abort();
   }, [date, retry]);
@@ -65,6 +70,9 @@ export default function Spotlight({
           </button>
         </div>
       )}
+      <button className="text-button" disabled={loading} onClick={() => setRetry((n) => n + 1)}>
+        {loading ? 'Spotlight laden…' : 'Spotlight en odds opnieuw laden'}
+      </button>
       {report && (
         <>
           {cards.length ? (
@@ -107,6 +115,11 @@ export default function Spotlight({
                         <b>{c.quote?.decimal.toFixed(2) ?? '—'}</b>
                       </span>
                     </div>
+                    {!c.quote && (
+                      <p className="quote-age">
+                        Geen bookmakerprijs voor deze selectie beschikbaar.
+                      </p>
+                    )}
                     {c.quote && (
                       <p className="quote-age">
                         <Clock3 size={12} />
