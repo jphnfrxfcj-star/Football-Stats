@@ -425,6 +425,11 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       {date >= today() && (
         <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} />
       )}
+      {date >= today() && (
+        <button className="text-button" onClick={() => navigate('/combis')}>
+          Meer combivoorstellen en variatie →
+        </button>
+      )}
       <ComboHistory
         combos={archive.combos}
         error={archive.error}

@@ -8,11 +8,15 @@ export default function ComboFinder({
   date,
   navigate,
   onSave,
+  compact = false,
 }: {
+  compact?: boolean;
   onSave: (proposals: SavedCombo[]) => void;
   date: string;
   navigate: (path: string) => void;
 }) {
+  const [diverse, setDiverse] = useState(compact);
+  const Evidence = compact ? 'details' : 'div';
   const [started, setStarted] = useState(false);
   const [report, setReport] = useState<MarketsReport | null>(null),
     [error, setError] = useState(''),
@@ -48,8 +52,12 @@ export default function ComboFinder({
     ]),
   ];
   const combos = useMemo(
-    () => suggestCombinations(report?.selections ?? [], book, cutoff, 8),
-    [report, book, cutoff],
+    () =>
+      suggestCombinations(report?.selections ?? [], book, cutoff, 8, {
+        limit: compact ? 9 : 3,
+        diverse,
+      }),
+    [report, book, cutoff, compact, diverse],
   );
   useEffect(() => {
     if (isDemo) return;
@@ -78,7 +86,10 @@ export default function ComboFinder({
   ].length;
   const end = new Date(Date.parse(date) + 7 * 86400000).toISOString().slice(0, 10);
   return (
-    <section className="combo-finder" aria-label="Combi x2 tot x3">
+    <section
+      className={`combo-finder${compact ? ' combo-finder-compact' : ''}`}
+      aria-label="Combi x2 tot x3"
+    >
       <SectionTitle
         eyebrow="VERSCHILLENDE WEDSTRIJDEN · ÉÉN BOOKMAKER"
         title="Combi x2–x3"
@@ -90,7 +101,27 @@ export default function ComboFinder({
         selectie kwam voor in minstens {minimumRate}% van de laatste {window} competitieduels van
         elk team. Elke selectie heeft een odd van minimaal 1,10.
       </p>
+      {compact && (
+        <p className="spotlight-note">
+          Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder
+          herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is
+          geen hogere winstkans.
+        </p>
+      )}
       <div className="market-controls">
+        {compact && (
+          <label>
+            Rangschikking{' '}
+            <select
+              aria-label="Combi rangschikking"
+              value={diverse ? 'variety' : 'target'}
+              onChange={(e) => setDiverse(e.target.value === 'variety')}
+            >
+              <option value="variety">Meer variatie</option>
+              <option value="target">Dichtst bij 2,50</option>
+            </select>
+          </label>
+        )}
         <label>
           Bookmaker{' '}
           <select
@@ -177,65 +208,88 @@ export default function ComboFinder({
                     {combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × ')} ={' '}
                     {combo.decimal.toFixed(2)}
                   </p>
-                  <ol>
-                    {combo.legs.map(({ selection: s, quote: q }) => (
-                      <li key={s.id} className="finder-leg">
-                        <button
-                          className="text-button"
-                          onClick={() => navigate(`/match/${s.fixture.id}`)}
-                        >
-                          {s.fixture.home.name} – {s.fixture.away.name}
-                        </button>
-                        <small>
-                          {new Date(s.fixture.kickoff).toLocaleString('nl-BE')} ·{' '}
-                          {s.fixture.league.name}
-                        </small>
-                        <div>
-                          <strong>{s.label}</strong>
-                          <strong>{q.decimal.toFixed(2)}</strong>
-                        </div>
-                        <small>
-                          Historie:{' '}
-                          {
-                            s.homeEvidence.filter(
-                              (f) => occurrence(f, s.fixture.home.id, s.market) === true,
-                            ).length
-                          }
-                          /{window} thuisploeg ·{' '}
-                          {
-                            s.awayEvidence.filter(
-                              (f) => occurrence(f, s.fixture.away.id, s.market) === true,
-                            ).length
-                          }
-                          /{window} uitploeg · prijswijziging{' '}
-                          {q.updatedAt ? new Date(q.updatedAt).toLocaleString('nl-BE') : 'onbekend'}
-                        </small>
-                        <details>
-                          <summary>
-                            Bekijk de {window}+{window} onderliggende duels
-                          </summary>
-                          {[
-                            { team: s.fixture.home, rows: s.homeEvidence },
-                            { team: s.fixture.away, rows: s.awayEvidence },
-                          ].map(({ team, rows }) => (
-                            <div key={team.id}>
-                              <strong>{team.name}</strong>
-                              <ul>
-                                {rows.map((f) => (
-                                  <li key={f.id}>
-                                    {f.kickoff.slice(0, 10)} · {f.home.name} {f.homeGoals}–
-                                    {f.awayGoals} {f.away.name}
-                                    {s.market.startsWith('firstHalf') &&
-                                      ` (rust ${f.halfHomeGoals}–${f.halfAwayGoals})`}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </details>
-                      </li>
-                    ))}
-                  </ol>
+                  {compact && (
+                    <ul className="compact-combo-legs">
+                      {combo.legs.map(({ selection: s, quote: q }) => (
+                        <li key={s.id}>
+                          <button
+                            className="text-button"
+                            onClick={() => navigate(`/match/${s.fixture.id}`)}
+                          >
+                            {s.fixture.home.name} – {s.fixture.away.name}
+                          </button>
+                          <span>
+                            {s.label} <b>{q.decimal.toFixed(2)}</b>
+                          </span>
+                          <small>{new Date(s.fixture.kickoff).toLocaleString('nl-BE')}</small>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <Evidence className="combo-evidence">
+                    {compact && <summary>Historie en onderbouwing</summary>}
+                    <ol>
+                      {combo.legs.map(({ selection: s, quote: q }) => (
+                        <li key={s.id} className="finder-leg">
+                          <button
+                            className="text-button"
+                            onClick={() => navigate(`/match/${s.fixture.id}`)}
+                          >
+                            {s.fixture.home.name} – {s.fixture.away.name}
+                          </button>
+                          <small>
+                            {new Date(s.fixture.kickoff).toLocaleString('nl-BE')} ·{' '}
+                            {s.fixture.league.name}
+                          </small>
+                          <div>
+                            <strong>{s.label}</strong>
+                            <strong>{q.decimal.toFixed(2)}</strong>
+                          </div>
+                          <small>
+                            Historie:{' '}
+                            {
+                              s.homeEvidence.filter(
+                                (f) => occurrence(f, s.fixture.home.id, s.market) === true,
+                              ).length
+                            }
+                            /{window} thuisploeg ·{' '}
+                            {
+                              s.awayEvidence.filter(
+                                (f) => occurrence(f, s.fixture.away.id, s.market) === true,
+                              ).length
+                            }
+                            /{window} uitploeg · prijswijziging{' '}
+                            {q.updatedAt
+                              ? new Date(q.updatedAt).toLocaleString('nl-BE')
+                              : 'onbekend'}
+                          </small>
+                          <details>
+                            <summary>
+                              Bekijk de {window}+{window} onderliggende duels
+                            </summary>
+                            {[
+                              { team: s.fixture.home, rows: s.homeEvidence },
+                              { team: s.fixture.away, rows: s.awayEvidence },
+                            ].map(({ team, rows }) => (
+                              <div key={team.id}>
+                                <strong>{team.name}</strong>
+                                <ul>
+                                  {rows.map((f) => (
+                                    <li key={f.id}>
+                                      {f.kickoff.slice(0, 10)} · {f.home.name} {f.homeGoals}–
+                                      {f.awayGoals} {f.away.name}
+                                      {s.market.startsWith('firstHalf') &&
+                                        ` (rust ${f.halfHomeGoals}–${f.halfAwayGoals})`}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </details>
+                        </li>
+                      ))}
+                    </ol>
+                  </Evidence>
                 </article>
               ))}
             </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   Activity,
   ArrowDownRight,
@@ -16,6 +16,7 @@ import { isDemo } from './api';
 import Dashboard from './components/Dashboard';
 import { analysisWeights as w } from './analysis/config';
 import MatchPage from './components/MatchPage';
+const CombinationsPage = lazy(() => import('./components/CombinationsPage'));
 function Modal({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -107,7 +108,7 @@ export default function App() {
         <div className="workspace-label">FOOTBALL INTELLIGENCE</div>
         <nav>
           <button
-            className={!matchId ? 'nav-item active' : 'nav-item'}
+            className={route === '/' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('/')}
           >
             <LayoutDashboard size={19} />
@@ -121,6 +122,13 @@ export default function App() {
           >
             <BarChart3 size={19} />
             Matchanalyse
+          </button>
+          <button
+            className={route === '/combis' ? 'nav-item active' : 'nav-item'}
+            onClick={() => navigate('/combis')}
+          >
+            <Layers3 size={19} />
+            Combivoorstellen
           </button>
           <button className="nav-item" onClick={() => setMethod(true)}>
             <Layers3 size={19} />
@@ -169,7 +177,9 @@ export default function App() {
         <header className="topbar">
           <div className="breadcrumb">
             Workspace <ChevronRight size={14} />
-            <strong>{matchId ? 'Matchanalyse' : 'Wedstrijden'}</strong>
+            <strong>
+              {matchId ? 'Matchanalyse' : route === '/combis' ? 'Combivoorstellen' : 'Wedstrijden'}
+            </strong>
           </div>
           <div className="topbar-right">
             <span className="data-label">
@@ -189,6 +199,10 @@ export default function App() {
         <main>
           {matchId ? (
             <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
+          ) : route === '/combis' ? (
+            <Suspense fallback={<p role="status">Pagina laden…</p>}>
+              <CombinationsPage navigate={navigate} />
+            </Suspense>
           ) : (
             <Dashboard navigate={navigate} />
           )}

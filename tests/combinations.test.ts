@@ -224,3 +224,45 @@ it.each(['home', 'away'] as const)(
     }
   },
 );
+
+it('offers market variation within the same odds and team constraints', () => {
+  const base = buildMarkets(data, odds, 5, now).selections.find((s) => s.market === 'over25')!;
+  const selections = Array.from({ length: 5 }, (_, i) =>
+    ['over15', 'btts'].map((market) => ({
+      ...base,
+      id: `varied-${i}:${market}`,
+      market: market as typeof base.market,
+      fixture: {
+        ...base.fixture,
+        id: `varied-${i}`,
+        home: { ...base.fixture.home, id: `home-${i}` },
+        away: { ...base.fixture.away, id: `away-${i}` },
+      },
+      quotes: [{ ...base.quotes[0], market, decimal: 1.5 }],
+    })),
+  ).flat();
+  const combos = suggestCombinations(selections, 'A', now, 8, { limit: 9, diverse: true });
+  expect(combos).toHaveLength(9);
+  expect(new Set(combos[0].legs.map((l) => l.selection.market)).size).toBe(2);
+  expect(
+    new Set(
+      combos.map((c) =>
+        c.legs
+          .map((l) => l.selection.id)
+          .sort()
+          .join('|'),
+      ),
+    ).size,
+  ).toBe(9);
+  for (const combo of combos) {
+    expect(combo.decimal).toBeCloseTo(2.25);
+    const teams = combo.legs.flatMap((l) => [
+      l.selection.fixture.home.id,
+      l.selection.fixture.away.id,
+    ]);
+    expect(new Set(teams).size).toBe(teams.length);
+  }
+  expect(suggestCombinations(selections, 'Unknown', now, 8, { limit: 9, diverse: true })).toEqual(
+    [],
+  );
+});

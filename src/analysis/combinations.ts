@@ -104,6 +104,7 @@ export function suggestCombinations(
   bookmaker: string,
   now = Date.now(),
   maxLegs = 6,
+  options: { limit?: number; diverse?: boolean } = {},
 ): Combination[] {
   const legs: ComboLeg[] = selections.flatMap((selection) => {
     if (Date.parse(selection.fixture.kickoff) <= now) return [];
@@ -146,10 +147,42 @@ export function suggestCombinations(
     }
   }
   visit(0, [], 1);
-  return found
-    .sort(
-      (a, b) =>
-        Math.abs(a.decimal - 2.5) - Math.abs(b.decimal - 2.5) || a.legs.length - b.legs.length,
-    )
-    .slice(0, 3);
+  const ranked = found.sort(
+    (a, b) =>
+      Math.abs(a.decimal - 2.5) - Math.abs(b.decimal - 2.5) || a.legs.length - b.legs.length,
+  );
+  const limit = Math.max(1, Math.min(12, options.limit ?? 3));
+  if (!options.diverse) return ranked.slice(0, limit);
+  const selected: Combination[] = [];
+  const used = new Map<string, number>();
+  const usedMarkets = new Map<string, number>();
+  const remaining = new Set(ranked);
+  while (selected.length < limit && remaining.size) {
+    let best: Combination | undefined;
+    let bestScore = -Infinity;
+    for (const combo of remaining) {
+      const markets = new Set(combo.legs.map((l) => l.selection.market));
+      const repetition =
+        combo.legs.reduce((n, l) => n + (used.get(l.selection.id) ?? 0), 0) / combo.legs.length;
+      const marketRepetition =
+        [...markets].reduce((n, m) => n + (usedMarkets.get(m) ?? 0), 0) / markets.size;
+      const score =
+        markets.size / combo.legs.length -
+        repetition * 2 -
+        marketRepetition * 0.5 -
+        Math.abs(combo.decimal - 2.5) * 0.1;
+      if (score > bestScore) {
+        best = combo;
+        bestScore = score;
+      }
+    }
+    if (!best) break;
+    selected.push(best);
+    remaining.delete(best);
+    best.legs.forEach((l) => used.set(l.selection.id, (used.get(l.selection.id) ?? 0) + 1));
+    new Set(best.legs.map((l) => l.selection.market)).forEach((m) =>
+      usedMarkets.set(m, (usedMarkets.get(m) ?? 0) + 1),
+    );
+  }
+  return selected;
 }
