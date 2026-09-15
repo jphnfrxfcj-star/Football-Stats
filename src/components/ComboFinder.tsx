@@ -113,33 +113,36 @@ export default function ComboFinder({
           </span>
         }
       />
-      <p className="section-intro">
-        {t('Van ')}
-        {t(date)}
-        {t(' t/m ')}
-        {t(end)}
-        {t(
-          '. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens ',
+      <details className="combo-explainer">
+        <summary>{t('Hoe worden voorstellen gekozen?')}</summary>
+        <p className="section-intro">
+          {t('Van ')}
+          {t(date)}
+          {t(' t/m ')}
+          {t(end)}
+          {t(
+            '. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens ',
+          )}
+          {t(minimumRate)}
+          {t('% van de laatste ')}
+          {t(window)}
+          {t(' competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.')}
+        </p>
+        {compact && (
+          <p className="spotlight-note">
+            {t(
+              'Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is geen hogere winstkans.',
+            )}
+          </p>
         )}
-        {t(minimumRate)}
-        {t('% van de laatste ')}
-        {t(window)}
-        {t(' competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.')}
-      </p>
-      {compact && (
-        <p className="spotlight-note">
-          {t(
-            'Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is geen hogere winstkans.',
-          )}
-        </p>
-      )}
-      {compact && (
-        <p className="spotlight-note">
-          {t(
-            'Je kunt doelodds tussen 2 en 20 kiezen en de historische drempel verlagen tot 50%. Dit percentage geldt per selectie en per team; het is niet de slaagkans van je volledige combi.',
-          )}
-        </p>
-      )}
+        {compact && (
+          <p className="spotlight-note">
+            {t(
+              'Je kunt doelodds tussen 2 en 20 kiezen en de historische drempel verlagen tot 50%. Dit percentage geldt per selectie en per team; het is niet de slaagkans van je volledige combi.',
+            )}
+          </p>
+        )}
+      </details>
       {!validTarget && (
         <p role="alert">
           {t(

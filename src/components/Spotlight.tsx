@@ -83,7 +83,12 @@ export default function Spotlight({
       {report && (
         <>
           {cards.length ? (
-            <div className="spotlight-grid">
+            <div
+              className="spotlight-grid"
+              tabIndex={0}
+              role="group"
+              aria-label={t('Spotlight voorstellen')}
+            >
               {cards.map((c) => {
                 const fresh =
                   c.quote?.updatedAt &&

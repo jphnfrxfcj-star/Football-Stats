@@ -2772,7 +2772,7 @@ td {
 .builder-slip {
   margin: 20px 0;
 }
-@media (max-width: 700px) {
+@media (max-width: 720px) {
   .bet-workbench .player-table-scroll {
     overflow: visible;
     max-height: none;
@@ -3025,7 +3025,7 @@ td {
 .builder-price-details .manual-price {
   margin-top: 12px;
 }
-@media (max-width: 700px) {
+@media (max-width: 720px) {
   .bet-workbench .player-table tbody th {
     width: auto;
   }
@@ -3331,4 +3331,315 @@ td {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Phone layout: labelled bottom navigation, short entry screens and touch-sized controls. */
+.nav-mobile-label,
+.mobile-quick-links,
+.mobile-stats-toggle {
+  display: none;
+}
+.combo-explainer {
+  margin: 12px 0 20px;
+}
+.combo-explainer > summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--green);
+  padding: 10px 0;
+}
+@media (max-width: 720px) {
+  html {
+    scroll-padding-top: 64px;
+    scroll-padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  .main-shell {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  .sidebar {
+    height: 54px;
+    padding: 10px 16px;
+  }
+  .sidebar nav {
+    position: fixed;
+    z-index: 45;
+    inset: auto 0 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    box-shadow: 0 -3px 15px #173b2e08;
+  }
+  .sidebar .nav-item {
+    width: 100%;
+    min-height: 56px;
+    padding: 7px 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 11px;
+    line-height: 1.2;
+    border-radius: 8px;
+  }
+  .sidebar .nav-item svg {
+    width: 21px;
+    height: 21px;
+  }
+  .nav-label {
+    display: none;
+  }
+  .nav-mobile-label {
+    display: inline;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    height: 48px;
+    background: white;
+    padding: 0 16px;
+  }
+  .topbar .breadcrumb {
+    font-size: 0;
+    min-width: 0;
+  }
+  .topbar .breadcrumb svg,
+  .topbar .data-label,
+  .topbar .avatar {
+    display: none;
+  }
+  .topbar .breadcrumb strong {
+    font-size: 13px;
+  }
+  .language-control select {
+    min-width: 64px;
+    min-height: 40px;
+    font-size: 16px;
+  }
+  main {
+    padding: 20px 16px;
+  }
+  .page-heading h1 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+  .dashboard-heading {
+    margin-bottom: 12px;
+  }
+  .dashboard-heading .eyebrow,
+  .dashboard-heading p,
+  .dashboard-heading .date-pill,
+  .overview-grid,
+  .feature-banner {
+    display: none;
+  }
+  .mobile-quick-links {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 22px;
+  }
+  .mobile-quick-links a,
+  .mobile-quick-links button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--green);
+    font: inherit;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .spotlight-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding-bottom: 10px;
+  }
+  .spotlight-grid .spotlight-card {
+    flex: 0 0 88%;
+    min-width: 0;
+    scroll-snap-align: start;
+    padding: 16px;
+  }
+  .spotlight-section .section-intro {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .spotlight-note {
+    line-height: 1.6;
+  }
+  .filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .date-switch {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .date-switch label {
+    flex: 1;
+    justify-content: center;
+  }
+  .date-switch input {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+  .filters .search,
+  .filters .select-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+  .filters input,
+  .filters select {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .market-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
+  .market-controls label {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .market-controls input,
+  .market-controls select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 16px;
+  }
+  .market-controls > button {
+    grid-column: 1 / -1;
+    min-height: 48px;
+    width: 100%;
+  }
+  .market-controls > a {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .combo-explainer {
+    margin: 4px 0 16px;
+  }
+  .combo-explainer > summary {
+    min-height: 44px;
+    padding: 12px 0;
+  }
+  .combo-explainer .section-intro {
+    margin-top: 6px;
+    font-size: 13px;
+  }
+  .combo-target {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .combo-finder .section-title {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .match-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 18px;
+    padding-bottom: 4px;
+  }
+  .match-tabs a {
+    white-space: nowrap;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .match-hero {
+    padding: 18px 12px;
+  }
+  .match-venue {
+    font-size: 11px;
+  }
+  .match-picker-row {
+    padding: 12px;
+    gap: 10px;
+  }
+  .match-picker-row strong {
+    font-size: 14px;
+  }
+  .mobile-stats-toggle {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .bet-workbench:not(.show-extra-stats) .player-table td:nth-child(3),
+  .bet-workbench:not(.show-extra-stats) .player-table td:nth-child(5) {
+    display: none;
+  }
+  .bet-workbench .player-table tbody td {
+    padding: 9px 12px;
+  }
+  .bet-workbench .player-table td details summary {
+    min-height: 36px;
+  }
+  .bet-workbench .player-table td:last-child button {
+    min-height: 40px;
+  }
+  .combo-history .market-controls {
+    grid-template-columns: 1fr;
+  }
+  .modal-overlay {
+    padding: 12px;
+    z-index: 60;
+  }
+  .modal {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+  .bottom-info {
+    display: none;
+  }
+  footer {
+    padding: 20px 16px;
+  }
+}
+@media (max-width: 720px) {
+  html[lang='en'] .bet-workbench .player-table td:nth-child(2)::before {
+    content: 'Bookmaker odds';
+  }
+  html[lang='en'] .bet-workbench .player-table td:nth-child(3)::before {
+    content: 'Implied probability';
+  }
+  html[lang='en'] .bet-workbench .player-table td:nth-child(4)::before {
+    content: 'Model estimate';
+  }
+  html[lang='en'] .bet-workbench .player-table td:nth-child(5)::before {
+    content: 'Model gap';
+  }
+  html[lang='en'] .bet-workbench .player-table td:nth-child(6)::before {
+    content: 'Home team history';
+  }
+  html[lang='en'] .bet-workbench .player-table td:nth-child(7)::before {
+    content: 'Away team history';
+  }
 }

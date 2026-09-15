@@ -1,5 +1,7 @@
 # Matchday — Football Intelligence
 
+Voor AI-sessies en een actuele projectoverdracht: lees [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md). De onderstaande uitbreidingsnotities zijn deels chronologisch.
+
 Voetbalanalyse met React, Vite, TypeScript, Netlify Functions en Supabase. De standaardprovider combineert **OpenFootball** (programma) en **Football-Data.co.uk** (uitslagen, historie en wedstrijdstatistieken). Hiervoor is **geen betaalde voetbal-API of API-key nodig**. Onze eigen engine berekent frequenties, gewogen scores, trends en transparante modelkansen; geen externe prediction-endpoints.
 
 ## Starten
@@ -32,7 +34,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-server-secret-key
 SYNC_SECRET=your-long-random-secret
 ```
 
-`free-football` is ook de standaard wanneer `FOOTBALL_PROVIDER` ontbreekt. Een bestaande `API_FOOTBALL_KEY` wordt in deze modus niet gebruikt. `FOOTBALL_SEASON` is het seizoenstartjaar: 2026 betekent 2026/27. Zonder deze variabele wordt het huidige seizoen afgeleid. Deze versie ondersteunt de Premier League en La Liga en seizoenstartjaren vanaf 2024; oudere jaren blijven beschikbaar als historie.
+`free-football` is ook de standaard wanneer `FOOTBALL_PROVIDER` ontbreekt. Een bestaande `API_FOOTBALL_KEY` wordt in deze modus niet gebruikt. `FOOTBALL_SEASON` is het seizoenstartjaar: 2026 betekent 2026/27. Zonder deze variabele wordt het huidige seizoen afgeleid. Deze versie ondersteunt de Premier League, La Liga, Serie A en Ligue 1 en seizoenstartjaren vanaf 2024; oudere jaren blijven beschikbaar als historie.
 
 3. Deploy branch `main`. `netlify.toml` stelt build `npm run build`, publicatiemap `dist`, Functions en routes in.
 4. Open bijvoorbeeld **12 september 2026** en kies een wedstrijd. Op dagen zonder duels in deze competities is een lege lijst normaal; gebruik de datumkiezer of “Volgende dag bekijken”.

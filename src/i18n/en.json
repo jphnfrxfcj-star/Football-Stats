@@ -485,5 +485,11 @@
   "Ongeldige API-parameters": "Invalid API parameters",
   "Gegevens zijn tijdelijk niet beschikbaar. Controleer de serverconfiguratie of probeer later opnieuw.": "Data is temporarily unavailable. Check the server configuration or try again later.",
   "tijdstip onbekend": "timestamp unknown",
-  "Voorbeeldgegevens: wedstrijden en statistieken zijn synthetisch en niet geschikt voor echte voorspellingen.": "Sample data: matches and statistics are synthetic and unsuitable for real predictions."
+  "Voorbeeldgegevens: wedstrijden en statistieken zijn synthetisch en niet geschikt voor echte voorspellingen.": "Sample data: matches and statistics are synthetic and unsuitable for real predictions.",
+  "Combi’s": "Combos",
+  "Naar programma": "Go to fixtures",
+  "Spotlight voorstellen": "Spotlight suggestions",
+  "Hoe worden voorstellen gekozen?": "How are suggestions selected?",
+  "Minder cijfers": "Fewer figures",
+  "Toon impliciete kans en modelverschil": "Show implied probability and model gap"
 }

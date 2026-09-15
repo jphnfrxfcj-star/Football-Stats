@@ -126,6 +126,8 @@ export default function App() {
         <div className="workspace-label">{t('FOOTBALL INTELLIGENCE')}</div>
         <nav>
           <button
+            aria-label={t('Wedstrijden')}
+            aria-current={route === '/' ? 'page' : undefined}
             className={route === '/' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('/')}
           >
@@ -134,24 +136,36 @@ export default function App() {
             <span className="nav-count">{'01'}</span>
           </button>
           <button
+            aria-label={t('Matchanalyse')}
+            aria-current={matchId || route === '/analyse' ? 'page' : undefined}
             className={matchId || route === '/analyse' ? 'nav-item active' : 'nav-item'}
             onClick={() =>
               matchId ? window.scrollTo({ top: 0, behavior: 'smooth' }) : navigate('/analyse')
             }
           >
             <BarChart3 size={19} />
-            {t('Matchanalyse')}
+            <span className="nav-label">{t('Matchanalyse')}</span>
+            <span className="nav-mobile-label">{t('Analyse')}</span>
           </button>
           <button
+            aria-label={t('Combivoorstellen')}
+            aria-current={route === '/combis' ? 'page' : undefined}
             className={route === '/combis' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('/combis')}
           >
             <Layers3 size={19} />
-            {t('Combivoorstellen')}
+            <span className="nav-label">{t('Combivoorstellen')}</span>
+            <span className="nav-mobile-label">{t('Combi’s')}</span>
           </button>
-          <button className="nav-item" onClick={() => setMethod(true)}>
+          <button
+            className="nav-item"
+            aria-label={t('Ons model')}
+            aria-haspopup="dialog"
+            onClick={() => setMethod(true)}
+          >
             <Layers3 size={19} />
-            {t('Ons model')}
+            <span className="nav-label">{t('Ons model')}</span>
+            <span className="nav-mobile-label">{t('Model')}</span>
             <ArrowDownRight size={15} className="nav-end" />
           </button>
         </nav>

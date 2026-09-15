@@ -117,7 +117,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
   };
   return (
     <>
-      <div className="page-heading">
+      <div className="page-heading dashboard-heading">
         <div>
           <div className="eyebrow">
             <span className="green-dot" />
@@ -133,6 +133,18 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           <CalendarDays size={16} />
           {t(dateLabel(date, true))}
         </span>
+      </div>
+      <div className="mobile-quick-links">
+        <a href="#program">{t('Naar programma')}</a>
+        <a
+          href="/combis"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('/combis');
+          }}
+        >
+          {t('Combivoorstellen')}
+        </a>
       </div>
       <div className="overview-grid">
         <div className="overview-card">
@@ -240,6 +252,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         <Spotlight date={date} league={league} navigate={navigate} />
       )}
       {!loading && !error && <DayRecap fixtures={filtered} />}
+      <div id="program" />
       <SectionTitle
         title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
         aside={<span className="subtle">{t('Alle tijden in jouw tijdzone')}</span>}

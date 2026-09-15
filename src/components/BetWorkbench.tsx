@@ -49,8 +49,12 @@ export default function BetWorkbench({
     setBuilderPrice('');
     setPicked(picked.includes(m) ? picked.filter((p) => p !== m) : [...picked, m]);
   }
+  const [extraStats, setExtraStats] = useState(false);
   return (
-    <div className="bet-workbench" aria-label={t('Odds versus statistiek')}>
+    <div
+      className={`bet-workbench${extraStats ? ' show-extra-stats' : ''}`}
+      aria-label={t('Odds versus statistiek')}
+    >
       <h3>{t('Odds versus statistiek')}</h3>
       <p className="section-intro">
         {t(
@@ -128,6 +132,13 @@ export default function BetWorkbench({
           )}
         </p>
       </details>
+      <button
+        className="text-button mobile-stats-toggle"
+        aria-expanded={extraStats}
+        onClick={() => setExtraStats((v) => !v)}
+      >
+        {t(extraStats ? 'Minder cijfers' : 'Toon impliciete kans en modelverschil')}
+      </button>
       <div className="player-table-scroll" tabIndex={0} aria-label={t('Odds en statistiek tabel')}>
         <table className="player-table">
           <thead>
