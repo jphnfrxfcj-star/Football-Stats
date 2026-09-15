@@ -13,6 +13,7 @@ export default function ComboFinder({
   date: string;
   navigate: (path: string) => void;
 }) {
+  const [started, setStarted] = useState(false);
   const [report, setReport] = useState<MarketsReport | null>(null),
     [error, setError] = useState(''),
     [window, setWindow] = useState(5),
@@ -25,6 +26,7 @@ export default function ComboFinder({
     return () => clearInterval(t);
   }, []);
   useEffect(() => {
+    if (!started) return;
     const c = new AbortController();
     setReport(null);
     setError('');
@@ -37,7 +39,7 @@ export default function ComboFinder({
         if (!c.signal.aborted) setError(e.message);
       });
     return () => c.abort();
-  }, [date, window, attempt, minimumRate]);
+  }, [date, window, attempt, minimumRate, started]);
   const cutoff = isDemo ? Date.parse(`${date}T00:00:00Z`) : now;
   const books = [
     ...new Set([
@@ -135,11 +137,21 @@ export default function ComboFinder({
             ))}
           </select>
         </label>
-        <button className="secondary-button" onClick={() => setAttempt(attempt + 1)}>
-          Combi zoeken / verversen
+        <button
+          className="secondary-button"
+          onClick={() => {
+            setStarted(true);
+            setAttempt(attempt + 1);
+          }}
+        >
+          {started ? 'Combi zoeken / verversen' : 'Doe een voorstel'}
         </button>
       </div>
-      {error ? (
+      {!started ? (
+        <p className="spotlight-note">
+          Kies je voorkeuren en klik op ‘Doe een voorstel’. De combianalyse wordt pas dan geladen.
+        </p>
+      ) : error ? (
         <p role="alert">{error} Probeer opnieuw met ‘Combi zoeken / verversen’.</p>
       ) : !report ? (
         <Loading />

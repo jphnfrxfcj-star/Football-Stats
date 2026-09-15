@@ -1,5 +1,5 @@
 import { expect, it, vi, afterEach } from 'vitest';
-import { normalizeUnibet, unibetMatchOdds } from '../server/providers/unibet';
+import { normalizeUnibet, unibetMatchOdds, unibetOdds } from '../server/providers/unibet';
 const now = Date.parse('2026-09-13T10:00:00Z');
 const event = {
   id: 1,
@@ -117,4 +117,45 @@ it('loads only the requested event and rejects matching teams on a different dat
       .quotes,
   ).toHaveLength(0);
   expect(call).toHaveBeenCalledTimes(1);
+});
+
+it('scopes program prices before the global 24-event limit without caching partial aggregates', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+  const { demoFixtures } = await import('../src/demo/data');
+  const fixture = {
+    ...demoFixtures('2026-09-14')[0],
+    kickoff: event.start,
+    home: { ...demoFixtures('2026-09-14')[0].home, name: 'Leeds' },
+    away: { ...demoFixtures('2026-09-14')[0].away, name: 'Newcastle' },
+  };
+  const earlier = Array.from({ length: 25 }, (_, i) => ({
+    event: { ...event, id: 100 + i, homeName: 'Arsenal', start: '2026-09-13T15:00:00Z' },
+  }));
+  const call = vi
+    .fn<typeof fetch>()
+    .mockImplementation(
+      async (url) =>
+        new Response(
+          JSON.stringify(
+            String(url).includes('listView')
+              ? { events: String(url).includes('premier_league') ? [...earlier, { event }] : [] }
+              : { events: [event], betOffers: [offer] },
+          ),
+        ),
+    );
+  vi.stubGlobal('fetch', call);
+  const keys: string[] = [];
+  const service = {
+    cached: async (key: string, _ttl: number, loader: () => Promise<unknown>) => {
+      keys.push(key);
+      return loader();
+    },
+  };
+  const result = await unibetOdds(service as never, [fixture]);
+  expect(result.quotes).toHaveLength(1);
+  expect(
+    call.mock.calls.filter(([url]) => String(url).includes('betoffer')).map(([url]) => String(url)),
+  ).toEqual([expect.stringContaining('/event/1.json')]);
+  expect(keys).not.toContain('odds:unibet-be:v3');
 });

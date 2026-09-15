@@ -92,14 +92,24 @@ async function read(path: string) {
   if (text.length > 5000000) throw new Error('Unibet response too large');
   return JSON.parse(text) as unknown;
 }
-export async function unibetOdds(service: FootballService): Promise<OddsSnapshot> {
-  return service.cached('odds:unibet-be:v3', 300, async () => {
+export async function unibetOdds(
+  service: FootballService,
+  fixtures?: Fixture[],
+): Promise<OddsSnapshot> {
+  const load = async (): Promise<OddsSnapshot> => {
     const now = Date.now();
     const lists = await Promise.allSettled(
       Object.values(competitions).map(({ unibet: path }) =>
-        read(`listView/${path}/all/matches.json`).then((raw) =>
-          z.object({ events: z.array(z.object({ event: eventSchema })) }).parse(raw),
-        ),
+        service
+          .cached(
+            `odds:unibet-be:list:v1:${path}`,
+            300,
+            async () =>
+              z
+                .object({ events: z.array(z.object({ event: eventSchema })) })
+                .parse(await read(`listView/${path}/all/matches.json`)).events,
+          )
+          .then((events) => ({ events })),
       ),
     );
     const events = lists.flatMap((result) =>
@@ -113,10 +123,20 @@ export async function unibetOdds(service: FootballService): Promise<OddsSnapshot
         (e) =>
           e.state === 'NOT_STARTED' &&
           Date.parse(e.start) > now &&
-          Date.parse(e.start) < now + 8 * 86400000,
+          (fixtures !== undefined || Date.parse(e.start) < now + 8 * 86400000),
+      )
+      .filter(
+        (e) =>
+          !fixtures ||
+          fixtures.some(
+            (f) =>
+              canonicalClubName(e.homeName) === canonicalClubName(f.home.name) &&
+              canonicalClubName(e.awayName) === canonicalClubName(f.away.name) &&
+              Math.abs(Date.parse(e.start) - Date.parse(f.kickoff)) <= 60000,
+          ),
       )
       .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
-      .slice(0, 24);
+      .slice(0, fixtures ? fixtures.length : 24);
     const quotes: OddsQuote[] = [];
     let failed = 0;
     for (let i = 0; i < upcoming.length; i += 3) {
@@ -141,7 +161,8 @@ export async function unibetOdds(service: FootballService): Promise<OddsSnapshot
       quotes,
       message: `Unibet België: beschikbare pre-matchprijzen voor de komende acht dagen, maximaal elke vijf minuten opgehaald. Quoteringstijdstip is de laatste prijswijziging. Geen automatische betbuilderprijs.${failed ? ' Sommige wedstrijden konden niet worden opgehaald.' : ''}`,
     };
-  });
+  };
+  return fixtures ? load() : service.cached('odds:unibet-be:v3', 300, load);
 }
 
 /** Fetch only the opened match; unrelated event failures must not remove its odds. */

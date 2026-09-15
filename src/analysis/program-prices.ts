@@ -8,7 +8,13 @@ export function programPrices(fixture: Fixture, report: OddsSnapshot | null, now
       ? fixtureQuotes(fixture, report).filter((q) => ['home', 'draw', 'away'].includes(q.market))
       : [];
   const books = [...new Set(available.map((q) => q.bookmaker))];
-  const bookmaker = books.includes('Unibet België') ? 'Unibet België' : (books[0] ?? null);
+  const coverage = (book: string) =>
+    new Set(available.filter((q) => q.bookmaker === book).map((q) => q.market)).size;
+  const ranked = [...books].sort(
+    (a, b) =>
+      coverage(b) - coverage(a) || Number(b === 'Unibet België') - Number(a === 'Unibet België'),
+  );
+  const bookmaker = ranked[0] ?? null;
   const quotes: Partial<Record<'home' | 'draw' | 'away', OddsQuote>> = {};
   for (const q of available.filter((q) => q.bookmaker === bookmaker)) {
     const market = q.market as 'home' | 'draw' | 'away';

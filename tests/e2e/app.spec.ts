@@ -156,6 +156,8 @@ test('multi-day x2-x3 finder remains visible on an empty program date', async ({
   await expect(finder.getByRole('heading', { name: 'Combi x2–x3' })).toBeVisible();
   await expect(finder).toContainText('2026-09-12 t/m 2026-09-19');
   await expect(finder.getByLabel('Combiboekmaker')).toHaveValue('Unibet België');
+  await expect(finder).toContainText('De combianalyse wordt pas dan geladen');
+  await finder.getByRole('button', { name: 'Doe een voorstel' }).click();
   await expect(finder).toContainText('Geen passende combi');
   await finder.getByLabel('Combi historie').selectOption('10');
   await expect(finder).toContainText('laatste 10');

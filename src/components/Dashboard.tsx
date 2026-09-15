@@ -70,7 +70,6 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     !loading && !error && date >= today() && fixtures.some((f) => isUpcoming(f, now));
   useEffect(() => {
     const c = new AbortController();
-    setOdds(null);
     setOddsError('');
     setOddsLoading(false);
     if (!hasUpcoming) return () => c.abort();
@@ -88,6 +87,23 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       });
     return () => c.abort();
   }, [date, hasUpcoming, oddsRetry]);
+  const [recoveredDate, setRecoveredDate] = useState('');
+  useEffect(() => {
+    if (!hasUpcoming || oddsLoading || recoveredDate === date) return;
+    const missing =
+      oddsError ||
+      (odds?.date === date &&
+        fixtures.some(
+          (f) =>
+            isUpcoming(f, now) && Object.keys(programPrices(f, odds.report, now).quotes).length < 3,
+        ));
+    if (!missing) return;
+    const timer = setTimeout(() => {
+      setRecoveredDate(date);
+      setOddsRetry((n) => n + 1);
+    }, 65000);
+    return () => clearTimeout(timer);
+  }, [hasUpcoming, oddsLoading, recoveredDate, date, oddsError, odds, fixtures]);
   const filtered = fixtures.filter(
     (f) =>
       (league === 'all' || f.league.id === league) &&
@@ -214,15 +230,6 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
-      <ComboHistory
-        combos={archive.combos}
-        error={archive.error}
-        remove={archive.remove}
-        navigate={navigate}
-      />
-      {date >= today() && (
-        <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} />
-      )}
       {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
         <Spotlight date={date} league={league} navigate={navigate} />
       )}
@@ -288,13 +295,17 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           {oddsError ? (
             <>
               <span role="status"> Odds tijdelijk niet beschikbaar.</span>{' '}
-              <button className="text-button" onClick={() => setOddsRetry((n) => n + 1)}>
-                Odds opnieuw laden
-              </button>
             </>
           ) : (
             ' Open een wedstrijd voor de volledige analyse.'
-          )}
+          )}{' '}
+          <button
+            className="text-button"
+            disabled={oddsLoading}
+            onClick={() => setOddsRetry((n) => n + 1)}
+          >
+            {oddsLoading ? 'Odds laden…' : 'Odds opnieuw laden'}
+          </button>
         </p>
       )}
       {isDemo && (
@@ -411,6 +422,15 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           })}
         </div>
       )}
+      {date >= today() && (
+        <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} />
+      )}
+      <ComboHistory
+        combos={archive.combos}
+        error={archive.error}
+        remove={archive.remove}
+        navigate={navigate}
+      />
       <div className="bottom-info">
         <div>
           <Database size={20} />

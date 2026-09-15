@@ -51,3 +51,12 @@ it('labels the available alternative and never mixes unmatched games or stale da
   expect(programPrices({ ...fixture, status: 'finished' }, report, now).bookmaker).toBeNull();
   expect(programPrices(fixture, report, Date.parse(fixture.kickoff)).bookmaker).toBeNull();
 });
+
+it('uses a complete alternative instead of leaving two prices blank for a partial preferred feed', () => {
+  const complete = report.quotes
+    .filter((q) => q.bookmaker === 'Unibet België')
+    .map((q) => ({ ...q, bookmaker: 'Other' }));
+  const p = programPrices(fixture, { ...report, quotes: [quote, ...complete] }, now);
+  expect(p.bookmaker).toBe('Other');
+  expect(Object.keys(p.quotes)).toHaveLength(3);
+});

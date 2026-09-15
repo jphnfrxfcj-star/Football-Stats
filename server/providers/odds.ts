@@ -171,9 +171,13 @@ async function comparisonOdds(service: FootballService): Promise<OddsSnapshot> {
   });
 }
 
-export async function getOdds(service: FootballService, fixture?: Fixture): Promise<OddsSnapshot> {
+export async function getOdds(
+  service: FootballService,
+  fixture?: Fixture,
+  fixtures?: Fixture[],
+): Promise<OddsSnapshot> {
   const [unibet, comparison] = await Promise.allSettled([
-    fixture ? unibetMatchOdds(service, fixture) : unibetOdds(service),
+    fixture ? unibetMatchOdds(service, fixture) : unibetOdds(service, fixtures),
     comparisonOdds(service),
   ]);
   if (unibet.status === 'fulfilled')

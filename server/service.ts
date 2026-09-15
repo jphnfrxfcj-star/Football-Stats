@@ -221,7 +221,7 @@ export class FootballService {
         quotes: [],
         message: 'Geen komende wedstrijden.',
       };
-    const report = await getOdds(this);
+    const report = await getOdds(this, undefined, fixtures);
     return {
       ...report,
       quotes: fixtures
