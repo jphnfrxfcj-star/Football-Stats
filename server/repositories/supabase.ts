@@ -293,6 +293,24 @@ export class Repository {
     const map = new Map((data ?? []).map((r) => [r.fixture_id, r.data as Fixture['statistics']]));
     return fixtures.map((f) => ({ ...f, statistics: map.get(f.id) ?? f.statistics }));
   }
+  async results(ids: string[]) {
+    const { data, error } = await this.db.from('fixtures').select('data').in('id', ids);
+    this.assert(error);
+    return (data ?? []).map((row) => {
+      const f = row.data as Fixture;
+      return {
+        id: f.id,
+        home: f.home,
+        away: f.away,
+        kickoff: f.kickoff,
+        status: f.status,
+        homeGoals: f.homeGoals,
+        awayGoals: f.awayGoals,
+        halfHomeGoals: f.halfHomeGoals,
+        halfAwayGoals: f.halfAwayGoals,
+      };
+    });
+  }
   async fixture(id: string): Promise<Fixture | null> {
     const { data, error } = await this.db
       .from('fixtures')

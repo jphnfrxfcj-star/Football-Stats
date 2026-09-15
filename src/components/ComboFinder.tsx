@@ -1,3 +1,4 @@
+import { saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { api, isDemo } from '../api';
@@ -6,7 +7,9 @@ import { SectionTitle, Loading } from './ui';
 export default function ComboFinder({
   date,
   navigate,
+  onSave,
 }: {
+  onSave: (proposals: SavedCombo[]) => void;
   date: string;
   navigate: (path: string) => void;
 }) {
@@ -46,6 +49,15 @@ export default function ComboFinder({
     () => suggestCombinations(report?.selections ?? [], book, cutoff, 8),
     [report, book, cutoff],
   );
+  useEffect(() => {
+    if (isDemo) return;
+    onSave(
+      combos.flatMap((combo) => {
+        const saved = saveProposal(combo, window, minimumRate);
+        return saved ? [saved] : [];
+      }),
+    );
+  }, [combos, window, minimumRate, onSave]);
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
   const priced = [
     ...new Set(
@@ -94,7 +106,10 @@ export default function ComboFinder({
           <select
             aria-label="Combi historie"
             value={window}
-            onChange={(e) => setWindow(Number(e.target.value))}
+            onChange={(e) => {
+              setReport(null);
+              setWindow(Number(e.target.value));
+            }}
           >
             {[5, 10, 20].map((n) => (
               <option value={n} key={n}>
@@ -108,7 +123,10 @@ export default function ComboFinder({
           <select
             aria-label="Combi minimumfrequentie"
             value={minimumRate}
-            onChange={(e) => setMinimumRate(Number(e.target.value))}
+            onChange={(e) => {
+              setReport(null);
+              setMinimumRate(Number(e.target.value));
+            }}
           >
             {[100, 90, 80].map((n) => (
               <option key={n} value={n}>
@@ -220,7 +238,13 @@ export default function ComboFinder({
                 verzinnen we geen prijzen.
               </p>
               {minimumRate === 100 && (
-                <button className="secondary-button" onClick={() => setMinimumRate(80)}>
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    setReport(null);
+                    setMinimumRate(80);
+                  }}
+                >
                   Zoek met minstens 80% historie
                 </button>
               )}

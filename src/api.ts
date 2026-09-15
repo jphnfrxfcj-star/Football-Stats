@@ -1,3 +1,4 @@
+import type { ComboResult } from './domain/combo-history';
 import { buildMarkets, type MarketsReport } from './analysis/combinations';
 import { getJson as get } from './lib/http';
 import type { PlayerReport } from './domain/players';
@@ -15,6 +16,19 @@ export interface AnalysisResponse {
   probabilities: Probability[];
 }
 export const api = {
+  results: (
+    ids: string[],
+    signal?: AbortSignal,
+  ): Promise<{ checkedAt: string; results: ComboResult[] }> =>
+    isDemo
+      ? Promise.resolve({
+          checkedAt: new Date().toISOString(),
+          results: ids.flatMap((id) => {
+            const d = demoMatch(id);
+            return d ? [d.fixture] : [];
+          }),
+        })
+      : get(`results?ids=${ids.map(encodeURIComponent).join(',')}`, signal),
   programOdds: (date: string, signal?: AbortSignal): Promise<OddsSnapshot> =>
     isDemo
       ? Promise.resolve({

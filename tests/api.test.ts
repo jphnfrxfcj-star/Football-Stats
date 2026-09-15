@@ -140,3 +140,17 @@ it('serves the lightweight program odds endpoint and validates dates', async () 
     (await handler(new Request('http://localhost/api/odds?date=invalid'), context)).status,
   ).toBe(400);
 });
+
+it('returns batched results and limits invalid or oversized requests', async () => {
+  const response = await handler(
+    new Request('http://localhost/api/results?ids=demo-2026-09-11-0'),
+    context,
+  );
+  expect(response.status).toBe(200);
+  expect((await response.json()).results).toHaveLength(1);
+  for (const ids of ['', 'invalid/id', Array(51).fill('demo-2026-09-11-0').join(',')]) {
+    expect(
+      (await handler(new Request(`http://localhost/api/results?ids=${ids}`), context)).status,
+    ).toBe(400);
+  }
+});

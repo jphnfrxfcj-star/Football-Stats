@@ -1,3 +1,5 @@
+import ComboHistory from './ComboHistory';
+import { useComboHistory } from './useComboHistory';
 import { programPrices } from '../analysis/program-prices';
 import type { OddsSnapshot } from '../domain/spotlight';
 import ComboFinder from './ComboFinder';
@@ -27,6 +29,7 @@ import type { Fixture, League } from '../domain/models';
 import { today } from '../demo/data';
 import { Badge, SectionTitle, Loading, ErrorBox, time, dateLabel } from './ui';
 export default function Dashboard({ navigate }: { navigate: (s: string) => void }) {
+  const archive = useComboHistory();
   const [date, setDate] = useState(today()),
     [query, setQuery] = useState(''),
     [league, setLeague] = useState('all');
@@ -211,7 +214,15 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
-      {date >= today() && <ComboFinder key={date} date={date} navigate={navigate} />}
+      <ComboHistory
+        combos={archive.combos}
+        error={archive.error}
+        remove={archive.remove}
+        navigate={navigate}
+      />
+      {date >= today() && (
+        <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} />
+      )}
       {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
         <Spotlight date={date} league={league} navigate={navigate} />
       )}

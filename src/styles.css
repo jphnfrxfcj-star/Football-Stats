@@ -3192,3 +3192,26 @@ td {
     font-size: 11px;
   }
 }
+
+.combo-history {
+  margin: 24px 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--border, #e2e8f0);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.combo-history > details > summary {
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.combo-history > details > summary span {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.combo-history .combo-grid {
+  margin-top: 20px;
+}
+.combo-history .combo-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

@@ -167,6 +167,20 @@ async function route(request: Request, context: Context) {
           : await svc!.programOdds(date),
       );
     }
+    if (path[0] === 'results' && path.length === 1) {
+      const ids = z
+        .array(idSchema)
+        .min(1)
+        .max(50)
+        .parse((url.searchParams.get('ids') ?? '').split(','));
+      const results = demo
+        ? ids.flatMap((id) => {
+            const data = demoMatch(id);
+            return data ? [data.fixture] : [];
+          })
+        : await svc!.repo.results([...new Set(ids)]);
+      return json({ checkedAt: new Date().toISOString(), results });
+    }
     if (path[0] === 'fixtures' && path.length === 1) {
       const date = dateSchema.parse(url.searchParams.get('date') ?? today());
       return json(demo ? demoFixtures(date) : await svc!.fixtures(date));
