@@ -491,5 +491,11 @@
   "Spotlight voorstellen": "Spotlight suggestions",
   "Hoe worden voorstellen gekozen?": "How are suggestions selected?",
   "Minder cijfers": "Fewer figures",
-  "Toon impliciete kans en modelverschil": "Show implied probability and model gap"
+  "Toon impliciete kans en modelverschil": "Show implied probability and model gap",
+  "Competitie": "Competition",
+  "Ploeg": "Team",
+  "Competitie voor analyse": "Competition to analyse",
+  "Ploeg voor analyse": "Team to analyse",
+  "Alle ploegen": "All teams",
+  "Geen wedstrijden gevonden voor deze datum en filters.": "No matches found for this date and filters."
 }

@@ -269,6 +269,11 @@ export default function ComboFinder({
         <Loading />
       ) : (
         <>
+          {report.odds.message && (
+            <p className="spotlight-note" role="status">
+              {t(report.odds.message)}
+            </p>
+          )}
           <p className="spotlight-note">
             {t(report.fixtures.filter((f) => Date.parse(f.fixture.kickoff) > cutoff).length)}
             {t(' komende wedstrijden onderzocht · ')}

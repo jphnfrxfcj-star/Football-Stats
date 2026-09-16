@@ -32,6 +32,22 @@ for (const width of [360, 390])
     expect(action!.y + action!.height).toBeLessThanOrEqual(bottom!.y);
     await page.screenshot({ path: `/tmp/mobile-combis-${width}.png` });
     await page.getByRole('button', { name: 'Matchanalyse', exact: true }).click();
+    const analysisControls = page.locator('.match-picker-controls');
+    const dateInput = page.getByLabel('Analysedatum');
+    const searchInput = page.getByLabel('Competitie voor analyse');
+    const dateBox = await dateInput.boundingBox();
+    const searchBox = await searchInput.boundingBox();
+    const controlsBox = await analysisControls.boundingBox();
+    expect(dateBox!.y + dateBox!.height).toBeLessThanOrEqual(searchBox!.y);
+    expect(dateBox!.x).toBeGreaterThanOrEqual(controlsBox!.x);
+    expect(searchBox!.x).toBeGreaterThanOrEqual(controlsBox!.x);
+    expect(dateBox!.x + dateBox!.width).toBeLessThanOrEqual(controlsBox!.x + controlsBox!.width);
+    expect(searchBox!.x + searchBox!.width).toBeLessThanOrEqual(
+      controlsBox!.x + controlsBox!.width,
+    );
+    const teamBox = await page.getByLabel('Ploeg voor analyse').boundingBox();
+    expect(searchBox!.y + searchBox!.height).toBeLessThanOrEqual(teamBox!.y);
+    await page.screenshot({ path: `/tmp/mobile-analysis-filters-${width}.png` });
     await page.locator('.match-picker-row').first().click();
     const table = page.getByLabel('Odds versus statistiek');
     await expect(table.locator('td:nth-child(3)').first()).not.toBeVisible();

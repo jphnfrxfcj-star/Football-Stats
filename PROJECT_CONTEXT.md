@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 15 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 16 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -27,7 +27,7 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 | Route        | Gedrag                                                                                                                                    |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `/`          | Dashboard: spotlight, programma met 1/X/2-odds, combizoeker, combihistoriek. Datum-, competitie- en teamfilter.                           |
-| `/analyse`   | Wedstrijdkiezer met datum en zoekveld; opent een echte matchanalyse.                                                                      |
+| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                                      |
 | `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
 | `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
 
@@ -37,6 +37,9 @@ openen; op een matchpagina brengt die navigatie je naar boven in de huidige anal
 Mobiel (tot 720 px): vaste ondernavigatie met labels en safe-area-ruimte, compacte
 header met taalkeuze, geen grote promotionele hero/overzichtskaarten, horizontaal
 scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
+Op `/analyse` staan datum, competitie en ploeg mobiel onder elkaar. Keuzelijsten
+worden gevuld met wedstrijden op de gekozen datum; de ploegkeuze volgt de competitie.
+Een andere competitie wist de ploegkeuze; een andere datum wist beide filters.
 Op de oddsvergelijking zijn impliciete kans en modelverschil mobiel optioneel via
 ‘Toon impliciete kans en modelverschil’. Odds, model en historie blijven direct
 beschikbaar. Desktop behoudt de uitgebreidere weergave.
@@ -115,6 +118,10 @@ niet opnieuw alleen de algemene feed: die selecteert maximaal 24 wedstrijden voo
 de komende acht dagen, waardoor een gekozen speeldag buiten de selectie kan vallen.
 Matchanalyse vraagt specifiek de geopende wedstrijd op. Lijst- en eventcaches
 worden gedeeld tussen deze aanvragen.
+
+De combizoeker vraagt odds gericht op voor alle nog komende wedstrijden uit de
+gekozen periode, eveneens buiten de algemene limiet van 24 wedstrijden. Hij toont
+de bronmelding bij de resultaten, ook bij gedeeltelijke of volledige bronuitval.
 
 - Programma toont compacte 1/X/2-prijzen, zonder prijstegels, onder de teams.
 - Gebruik één bookmaker per wedstrijdregel; geen mix van prijzen tussen bookmakers.

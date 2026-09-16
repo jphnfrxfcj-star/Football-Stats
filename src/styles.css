@@ -3285,6 +3285,29 @@ td {
   display: grid;
   gap: 10px;
 }
+.match-picker-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.match-picker-controls label {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.match-picker-controls input,
+.match-picker-controls select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #dce3df;
+  border-radius: 8px;
+  background: white;
+  color: #173b2e;
+  font: inherit;
+}
 .match-picker-row {
   display: flex;
   align-items: center;
@@ -3582,6 +3605,17 @@ td {
   .match-picker-row {
     padding: 12px;
     gap: 10px;
+  }
+  .match-picker-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .match-picker-controls label,
+  .match-picker-controls input {
+    width: 100%;
+  }
+  .match-picker-controls input,
+  .match-picker-controls select {
+    min-height: 48px;
   }
   .match-picker-row strong {
     font-size: 14px;

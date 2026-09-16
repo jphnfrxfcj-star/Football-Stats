@@ -255,7 +255,11 @@ export class FootballService {
     const matches = unpackMarketHistory(packed);
     const odds = await (
       matches.some((m) => isUpcoming(m.fixture))
-        ? getOdds(this)
+        ? getOdds(
+            this,
+            undefined,
+            matches.map((m) => m.fixture).filter((f) => isUpcoming(f)),
+          )
         : Promise.resolve({
             source: 'Geen pre-matchodds nodig',
             kind: 'snapshot' as const,

@@ -43,13 +43,21 @@ test('separate combinations page loads only on request and shows compact expanda
             ],
           })),
         ),
-        odds: { source: 'Test', kind: 'snapshot', fetchedAt: '2026-09-12T08:00:00Z', message: '' },
+        odds: {
+          source: 'Test',
+          kind: 'snapshot',
+          fetchedAt: '2026-09-12T08:00:00Z',
+          message: 'Sommige wedstrijden konden niet worden opgehaald.',
+        },
       });
     },
     { fixtures, path: apiPath },
   );
   await page.getByRole('button', { name: 'Doe een voorstel' }).click();
   await expect(page.locator('.combo-finder-compact .combo-card')).toHaveCount(9);
+  await expect(page.locator('.combo-finder').getByRole('status')).toHaveText(
+    'Sommige wedstrijden konden niet worden opgehaald.',
+  );
   const first = page.locator('.combo-card').first();
   await expect(first.locator('.compact-combo-legs')).toBeVisible();
   await expect(first.locator('.combo-evidence')).not.toHaveAttribute('open', '');
@@ -81,7 +89,7 @@ test('match analysis navigation opens a fixture picker instead of model document
   await page.getByRole('button', { name: 'Matchanalyse', exact: true }).click();
   await expect(page).toHaveURL(/\/analyse$/);
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await page.getByLabel('Zoek wedstrijd voor analyse').fill('Arsenal');
+  await page.getByLabel('Ploeg voor analyse').selectOption({ label: 'Arsenal' });
   await expect(page.locator('.match-picker-row')).toHaveCount(1);
   await page.locator('.match-picker-row').click();
   await expect(page).toHaveURL(/\/match\//);
