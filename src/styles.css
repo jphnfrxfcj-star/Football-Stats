@@ -3104,15 +3104,18 @@ td {
 .fixture-odds {
   grid-column: 2 / 5;
   grid-row: 2;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 68px);
   align-items: baseline;
   justify-content: center;
-  gap: 14px;
+  gap: 4px 12px;
   min-width: 0;
   line-height: 1.4;
 }
 .fixture-odd {
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 10px 5ch;
+  justify-content: center;
   align-items: baseline;
   gap: 5px;
   white-space: nowrap;
@@ -3122,19 +3125,22 @@ td {
   color: #89948c;
 }
 .fixture-odd strong {
+  text-align: right;
   font-size: 12px;
   font-weight: 550;
   font-variant-numeric: tabular-nums;
   color: #42634e;
 }
 .fixture-odds-caption {
+  grid-column: 1 / -1;
+  text-align: center;
   font-size: 9px;
   color: #89948c;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
-  max-width: 160px;
+  max-width: 100%;
 }
 @media (min-width: 701px) {
   .fixture-row:not(.has-odds) > :is(.fixture-time, .fixture-venue, .analyze-link) {
@@ -3177,12 +3183,13 @@ td {
   .fixture-row .fixture-odds {
     grid-column: 2 / -1;
     grid-row: 3;
-    justify-content: flex-start;
-    gap: 10px;
+    grid-template-columns: repeat(3, 60px);
+    justify-content: start;
+    gap: 4px 10px;
     margin-top: 3px;
   }
   .fixture-odds-caption {
-    max-width: 100px;
+    max-width: 100%;
     font-size: 8px;
   }
   .fixture-odd {
