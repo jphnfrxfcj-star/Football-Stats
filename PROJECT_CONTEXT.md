@@ -27,7 +27,7 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 | Route        | Gedrag                                                                                                                                    |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `/`          | Dashboard: spotlight, programma met 1/X/2-odds, combizoeker, combihistoriek. Datum-, competitie- en teamfilter.                           |
-| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                                      |
+| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                       |
 | `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
 | `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
 
@@ -158,31 +158,39 @@ prijzen bij dezelfde bookmaker:
   historische drempels 50/60/70/80/90/100%.
 - Elke selectie moet de drempel halen voor **beide teams**, met een volledige
   waargenomen steekproef. Ontbrekende waarnemingen kwalificeren niet als succes.
-- **Standaard aanvullende prijscontrole** op homepage én combipagina. De historische
-  eis blijft noodzakelijk. `combo-assessment.ts` vergelijkt het gewogen model met
-  een Poisson-goalsmodel (gewogen aanval/verdediging, ook voor rustmarkten).
-  Beide moeten minstens **5 procentpunten** boven `100 / odd` liggen; dit is een
-  expliciete, ongekalibreerde filtermarge, geen bewezen voordeel of betrouwbaarheidsinterval.
-  Minstens 20 volledig waargenomen recente marktuitslagen per ploeg en minstens
-  5 beschikbare relevante thuis-/uitduels vereist. Geen verplichte H2H-steekproef.
-- Prijscontrole vraagt een feedprijs die maximaal 15 minuten geleden is waargenomen
-  (`observedAt`) of, zonder observatietijd, gewijzigd (`updatedAt`). Unibet legt
-  observatietijd vast bij het lezen van OPEN eventodds; cachehits behouden die tijd.
-  Een recent opgehaalde CSV of een nieuwe response-envelope maakt prijzen niet actueel.
-  Onbekende/verlopen prijzen kunnen alleen via de expliciete historische modus meedoen.
-- ‘Alleen historische frequentie’ behoudt de oorspronkelijke zoeker met een zichtbare
-  melding dat de prijs niet is beoordeeld. Meer variatie/hogere doelodds versoepelt
-  de prijscontrole nooit. Afvallers krijgen redenen en maximaal zes voorbeelden;
-  per leg zijn beide modellen, break-even, laatste 10, trend 5 versus vorige 5,
-  thuis/uit en gedateerde H2H inspecteerbaar. Geen samengestelde combiwinstkans.
-- Onderzoek: `docs/combo-model-review.md`, reproduceerbaar met
-  `node scripts/audit-combo-model.mjs`. 2.565 chronologisch getoetste wedstrijden,
-  vier competities, 2023/24–2024/25. Geen bewijs van winstgevendheid of kalibratie;
-  de extra marge/strengere combinatie van modellen is niet als bettingstrategie gevalideerd.
+- Homepage blijft een eenvoudige historische x2–3-zoeker: geen beoordelingselector
+  of verplichte prijsfilter. De ingestelde historische eisen blijven ongewijzigd.
+- Combipagina start met **Toon voorstellen met beoordeling**. Alle historisch
+  passende selecties met bruikbare odds blijven beschikbaar. Voorstellen worden
+  gerangschikt op hun zwakste prijsbeoordeling: beide modellen boven break-even,
+  tegenstrijdig, beide eronder, of niet beoordeelbaar. Dit is diagnostische
+  rangschikking, geen bewezen betere bettingstrategie. Waarschuwing op elke kaart.
+- Expliciete optie **Alleen ruime modelmarge (experimenteel)** behoudt de strenge
+  filter: minstens 20 waargenomen marktuitslagen per ploeg, minstens 5 relevante
+  thuis-/uitduels en beide modellen ≥5 procentpunten boven `100 / odd`.
+  Geen verplichte H2H-steekproef; geen versoepeling bij hogere doelodds/variatie.
+- Actuele prijsbeoordeling vraagt een feedprijs die maximaal 15 minuten geleden is
+  waargenomen (`observedAt`), of anders gewijzigd (`updatedAt`). Cachehits verversen
+  deze tijd nooit. Onbekende/verlopen/snapshotprijzen krijgen geen actuele marge.
+- De uitgebreide pagina toont aantallen per beoordeling, afwijzingsredenen en
+  maximaal twaalf afzonderlijke kandidaten, ook als geen combi mogelijk is.
+  Bij de experimentele filter staat hoeveel verschillende wedstrijden overblijven.
+  Geen samengestelde combiwinstkans. Historie en voorspelling blijven onderscheiden.
+- `combo-assessment.ts`: gewogen frequentie/Beta-prior en Poisson met gewogen
+  aanval/verdediging, inclusief rustmarkten. Laatste 10, trend 5 tegenover vorige 5,
+  thuis/uit en gedateerde H2H inspecteerbaar. Geen nieuwe geleerde parameters.
+- Onderzoek: `docs/combo-model-review.md` (eerste audit) en
+  `docs/combo-policy-review.md` (huidige productkeuze en nieuwe eindtest 2025/26).
+  De extra eindtest omvat 1.347 wedstrijden naast de oorspronkelijke 2.565.
+  Minimumregel en sigmoidkalibratie tonen geen brede overtuigende winst boven de
+  eenvoudige competitiebaseline. Geen bewijs van winstgevendheid van de prijsfilter.
 - Ondersteunde markten: over 0.5/1.5/2.5/3.5, under 2.5, BTTS en eerste helft over
   0.5/1.5. Corners, kaarten en spelersmarkten zitten niet in deze combizoeker.
 - ‘Meer variatie’ beloont verschillende markten en minder herhaalde selecties tussen
   voorstellen. Het verandert de historische eisen niet en belooft geen hogere kans.
+- De nieuwste prijs wordt vóór de modelcontrole gekozen; geen oudere gunstige prijs
+  selecteren omdat de nieuwste afvalt. De zoekboom onderzoekt ook uitbreidingen van
+  al geldige combinaties binnen de doelodds, tot de bestaande limieten.
 - Het zoeken is begrensd op 50.000 bezochte combinatiestappen. Geen resultaat is
   geen wiskundig bewijs dat geen enkele combinatie mogelijk is.
 - Data laden start pas na ‘Doe een voorstel’. Doelodds/rangschikking aanpassen
@@ -206,7 +214,7 @@ bij de bookmaker worden bevestigd; een handmatig ingevoerde prijs is expliciet g
   Bestaande data niet stilzwijgend wissen of overschrijven.
 - Eerste snapshot blijft vast: bookmaker, individuele odds, aftrappen, markt,
   historische hits, venster, drempel en opslagtijd. Nieuwe snapshots bewaren ook
-  prijscontrolemode, modelversie, modelscores, controlemarge/status en eventuele
+  beoordelingswijze (`history`/`review`/`strict`), modelversie, modelscores, controlemarge/status en eventuele
   prijsobservatietijd. Deze velden zijn optioneel; oude historie blijft leesbaar.
   Deduplicatie per bookmaker en
   verzameling fixture/marktselecties, niet op later gewijzigde prijzen.

@@ -1,5 +1,8 @@
 # Onderzoek combiselectie — 16 september 2026
 
+> De productkeuze (verplichte prijscontrole als standaard) is herzien. Zie de
+> [tweede modelcontrole](combo-policy-review.md) voor de actuele werking en extra eindtest.
+
 ## Conclusie
 
 De historische 80%-eis is een patroonfilter, geen kansmodel of prijsbeoordeling.

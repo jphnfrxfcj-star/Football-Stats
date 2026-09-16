@@ -3,10 +3,16 @@ import { assessComboPrice, type ComboPriceStatus } from '../analysis/combo-asses
 import type { PerfectSelection } from '../analysis/combinations';
 import type { OddsQuote } from '../domain/spotlight';
 export const comboPriceLabels: Record<ComboPriceStatus, string> = {
-  passes: 'Voldoet aan de prijscontrole; geen bewezen voordeel.',
+  passes: 'Voldoet aan de experimentele margefilter; geen bewezen voordeel.',
   'insufficient-history': 'Onvoldoende historie voor de prijscontrole.',
   'unverified-price': 'Geen recente, controleerbare feedprijs.',
   'insufficient-margin': 'Te weinig modelmarge tegenover deze odd.',
+};
+export const comboComparisonLabels = {
+  'both-above': 'Beide modellen boven break-even; geen bewezen voordeel.',
+  disagree: 'De modellen spreken elkaar tegen over deze prijs.',
+  'both-below': 'Beide modellen onder break-even bij deze prijs.',
+  unavailable: 'Prijsbeoordeling niet beschikbaar.',
 };
 export default function ComboAssessment({
   selection,
@@ -23,7 +29,10 @@ export default function ComboAssessment({
     p == null ? t('onbekend') : `${p.toFixed(1)}%`;
   return (
     <div className="combo-assessment">
-      <small>{t(comboPriceLabels[assessment.status])}</small>
+      <small>{t(comboComparisonLabels[assessment.comparison])}</small>
+      {assessment.comparison === 'unavailable' && (
+        <small>{t(comboPriceLabels[assessment.status])}</small>
+      )}
       <small>
         {tr('Gewogen model: {0} · goalsmodel: {1} · break-even: {2}', [
           percentage(model?.weightedProbability),

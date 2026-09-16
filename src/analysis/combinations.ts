@@ -37,6 +37,7 @@ export interface ComboLeg {
   quote: OddsQuote;
 }
 export interface Combination {
+  evaluationMode?: 'history' | 'review' | 'strict';
   priceChecked?: boolean;
   bookmaker: string;
   legs: ComboLeg[];
@@ -106,6 +107,52 @@ export function buildMarkets(
   const { quotes: _, ...metadata } = odds;
   return { window, fixtures, selections, odds: metadata };
 }
+/** Pick the newest applicable price first; never cherry-pick an older price that passes a filter. */
+export function comboCandidates(
+  selections: PerfectSelection[],
+  bookmaker: string,
+  now: number,
+  maxOdd: number,
+) {
+  const time = (q: OddsQuote) => {
+    const timestamp = Date.parse(q.observedAt ?? q.updatedAt ?? '');
+    return Number.isFinite(timestamp) ? timestamp : -Infinity;
+  };
+  return selections.flatMap((selection) => {
+    if (
+      selection.fixture.status !== 'scheduled' ||
+      selection.fixture.kickoffKnown === false ||
+      !(Date.parse(selection.fixture.kickoff) > now)
+    )
+      return [];
+    const quote = selection.quotes
+      .filter(
+        (q) =>
+          q.bookmaker === bookmaker &&
+          q.market === selection.market &&
+          Number.isFinite(q.decimal) &&
+          q.decimal > 1,
+      )
+      .sort((a, b) => time(b) - time(a))[0];
+    if (!quote || quote.decimal < 1.1 || quote.decimal > maxOdd) return [];
+    return [{ selection, quote, assessment: assessComboPrice(selection, quote, now) }];
+  });
+}
+export function comboEvidenceOrder(legs: ComboLeg[], now: number) {
+  const tiers = { 'both-above': 0, disagree: 1, 'both-below': 2, unavailable: 3 };
+  const assessments = legs.map((l) => assessComboPrice(l.selection, l.quote, now));
+  const ranks = assessments.map((a) => tiers[a.comparison]);
+  return {
+    worst: Math.max(...ranks),
+    average: ranks.reduce((s, v) => s + v, 0) / ranks.length,
+    margin: Math.min(...assessments.map((a) => a.margin ?? -Infinity)),
+  };
+}
+function compareEvidence(a: ComboLeg[], b: ComboLeg[], now: number) {
+  const x = comboEvidenceOrder(a, now),
+    y = comboEvidenceOrder(b, now);
+  return x.worst - y.worst || x.average - y.average || y.margin - x.margin || 0;
+}
 // Quotes are indicative: unknown or stale timestamps remain explicitly visible in the UI.
 export function suggestCombinations(
   selections: PerfectSelection[],
@@ -118,6 +165,7 @@ export function suggestCombinations(
     minOdd?: number;
     maxOdd?: number;
     requirePriceCheck?: boolean;
+    rankByAssessment?: boolean;
   } = {},
 ): Combination[] {
   const minOdd = options.minOdd ?? 2,
@@ -131,21 +179,29 @@ export function suggestCombinations(
   )
     return [];
   const target = (minOdd + maxOdd) / 2;
-  const legs: ComboLeg[] = selections.flatMap((selection) => {
-    if (Date.parse(selection.fixture.kickoff) <= now) return [];
-    const quote = selection.quotes
-      .filter(
-        (q) =>
-          q.bookmaker === bookmaker &&
-          Number.isFinite(q.decimal) &&
-          q.decimal >= 1.1 &&
-          q.decimal <= maxOdd &&
-          (!options.requirePriceCheck || assessComboPrice(selection, q, now).status === 'passes'),
-      )
-      .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
-    return quote ? [{ selection, quote }] : [];
-  });
+  const legs: ComboLeg[] = comboCandidates(selections, bookmaker, now, maxOdd).filter(
+    (candidate) => !options.requirePriceCheck || candidate.assessment.status === 'passes',
+  );
+  if (options.rankByAssessment)
+    legs.sort(
+      (a, b) => compareEvidence([a], [b], now) || a.selection.id.localeCompare(b.selection.id),
+    );
   const found: Combination[] = [];
+  // A full search can retain 50,000 paths. Compute each path's assessment once.
+  const evidenceCache = new WeakMap<ComboLeg[], ReturnType<typeof comboEvidenceOrder>>();
+  const evidence = (path: ComboLeg[]) => {
+    let value = evidenceCache.get(path);
+    if (!value) {
+      value = comboEvidenceOrder(path, now);
+      evidenceCache.set(path, value);
+    }
+    return value;
+  };
+  const comparePaths = (a: ComboLeg[], b: ComboLeg[]) => {
+    const x = evidence(a),
+      y = evidence(b);
+    return x.worst - y.worst || x.average - y.average || y.margin - x.margin || 0;
+  };
   let visits = 0;
   function visit(start: number, picked: ComboLeg[], decimal: number) {
     if (++visits > 50000) return;
@@ -155,8 +211,12 @@ export function suggestCombinations(
         legs: picked,
         decimal,
         priceChecked: options.requirePriceCheck ?? false,
+        evaluationMode: options.requirePriceCheck
+          ? 'strict'
+          : options.rankByAssessment
+            ? 'review'
+            : 'history',
       });
-      return;
     }
     if (picked.length === Math.max(2, Math.min(8, maxLegs))) return;
     for (let i = start; i < legs.length && visits < 50000; i++) {
@@ -180,7 +240,9 @@ export function suggestCombinations(
   visit(0, [], 1);
   const ranked = found.sort(
     (a, b) =>
-      Math.abs(a.decimal - target) - Math.abs(b.decimal - target) || a.legs.length - b.legs.length,
+      (options.rankByAssessment ? comparePaths(a.legs, b.legs) : 0) ||
+      Math.abs(a.decimal - target) - Math.abs(b.decimal - target) ||
+      a.legs.length - b.legs.length,
   );
   const limit = Math.max(1, Math.min(12, options.limit ?? 3));
   if (!options.diverse) return ranked.slice(0, limit);
@@ -191,7 +253,11 @@ export function suggestCombinations(
   while (selected.length < limit && remaining.size) {
     let best: Combination | undefined;
     let bestScore = -Infinity;
+    const bestTier = options.rankByAssessment
+      ? [...remaining].reduce((best, c) => Math.min(best, evidence(c.legs).worst), Infinity)
+      : null;
     for (const combo of remaining) {
+      if (bestTier !== null && evidence(combo.legs).worst !== bestTier) continue;
       const markets = new Set(combo.legs.map((l) => l.selection.market));
       const repetition =
         combo.legs.reduce((n, l) => n + (used.get(l.selection.id) ?? 0), 0) / combo.legs.length;

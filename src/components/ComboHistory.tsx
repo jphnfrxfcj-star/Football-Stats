@@ -133,6 +133,15 @@ export default function ComboHistory({
                       {t(new Date(combo.savedAt).toLocaleString(locale()))}
                     </p>
                     <small>
+                      {t(
+                        combo.evaluationMode === 'review'
+                          ? 'Met modelbeoordeling'
+                          : combo.priceChecked
+                            ? 'Experimentele margefilter'
+                            : 'Historische selectie',
+                      )}
+                    </small>
+                    <small>
                       {t('Minstens ')}
                       {t(combo.minimumRate)}
                       {t('% in de laatste ')}

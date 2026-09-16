@@ -25,7 +25,9 @@ try {
   ];
   for (const division of ['E0', 'SP1', 'I1', 'F1']) {
     const rows = [];
-    for (const season of ['2223', '2324', '2425']) {
+    for (const season of process.env.MATCHDAY_AUDIT_EXTENDED
+      ? ['2223', '2324', '2425', '2526']
+      : ['2223', '2324', '2425']) {
       const url = `https://www.football-data.co.uk/mmz4281/${season}/${division}.csv`;
       const file = join(cache, `${division}-${season}.csv`);
       let text;
@@ -53,6 +55,8 @@ try {
           id: `${division}:${season}:${r.HomeTeam}:${r.AwayTeam}`,
           season,
           division,
+          over25Price: Number(r['B365>2.5']) || null,
+          under25Price: Number(r['B365<2.5']) || null,
           kickoff: `${date}T12:00:00Z`,
           status: 'finished',
           home: team(r.HomeTeam),
@@ -99,7 +103,9 @@ try {
         samples.push({
           division,
           season: f.season,
+          date: f.kickoff.slice(0, 10),
           market,
+          price: market === 'over25' ? f.over25Price : market === 'under25' ? f.under25Price : null,
           y: Number(hit(f)),
           qualifies80,
           recent,
@@ -109,6 +115,10 @@ try {
         });
       }
     }
+  }
+  if (process.env.MATCHDAY_AUDIT_EXTENDED) {
+    await writeFile(join(cache, 'extended-samples.json'), JSON.stringify({ sources, samples }));
+    console.log('Extended chronological samples written to temporary cache.');
   }
   function summary(rows) {
     return {
@@ -163,7 +173,8 @@ try {
       ]),
     ),
   };
-  await writeFile('docs/combo-model-audit.json', JSON.stringify(report, null, 2) + '\n');
+  if (!process.env.MATCHDAY_AUDIT_EXTENDED)
+    await writeFile('docs/combo-model-audit.json', JSON.stringify(report, null, 2) + '\n');
   console.log(
     JSON.stringify({ byMarket: report.byMarket, qualified80: report.qualified80 }, null, 2),
   );

@@ -53,7 +53,7 @@ test('separate combinations page loads only on request and shows compact expanda
     },
     { fixtures, path: apiPath },
   );
-  await page.getByLabel('Beoordeling combi').selectOption('history');
+  await expect(page.getByLabel('Beoordeling combi')).toHaveValue('review');
   await page.getByRole('button', { name: 'Doe een voorstel' }).click();
   await expect(page.locator('.combo-finder-compact .combo-card')).toHaveCount(9);
   await expect(page.locator('.combo-finder').getByRole('status')).toHaveText(

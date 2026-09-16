@@ -1,11 +1,16 @@
-import { assessComboPrice } from '../analysis/combo-assessment';
-import ComboAssessment, { comboPriceLabels } from './ComboAssessment';
+import ComboAssessment, { comboPriceLabels, comboComparisonLabels } from './ComboAssessment';
 import { tr, t, locale } from '../i18n';
 import { saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { api, isDemo } from '../api';
-import { suggestCombinations, comboRates, type MarketsReport } from '../analysis/combinations';
+import {
+  suggestCombinations,
+  comboCandidates,
+  comboEvidenceOrder,
+  comboRates,
+  type MarketsReport,
+} from '../analysis/combinations';
 import { SectionTitle, Loading } from './ui';
 export default function ComboFinder({
   date,
@@ -28,7 +33,8 @@ export default function ComboFinder({
     minOdd >= 2 &&
     maxOdd <= 20 &&
     minOdd <= maxOdd;
-  const [priceCheck, setPriceCheck] = useState(true);
+  const [assessmentMode, setAssessmentMode] = useState<'review' | 'strict'>('review');
+  const priceCheck = compact && assessmentMode === 'strict';
   const [diverse, setDiverse] = useState(compact);
   const Evidence = compact ? 'details' : 'div';
   const [started, setStarted] = useState(false);
@@ -69,6 +75,7 @@ export default function ComboFinder({
     () =>
       suggestCombinations(report?.selections ?? [], book, cutoff, 8, {
         requirePriceCheck: priceCheck,
+        rankByAssessment: compact,
         limit: compact ? 9 : 3,
         diverse,
         minOdd,
@@ -86,34 +93,15 @@ export default function ComboFinder({
     );
   }, [combos, window, minimumRate, onSave]);
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
-  const priced = [
-    ...new Set(
-      eligible
-        .filter((s) =>
-          s.quotes.some(
-            (q) =>
-              q.bookmaker === book &&
-              Number.isFinite(q.decimal) &&
-              q.decimal >= 1.1 &&
-              q.decimal <= maxOdd,
-          ),
-        )
-        .map((s) => s.fixture.id),
-    ),
-  ].length;
-  const rejected = eligible.flatMap((selection) => {
-    const quote = selection.quotes
-      .filter(
-        (q) =>
-          q.bookmaker === book &&
-          Number.isFinite(q.decimal) &&
-          q.decimal >= 1.1 &&
-          q.decimal <= maxOdd,
-      )
-      .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
-    if (!quote) return [];
-    const assessment = assessComboPrice(selection, quote, cutoff);
-    return assessment.status === 'passes' ? [] : [{ selection, quote, assessment }];
+  const candidates = comboCandidates(eligible, book, cutoff, maxOdd);
+  const priced = new Set(candidates.map((c) => c.selection.fixture.id)).size;
+  const approved = candidates.filter((c) => c.assessment.status === 'passes');
+  const approvedFixtures = new Set(approved.map((c) => c.selection.fixture.id)).size;
+  const rejected = candidates.filter((c) => c.assessment.status !== 'passes');
+  const visibleCandidates = (priceCheck ? approved : candidates).slice().sort((a, b) => {
+    const x = comboEvidenceOrder([a], cutoff),
+      y = comboEvidenceOrder([b], cutoff);
+    return x.worst - y.worst || y.margin - x.margin || 0;
   });
   const end = new Date(Date.parse(date) + 7 * 86400000).toISOString().slice(0, 10);
   return (
@@ -160,11 +148,20 @@ export default function ComboFinder({
             )}
           </p>
         )}
-        <p className="spotlight-note">
-          {t(
-            'Prijscontrole actief: minstens 20 waargenomen duels per ploeg en 5 per thuis-/uitreeks. Zowel het gewogen model als het goalsmodel moet minstens 5 procentpunten boven break-even liggen. Alleen feedprijzen die maximaal 15 minuten geleden zijn waargenomen of gewijzigd tellen mee. Dit is een extra filter, geen bewezen winstkans.',
-          )}
-        </p>
+        {compact && (
+          <p className="spotlight-note">
+            {t(
+              'De uitgebreide beoordeling vergelijkt recente vorm, thuis/uit, H2H en twee ongekalibreerde modellen met de odd. De beoordeling rangschikt voorstellen; zij verandert je historische eisen niet. Onbekende of verlopen prijzen krijgen geen actueel modelvoordeel.',
+            )}
+          </p>
+        )}
+        {priceCheck && (
+          <p className="spotlight-note">
+            {t(
+              'Experimentele margefilter: minstens 20 waargenomen duels per ploeg en 5 per thuis-/uitreeks, recente feedprijzen en beide modellen minstens 5 procentpunten boven break-even. Deze grens is niet als winstgevende strategie gevalideerd en kan nul voorstellen opleveren.',
+            )}
+          </p>
+        )}
       </details>
       {!validTarget && (
         <p role="alert">
@@ -175,23 +172,27 @@ export default function ComboFinder({
       )}
       <p className="spotlight-note">
         {t(
-          priceCheck
-            ? 'Prijscontrole actief: langere historie, recente trends en de odd worden samen beoordeeld. Geen bewezen winstkans.'
-            : 'Alleen historische frequentie: de prijs wordt niet beoordeeld. Deze voorstellen zijn geen onderbouwd bettingadvies.',
+          !compact
+            ? 'Eenvoudige combi x2–3 op basis van je historische eisen en beschikbare odds. Historie is geen voorspelde winstkans; de uitgebreide prijsbeoordeling staat op de combipagina.'
+            : priceCheck
+              ? 'Experimentele margefilter actief. Alleen selecties met voldoende data en ruime marge bij beide modellen doen mee. Geen bewezen voordeel.'
+              : 'Alle passende historische selecties blijven beschikbaar, met de modelbeoordeling erbij. Voorstellen met gunstigere modelsignalen komen eerst; een voorstel is geen bettingadvies.',
         )}
       </p>
       <div className="market-controls">
-        <label className="combo-assessment-control">
-          {t('Beoordeling')}
-          <select
-            aria-label={t('Beoordeling combi')}
-            value={priceCheck ? 'checked' : 'history'}
-            onChange={(e) => setPriceCheck(e.target.value === 'checked')}
-          >
-            <option value="checked">{t('Historie + prijscontrole')}</option>
-            <option value="history">{t('Alleen historische frequentie')}</option>
-          </select>
-        </label>
+        {compact && (
+          <label className="combo-assessment-control">
+            {t('Beoordeling')}
+            <select
+              aria-label={t('Beoordeling combi')}
+              value={assessmentMode}
+              onChange={(e) => setAssessmentMode(e.target.value as 'review' | 'strict')}
+            >
+              <option value="review">{t('Toon voorstellen met beoordeling')}</option>
+              <option value="strict">{t('Alleen ruime modelmarge (experimenteel)')}</option>
+            </select>
+          </label>
+        )}
         {compact && (
           <>
             <label>
@@ -327,6 +328,28 @@ export default function ComboFinder({
             {t(book)}
             {'.'}
           </p>
+          {compact && candidates.length > 0 && (
+            <div className="combo-diagnostics">
+              <p>
+                {tr(
+                  '{0} selecties met bruikbare odds · {1} voldoen aan de experimentele margefilter',
+                  [candidates.length, approved.length],
+                )}
+              </p>
+              <ul>
+                {Object.entries(comboComparisonLabels).map(([comparison, label]) => {
+                  const count = candidates.filter(
+                    (c) => c.assessment.comparison === comparison,
+                  ).length;
+                  return count ? (
+                    <li key={comparison}>
+                      {count} · {t(label)}
+                    </li>
+                  ) : null;
+                })}
+              </ul>
+            </div>
+          )}
           {priceCheck && rejected.length > 0 && (
             <details className="combo-rejections">
               <summary>
@@ -334,7 +357,7 @@ export default function ComboFinder({
               </summary>
               <p>
                 {t(
-                  'De historische drempel is gehaald, maar de uitgebreidere controle niet. Een hogere doelodd of meer variatie versoepelt deze controle niet.',
+                  'Deze selecties halen je historische eis, maar niet de experimentele margefilter. De gewone uitgebreide beoordeling toont ze met hun beperkingen; hogere doelodds versoepelen de filter niet.',
                 )}
               </p>
               <ul>
@@ -390,6 +413,21 @@ export default function ComboFinder({
                     {' ·'} {t(combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × '))}
                     {' ='} {t(combo.decimal.toFixed(2))}
                   </p>
+                  {compact && (
+                    <p
+                      className="combo-model-summary"
+                      data-signal={comboEvidenceOrder(combo.legs, cutoff).worst}
+                    >
+                      {t(
+                        [
+                          'Alle selecties: beide modellen boven break-even. Geen bewezen voordeel.',
+                          'Bevat selecties waarbij de modellen elkaar tegenspreken.',
+                          'Bevat selecties waarbij beide modellen onder break-even liggen.',
+                          'Bevat selecties waarvan de prijs niet betrouwbaar beoordeeld kan worden.',
+                        ][comboEvidenceOrder(combo.legs, cutoff).worst],
+                      )}
+                    </p>
+                  )}
                   {compact && (
                     <ul className="compact-combo-legs">
                       {combo.legs.map(({ selection: s, quote: q }) => (
@@ -455,7 +493,7 @@ export default function ComboFinder({
                                 : 'onbekend',
                             )}
                           </small>
-                          <ComboAssessment selection={s} quote={q} now={cutoff} />
+                          {compact && <ComboAssessment selection={s} quote={q} now={cutoff} />}
                           <details>
                             <summary>
                               {t('Bekijk de ')}
@@ -502,16 +540,17 @@ export default function ComboFinder({
                 {t(book)}
                 {t(' in deze periode.')}
               </strong>
-              {priceCheck && priced >= 2 && rejected.length > 0 && (
+              {priceCheck && (
                 <p>
-                  {t(
-                    'Geen voorstel binnen je instellingen en de extra prijscontrole. Bekijk hierboven waarom selecties afvallen.',
+                  {tr(
+                    'Verschillende wedstrijden die de margefilter halen: {0}. Voor een combi zijn minstens twee passende wedstrijden zonder terugkerende ploegen nodig.',
+                    [approvedFixtures],
                   )}
                 </p>
               )}
               <p>
                 {t(
-                  priced < 2
+                  (priceCheck ? approvedFixtures : priced) < 2
                     ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
                     : tr(
                         'Geen voorstel gevonden binnen {0}–{1} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.',
@@ -534,6 +573,35 @@ export default function ComboFinder({
                 </button>
               )}
             </div>
+          )}
+          {compact && visibleCandidates.length > 0 && (
+            <details className="combo-candidates" open={combos.length === 0 ? true : undefined}>
+              <summary>
+                {tr('Bekijk {0} beschikbare selecties', [visibleCandidates.length])}
+              </summary>
+              <p>
+                {t(
+                  'Losse selecties binnen je instellingen. Een selectie is geen combi; de beoordeling is geen bewezen voordeel.',
+                )}
+              </p>
+              {visibleCandidates.slice(0, 12).map(({ selection, quote }) => (
+                <article key={selection.id}>
+                  <button
+                    className="text-button"
+                    onClick={() => navigate(`/match/${selection.fixture.id}`)}
+                  >
+                    {selection.fixture.home.name} – {selection.fixture.away.name}
+                  </button>
+                  <p>
+                    {t(selection.label)} · {quote.decimal.toFixed(2)}
+                  </p>
+                  <ComboAssessment selection={selection} quote={quote} now={cutoff} />
+                </article>
+              ))}
+              {visibleCandidates.length > 12 && (
+                <p>{t('De eerste twaalf selecties worden getoond.')}</p>
+              )}
+            </details>
           )}
           <p className="spotlight-note">
             {t('Bron: ')}

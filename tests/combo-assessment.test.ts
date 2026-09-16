@@ -255,3 +255,76 @@ it('saves the original model assessment alongside a proposal without rewriting o
       .goalsProbability,
   ).toBe(initial);
 });
+
+it('ranks assessed proposals without hiding lower-rated ones, even with market variation', () => {
+  const report = buildMarkets(
+    [data()],
+    {
+      kind: 'feed',
+      source: 'Test',
+      fetchedAt: new Date(now).toISOString(),
+      message: '',
+      quotes: [quote],
+    },
+    5,
+    now,
+    80,
+  );
+  const first = report.selections.find((s) => s.market === 'btts')!;
+  const rows = Array.from({ length: 4 }, (_, i) => ({
+    ...first,
+    id: `rank-${i}`,
+    fixture: {
+      ...first.fixture,
+      id: `rank-${i}`,
+      home: { ...first.fixture.home, id: `home-${i}` },
+      away: { ...first.fixture.away, id: `away-${i}` },
+    },
+    model: {
+      ...first.model!,
+      weightedProbability: i < 2 ? 80 : 50,
+      goalsProbability: i < 2 ? 75 : 40,
+    },
+  }));
+  for (const diverse of [false, true]) {
+    const combos = suggestCombinations(rows, 'Test', now, 8, {
+      rankByAssessment: true,
+      limit: 9,
+      diverse,
+    });
+    expect(combos).toHaveLength(6);
+    expect(combos[0].legs.map((l) => l.selection.id).sort()).toEqual(['rank-0', 'rank-1']);
+    expect(combos.some((c) => c.legs.some((l) => l.selection.id === 'rank-3'))).toBe(true);
+    expect(combos.every((c) => c.evaluationMode === 'review' && !c.priceChecked)).toBe(true);
+  }
+});
+it('never selects an older passing price when a newer failing price exists', () => {
+  const report = buildMarkets(
+    [data()],
+    {
+      kind: 'feed',
+      source: 'Test',
+      fetchedAt: new Date(now).toISOString(),
+      message: '',
+      quotes: [quote],
+    },
+    5,
+    now,
+    80,
+  );
+  const s = report.selections.find((s) => s.market === 'btts')!;
+  const newer = { ...quote, decimal: 1.1, observedAt: new Date(now).toISOString() };
+  const old = { ...quote, observedAt: new Date(now - 60000).toISOString() };
+  const a = { ...s, quotes: [old, newer] };
+  const b = {
+    ...s,
+    id: 'other',
+    fixture: {
+      ...s.fixture,
+      id: 'other',
+      home: { ...s.fixture.home, id: 'h2' },
+      away: { ...s.fixture.away, id: 'a2' },
+    },
+  };
+  expect(suggestCombinations([a, b], 'Test', now, 8, { requirePriceCheck: true })).toHaveLength(0);
+});

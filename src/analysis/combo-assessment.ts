@@ -163,5 +163,20 @@ export function assessComboPrice(
   else if (margin === null || margin < comboAssessmentPolicy.marginPoints)
     status = 'insufficient-margin';
   else status = 'passes';
-  return { status, probability, implied, margin };
+  // The two point estimates are correlated diagnostics, not confidence bounds.
+  const comparison =
+    status === 'insufficient-history' || status === 'unverified-price' || implied === null
+      ? 'unavailable'
+      : Math.min(...(values as number[])) > implied
+        ? 'both-above'
+        : Math.max(...(values as number[])) <= implied
+          ? 'both-below'
+          : 'disagree';
+  return {
+    status,
+    probability,
+    implied,
+    margin: comparison === 'unavailable' ? null : margin,
+    comparison,
+  } as const;
 }

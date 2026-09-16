@@ -308,3 +308,21 @@ it('applies lower historical thresholds only when explicitly selected', () => {
   expect(buildMarkets([d], odds, 5, now).selections.some((s) => s.market === 'over25')).toBe(false);
   expect(() => buildMarkets([d], odds, 5, now, 40)).toThrow();
 });
+
+it('continues searching inside the target range instead of stopping at the first valid prefix', () => {
+  const base = buildMarkets(data, odds, 5, now).selections.find((s) => s.market === 'over25')!;
+  const rows = [1.4, 1.5, 1.2].map((decimal, i) => ({
+    ...base,
+    id: `target-${i}`,
+    fixture: {
+      ...base.fixture,
+      id: `target-${i}`,
+      home: { ...base.fixture.home, id: `home-${i}` },
+      away: { ...base.fixture.away, id: `away-${i}` },
+    },
+    quotes: [{ ...base.quotes[0], decimal }],
+  }));
+  const combos = suggestCombinations(rows, 'A', now, 8);
+  expect(combos[0].decimal).toBeCloseTo(2.52);
+  expect(combos[0].legs).toHaveLength(3);
+});

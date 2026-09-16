@@ -44,6 +44,7 @@ export const savedComboSchema = z
     bookmaker: z.string(),
     window: z.union([z.literal(5), z.literal(10), z.literal(20)]),
     priceChecked: z.boolean().optional(),
+    evaluationMode: z.enum(['history', 'review', 'strict']).optional(),
     minimumRate: z.number().refine((n) => comboRates.some((rate) => rate === n)),
     legs: z.array(legSchema).min(2).max(8),
   })
@@ -96,6 +97,7 @@ export function saveProposal(
     window,
     minimumRate,
     priceChecked: combo.priceChecked,
+    evaluationMode: combo.evaluationMode,
     legs: combo.legs.map(({ selection: s, quote: q }) => ({
       fixtureId: s.fixture.id,
       homeId: s.fixture.home.id,
