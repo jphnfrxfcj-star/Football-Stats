@@ -1,3 +1,5 @@
+import { assessComboPrice } from '../analysis/combo-assessment';
+import ComboAssessment, { comboPriceLabels } from './ComboAssessment';
 import { tr, t, locale } from '../i18n';
 import { saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
@@ -26,6 +28,7 @@ export default function ComboFinder({
     minOdd >= 2 &&
     maxOdd <= 20 &&
     minOdd <= maxOdd;
+  const [priceCheck, setPriceCheck] = useState(true);
   const [diverse, setDiverse] = useState(compact);
   const Evidence = compact ? 'details' : 'div';
   const [started, setStarted] = useState(false);
@@ -65,12 +68,13 @@ export default function ComboFinder({
   const combos = useMemo(
     () =>
       suggestCombinations(report?.selections ?? [], book, cutoff, 8, {
+        requirePriceCheck: priceCheck,
         limit: compact ? 9 : 3,
         diverse,
         minOdd,
         maxOdd,
       }),
-    [report, book, cutoff, compact, diverse, minOdd, maxOdd],
+    [report, book, cutoff, compact, diverse, minOdd, maxOdd, priceCheck],
   );
   useEffect(() => {
     if (isDemo) return;
@@ -97,6 +101,20 @@ export default function ComboFinder({
         .map((s) => s.fixture.id),
     ),
   ].length;
+  const rejected = eligible.flatMap((selection) => {
+    const quote = selection.quotes
+      .filter(
+        (q) =>
+          q.bookmaker === book &&
+          Number.isFinite(q.decimal) &&
+          q.decimal >= 1.1 &&
+          q.decimal <= maxOdd,
+      )
+      .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
+    if (!quote) return [];
+    const assessment = assessComboPrice(selection, quote, cutoff);
+    return assessment.status === 'passes' ? [] : [{ selection, quote, assessment }];
+  });
   const end = new Date(Date.parse(date) + 7 * 86400000).toISOString().slice(0, 10);
   return (
     <section
@@ -142,6 +160,11 @@ export default function ComboFinder({
             )}
           </p>
         )}
+        <p className="spotlight-note">
+          {t(
+            'Prijscontrole actief: minstens 20 waargenomen duels per ploeg en 5 per thuis-/uitreeks. Zowel het gewogen model als het goalsmodel moet minstens 5 procentpunten boven break-even liggen. Alleen feedprijzen die maximaal 15 minuten geleden zijn waargenomen of gewijzigd tellen mee. Dit is een extra filter, geen bewezen winstkans.',
+          )}
+        </p>
       </details>
       {!validTarget && (
         <p role="alert">
@@ -150,7 +173,25 @@ export default function ComboFinder({
           )}
         </p>
       )}
+      <p className="spotlight-note">
+        {t(
+          priceCheck
+            ? 'Prijscontrole actief: langere historie, recente trends en de odd worden samen beoordeeld. Geen bewezen winstkans.'
+            : 'Alleen historische frequentie: de prijs wordt niet beoordeeld. Deze voorstellen zijn geen onderbouwd bettingadvies.',
+        )}
+      </p>
       <div className="market-controls">
+        <label className="combo-assessment-control">
+          {t('Beoordeling')}
+          <select
+            aria-label={t('Beoordeling combi')}
+            value={priceCheck ? 'checked' : 'history'}
+            onChange={(e) => setPriceCheck(e.target.value === 'checked')}
+          >
+            <option value="checked">{t('Historie + prijscontrole')}</option>
+            <option value="history">{t('Alleen historische frequentie')}</option>
+          </select>
+        </label>
         {compact && (
           <>
             <label>
@@ -286,6 +327,47 @@ export default function ComboFinder({
             {t(book)}
             {'.'}
           </p>
+          {priceCheck && rejected.length > 0 && (
+            <details className="combo-rejections">
+              <summary>
+                {tr('{0} selecties uitgesloten door de prijscontrole', [rejected.length])}
+              </summary>
+              <p>
+                {t(
+                  'De historische drempel is gehaald, maar de uitgebreidere controle niet. Een hogere doelodd of meer variatie versoepelt deze controle niet.',
+                )}
+              </p>
+              <ul>
+                {Object.entries(comboPriceLabels)
+                  .filter(([status]) => status !== 'passes')
+                  .map(([status, label]) => {
+                    const count = rejected.filter((r) => r.assessment.status === status).length;
+                    return count ? (
+                      <li key={status}>
+                        {t(label)} {count}
+                      </li>
+                    ) : null;
+                  })}
+              </ul>
+              {rejected.slice(0, 6).map(({ selection, quote }) => (
+                <article key={selection.id}>
+                  <button
+                    className="text-button"
+                    onClick={() => navigate(`/match/${selection.fixture.id}`)}
+                  >
+                    {selection.fixture.home.name} – {selection.fixture.away.name}
+                  </button>
+                  <p>
+                    {t(selection.label)} · {quote.decimal.toFixed(2)}
+                  </p>
+                  <ComboAssessment selection={selection} quote={quote} now={cutoff} />
+                </article>
+              ))}
+              {rejected.length > 6 && (
+                <p>{t('Hierboven staan de eerste zes uitgesloten selecties.')}</p>
+              )}
+            </details>
+          )}
           {combos.length ? (
             <div className="combo-grid">
               {combos.map((combo, i) => (
@@ -373,6 +455,7 @@ export default function ComboFinder({
                                 : 'onbekend',
                             )}
                           </small>
+                          <ComboAssessment selection={s} quote={q} now={cutoff} />
                           <details>
                             <summary>
                               {t('Bekijk de ')}
@@ -419,6 +502,13 @@ export default function ComboFinder({
                 {t(book)}
                 {t(' in deze periode.')}
               </strong>
+              {priceCheck && priced >= 2 && rejected.length > 0 && (
+                <p>
+                  {t(
+                    'Geen voorstel binnen je instellingen en de extra prijscontrole. Bekijk hierboven waarom selecties afvallen.',
+                  )}
+                </p>
+              )}
               <p>
                 {t(
                   priced < 2

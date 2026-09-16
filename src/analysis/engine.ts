@@ -1,5 +1,5 @@
 import { before, type Fixture, type MatchData, type Metric } from '../domain/models';
-import { analysisWeights as weights } from './config';
+import { analysisWeights as weights, h2hWeight } from './config';
 export const marketLabels = {
   over05: 'Over 0.5',
   over15: 'Over 1.5',
@@ -140,14 +140,16 @@ export function weightedMarket(data: MatchData, market: Market) {
         entries.push({
           value,
           id: item.id,
-          weight:
-            (Date.parse(f.kickoff) - Date.parse(item.kickoff)) / 86400000 > weights.oldH2HDays
-              ? weights.h2hOld
-              : weights.h2hRecent,
+          weight: h2hWeight(f.kickoff, item.kickoff),
         });
     });
   // A shared fixture can occur in both histories; retain only one observation.
-  const unique = [...new Map(entries.map((e) => [e.id, e])).values()];
+  const byId = new Map<string, (typeof entries)[number]>();
+  for (const entry of entries) {
+    // A shared game keeps its strongest relevant weight, independent of team order.
+    if (entry.weight > (byId.get(entry.id)?.weight ?? -1)) byId.set(entry.id, entry);
+  }
+  const unique = [...byId.values()];
   const totalWeight = unique.reduce((s, e) => s + e.weight, 0);
   const successWeight = unique.reduce((s, e) => s + (e.value ? e.weight : 0), 0);
   return {

@@ -35,6 +35,8 @@ it('maps reviewed Belgian total lines and thousandth odds with identifiers', () 
     eventId: '1',
     outcomeId: '2',
     betBuilderEligible: true,
+    observedAt: new Date(now).toISOString(),
+    updatedAt: '2026-09-13T09:00:00Z',
   });
 });
 it('never treats other periods, team totals, suspended prices or started events as prematch odds', () => {
@@ -157,5 +159,43 @@ it('scopes program prices before the global 24-event limit without caching parti
   expect(
     call.mock.calls.filter(([url]) => String(url).includes('betoffer')).map(([url]) => String(url)),
   ).toEqual([expect.stringContaining('/event/1.json')]);
-  expect(keys).not.toContain('odds:unibet-be:v3');
+  expect(keys).not.toContain('odds:unibet-be:v4');
+});
+
+it('retains the actual observation time when unchanged event odds are served from cache', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+  const { demoFixtures } = await import('../src/demo/data');
+  const fixture = {
+    ...demoFixtures('2026-09-14')[0],
+    kickoff: event.start,
+    home: { ...demoFixtures('2026-09-14')[0].home, name: 'Leeds' },
+    away: { ...demoFixtures('2026-09-14')[0].away, name: 'Newcastle' },
+  };
+  const call = vi
+    .fn<typeof fetch>()
+    .mockImplementation(
+      async (url) =>
+        new Response(
+          JSON.stringify(
+            String(url).includes('listView')
+              ? { events: [{ event }] }
+              : { events: [event], betOffers: [offer] },
+          ),
+        ),
+    );
+  vi.stubGlobal('fetch', call);
+  const cache = new Map<string, unknown>();
+  const service = {
+    cached: async (key: string, _ttl: number, load: () => Promise<unknown>) => {
+      if (!cache.has(key)) cache.set(key, await load());
+      return cache.get(key);
+    },
+  };
+  const first = await unibetMatchOdds(service as never, fixture);
+  vi.setSystemTime(now + 60000);
+  const second = await unibetMatchOdds(service as never, fixture);
+  expect(second.quotes[0].observedAt).toBe(first.quotes[0].observedAt);
+  expect(second.quotes[0].updatedAt).toBe(offer.outcomes[0].changedDate);
+  expect(call).toHaveBeenCalledTimes(2);
 });

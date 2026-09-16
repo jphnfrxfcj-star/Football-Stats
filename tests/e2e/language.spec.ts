@@ -56,7 +56,7 @@ test('translates errors and analysis navigation', async ({ page }) => {
   // While on a match, navigation keeps the current analysis. Use the dedicated picker route.
   await page.goto('/analyse');
   await expect(page.getByRole('heading', { name: 'Match analysis', exact: true })).toBeVisible();
-  await page.getByLabel('Search matches to analyse').fill('Arsenal');
+  await page.getByLabel('Team to analyse').selectOption({ label: 'Arsenal' });
   await expect(page.locator('.match-picker-row')).toHaveCount(1);
 });
 

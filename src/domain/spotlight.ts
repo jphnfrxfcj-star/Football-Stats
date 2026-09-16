@@ -11,6 +11,8 @@ export interface OddsQuote {
   market: string;
   bookmaker: string;
   decimal: number;
+  /** Time an OPEN price was actually read from the feed; never refreshed on a cache hit. */
+  observedAt?: string;
   updatedAt: string | null;
 }
 export interface OddsSnapshot {

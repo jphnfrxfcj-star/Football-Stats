@@ -1,3 +1,4 @@
+import { comboModelEvidence, assessComboPrice, type ComboModelEvidence } from './combo-assessment';
 import { before, type Fixture, type MatchData } from '../domain/models';
 import { canonicalClubName } from '../domain/club-names';
 import type { OddsQuote, OddsSnapshot } from '../domain/spotlight';
@@ -22,6 +23,8 @@ export interface PerfectSelection {
   homeEvidence: Fixture[];
   awayEvidence: Fixture[];
   quotes: OddsQuote[];
+  model?: ComboModelEvidence;
+  oddsKind?: OddsSnapshot['kind'];
 }
 export interface MarketsReport {
   window: number;
@@ -34,6 +37,7 @@ export interface ComboLeg {
   quote: OddsQuote;
 }
 export interface Combination {
+  priceChecked?: boolean;
   bookmaker: string;
   legs: ComboLeg[];
   decimal: number;
@@ -93,6 +97,8 @@ export function buildMarkets(
         label: marketLabels[market],
         homeEvidence,
         awayEvidence,
+        model: comboModelEvidence(data, market, now),
+        oddsKind: odds.kind,
         quotes: quotes.filter((q) => q.market === market),
       });
     }
@@ -106,7 +112,13 @@ export function suggestCombinations(
   bookmaker: string,
   now = Date.now(),
   maxLegs = 6,
-  options: { limit?: number; diverse?: boolean; minOdd?: number; maxOdd?: number } = {},
+  options: {
+    limit?: number;
+    diverse?: boolean;
+    minOdd?: number;
+    maxOdd?: number;
+    requirePriceCheck?: boolean;
+  } = {},
 ): Combination[] {
   const minOdd = options.minOdd ?? 2,
     maxOdd = options.maxOdd ?? 3;
@@ -127,7 +139,8 @@ export function suggestCombinations(
           q.bookmaker === bookmaker &&
           Number.isFinite(q.decimal) &&
           q.decimal >= 1.1 &&
-          q.decimal <= maxOdd,
+          q.decimal <= maxOdd &&
+          (!options.requirePriceCheck || assessComboPrice(selection, q, now).status === 'passes'),
       )
       .sort((a, b) => Date.parse(b.updatedAt ?? '') - Date.parse(a.updatedAt ?? ''))[0];
     return quote ? [{ selection, quote }] : [];
@@ -137,7 +150,12 @@ export function suggestCombinations(
   function visit(start: number, picked: ComboLeg[], decimal: number) {
     if (++visits > 50000) return;
     if (picked.length >= 2 && decimal >= minOdd && decimal <= maxOdd) {
-      found.push({ bookmaker, legs: picked, decimal });
+      found.push({
+        bookmaker,
+        legs: picked,
+        decimal,
+        priceChecked: options.requirePriceCheck ?? false,
+      });
       return;
     }
     if (picked.length === Math.max(2, Math.min(8, maxLegs))) return;

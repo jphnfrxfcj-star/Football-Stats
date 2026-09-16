@@ -231,7 +231,7 @@ export class FootballService {
   }
   async markets(date: string, window: number, days = 1, minimumRate = 100) {
     const packed = await this.cached(
-      `${this.scope()}:markets-data:v3:${date}:${days}`,
+      `${this.scope()}:markets-data:v4:${date}:${days}`,
       900,
       async () => {
         if (days > 1) {
@@ -279,7 +279,7 @@ export class FootballService {
   }
   async spotlight(date: string) {
     const matches = await this.cached(
-      `${this.scope()}:spotlight-models:v1:${date}`,
+      `${this.scope()}:spotlight-models:v2:${date}`,
       900,
       async () => {
         if (this.provider.previewData)

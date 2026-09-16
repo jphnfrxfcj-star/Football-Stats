@@ -17,6 +17,7 @@ it('preserves market qualification and evidence across every supported sample an
   const summarize = (report: ReturnType<typeof buildMarkets>) =>
     report.selections.map((s) => ({
       id: s.id,
+      model: s.model,
       home: s.homeEvidence.map((f) => [
         f.id,
         f.homeGoals,
@@ -37,7 +38,7 @@ it('preserves market qualification and evidence across every supported sample an
       expect(summarize(buildMarkets(restored, odds, window, now, rate))).toEqual(
         summarize(buildMarkets([data], odds, window, now, rate)),
       );
-  expect(restored[0].homeHistory.length).toBeLessThanOrEqual(20);
+  expect(restored[0].homeHistory.length).toBeLessThanOrEqual(30);
   expect(new Set(packed.fixtures.map((f) => f.id)).size).toBe(packed.fixtures.length);
 });
 it('stores shared histories once and excludes matches that have already started', () => {
@@ -57,4 +58,21 @@ it('stores shared histories once and excludes matches that have already started'
     true,
   );
   expect(JSON.stringify(packed).length).toBeLessThan(JSON.stringify([data, second]).length / 2);
+});
+
+it('preserves older H2H context outside the recent team windows without leaking future results', async () => {
+  const { comboModelEvidence } = await import('../src/analysis/combo-assessment');
+  const data = demoMatch('demo-2026-09-14-0')!;
+  const head = {
+    ...data.fixture,
+    id: 'older-h2h',
+    status: 'finished' as const,
+    kickoff: '2024-01-01T12:00:00Z',
+    homeGoals: 1,
+    awayGoals: 1,
+  };
+  data.h2h = [head, { ...head, id: 'future-h2h', kickoff: '2026-09-13T12:00:00Z' }];
+  const restored = unpackMarketHistory(packMarketHistory([data], now))[0];
+  expect(restored.h2h.map((f) => f.id)).toEqual(['older-h2h']);
+  expect(comboModelEvidence(restored, 'btts', now)).toEqual(comboModelEvidence(data, 'btts', now));
 });

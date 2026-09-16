@@ -46,7 +46,7 @@ function Modal({ onClose }: { onClose: () => void }) {
             ['Wedstrijden 11–20', w.recent20.toFixed(2)],
             ['Relevante thuis/uitwedstrijd', `× ${w.homeAway.toFixed(2)}`],
             ['Recente H2H', w.h2hRecent.toFixed(2)],
-            [tr('H2H ouder dan {0} dagen', [w.oldH2HDays]), w.h2hOld.toFixed(2)],
+            [tr('H2H-gewicht halveert elke {0} dagen', [w.h2hHalfLifeDays]), '× 0.5'],
           ].map(([k, v]) => (
             <div key={k}>
               <span>{t(k)}</span>

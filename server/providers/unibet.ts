@@ -75,6 +75,7 @@ export function normalizeUnibet(raw: unknown, now = Date.now()): OddsQuote[] {
           bookmaker: 'Unibet België',
           decimal: o.odds! / 1000,
           updatedAt: o.changedDate ?? null,
+          observedAt: new Date(now).toISOString(),
           eventId: String(event.id),
           outcomeId: String(o.id),
           betBuilderEligible: offer.tags?.includes('BET_BUILDER') ?? false,
@@ -144,7 +145,7 @@ export async function unibetOdds(
         upcoming
           .slice(i, i + 3)
           .map((e) =>
-            service.cached(`odds:unibet-be:event:v2:${e.id}`, 300, async () =>
+            service.cached(`odds:unibet-be:event:v3:${e.id}`, 300, async () =>
               normalizeUnibet(await read(`betoffer/event/${e.id}.json`)),
             ),
           ),
@@ -162,7 +163,7 @@ export async function unibetOdds(
       message: `Unibet België: beschikbare pre-matchprijzen voor de komende acht dagen, maximaal elke vijf minuten opgehaald. Quoteringstijdstip is de laatste prijswijziging. Geen automatische betbuilderprijs.${failed ? ' Sommige wedstrijden konden niet worden opgehaald.' : ''}`,
     };
   };
-  return fixtures ? load() : service.cached('odds:unibet-be:v3', 300, load);
+  return fixtures ? load() : service.cached('odds:unibet-be:v4', 300, load);
 }
 
 /** Fetch only the opened match; unrelated event failures must not remove its odds. */
@@ -190,7 +191,7 @@ export async function unibetMatchOdds(
         Math.abs(Date.parse(e.start) - Date.parse(fixture.kickoff)) <= 60000,
     );
   const quotes = event
-    ? await service.cached(`odds:unibet-be:event:v2:${event.id}`, 300, async () =>
+    ? await service.cached(`odds:unibet-be:event:v3:${event.id}`, 300, async () =>
         normalizeUnibet(await read(`betoffer/event/${event.id}.json`)),
       )
     : [];

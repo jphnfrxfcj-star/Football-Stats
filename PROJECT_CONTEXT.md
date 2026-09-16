@@ -107,6 +107,10 @@ meer bruikbaar voor bekers of meerdere ontmoetingen met dezelfde thuis/uitcombin
 - Onbekende aftraptijd is geen geldige pre-matchselectie.
 - Modelkansen zijn eigen, ongekalibreerde schattingen. Goalmarkten gebruiken gewogen
   frequenties/Beta-prior; 1/X/2 gebruikt een Poisson-model. Geen externe predictions.
+  Modelversie 1.1.0: aanvullende H2H-duels wegen maximaal 0,35 en halveren continu
+  elke 365 dagen; gedeelde wedstrijden tellen één keer met hun hoogste relevante gewicht.
+  Recente teamvorm blijft zwaarder: duels 1–5 gewicht 1, 6–10 0,75, 11–20 0,45;
+  relevante thuis/uitpositie ×1,1. Transfers/blessures/opstellingen zijn geen modelinvoer.
 - Historische frequentie is **niet** de voorspelde slaagkans van een selectie of combi.
 - Modelvoordeel wordt alleen met voldoende recente, geschikte odds berekend;
   momentopnames met onbekend tijdstip worden niet als actuele value gepresenteerd.
@@ -154,6 +158,27 @@ prijzen bij dezelfde bookmaker:
   historische drempels 50/60/70/80/90/100%.
 - Elke selectie moet de drempel halen voor **beide teams**, met een volledige
   waargenomen steekproef. Ontbrekende waarnemingen kwalificeren niet als succes.
+- **Standaard aanvullende prijscontrole** op homepage én combipagina. De historische
+  eis blijft noodzakelijk. `combo-assessment.ts` vergelijkt het gewogen model met
+  een Poisson-goalsmodel (gewogen aanval/verdediging, ook voor rustmarkten).
+  Beide moeten minstens **5 procentpunten** boven `100 / odd` liggen; dit is een
+  expliciete, ongekalibreerde filtermarge, geen bewezen voordeel of betrouwbaarheidsinterval.
+  Minstens 20 volledig waargenomen recente marktuitslagen per ploeg en minstens
+  5 beschikbare relevante thuis-/uitduels vereist. Geen verplichte H2H-steekproef.
+- Prijscontrole vraagt een feedprijs die maximaal 15 minuten geleden is waargenomen
+  (`observedAt`) of, zonder observatietijd, gewijzigd (`updatedAt`). Unibet legt
+  observatietijd vast bij het lezen van OPEN eventodds; cachehits behouden die tijd.
+  Een recent opgehaalde CSV of een nieuwe response-envelope maakt prijzen niet actueel.
+  Onbekende/verlopen prijzen kunnen alleen via de expliciete historische modus meedoen.
+- ‘Alleen historische frequentie’ behoudt de oorspronkelijke zoeker met een zichtbare
+  melding dat de prijs niet is beoordeeld. Meer variatie/hogere doelodds versoepelt
+  de prijscontrole nooit. Afvallers krijgen redenen en maximaal zes voorbeelden;
+  per leg zijn beide modellen, break-even, laatste 10, trend 5 versus vorige 5,
+  thuis/uit en gedateerde H2H inspecteerbaar. Geen samengestelde combiwinstkans.
+- Onderzoek: `docs/combo-model-review.md`, reproduceerbaar met
+  `node scripts/audit-combo-model.mjs`. 2.565 chronologisch getoetste wedstrijden,
+  vier competities, 2023/24–2024/25. Geen bewijs van winstgevendheid of kalibratie;
+  de extra marge/strengere combinatie van modellen is niet als bettingstrategie gevalideerd.
 - Ondersteunde markten: over 0.5/1.5/2.5/3.5, under 2.5, BTTS en eerste helft over
   0.5/1.5. Corners, kaarten en spelersmarkten zitten niet in deze combizoeker.
 - ‘Meer variatie’ beloont verschillende markten en minder herhaalde selecties tussen
@@ -180,7 +205,10 @@ bij de bookmaker worden bevestigd; een handmatig ingevoerde prijs is expliciet g
 - Maximaal 200 voorstellen; bij een volle of onleesbare opslag volgt een melding.
   Bestaande data niet stilzwijgend wissen of overschrijven.
 - Eerste snapshot blijft vast: bookmaker, individuele odds, aftrappen, markt,
-  historische hits, venster, drempel en opslagtijd. Deduplicatie per bookmaker en
+  historische hits, venster, drempel en opslagtijd. Nieuwe snapshots bewaren ook
+  prijscontrolemode, modelversie, modelscores, controlemarge/status en eventuele
+  prijsobservatietijd. Deze velden zijn optioneel; oude historie blijft leesbaar.
+  Deduplicatie per bookmaker en
   verzameling fixture/marktselecties, niet op later gewijzigde prijzen.
 - Uitslagen laden alleen bij openen/verversen van de historiek, in batches via
   `/api/results?ids=...` (maximaal 50 IDs per aanvraag), zonder zware analysefetch.
@@ -209,7 +237,9 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
   nooit langer dan de echte DB-expiry; fouten en ontbrekende (`null`) resultaten worden niet als cachehit bewaard.
 - Verlopen cachepayloads worden al in de DB-query uitgesloten.
 - Meerdaagse combihistorie wordt compact opgeslagen: gedeelde fixtures eenmaal,
-  maximaal relevante recente historie, geen onnodige statistiekpayload voor goalmarkten.
+  laatste 20 per ploeg plus maximaal 10 relevante thuis-/uitduels en 10 H2H,
+  geen onnodige statistiekpayload voor goalmarkten. Cache `markets-data:v4` bewaart
+  nu ook H2H; eerdere cacheversies gooiden die context weg.
 - Succesvolle publieke GETs hebben korte browser-/Netlify-CDN-caching met queryvariatie.
   Fouten en writes niet publiek cachen.
 - Databasegatewayfouten en provideruitval mogen niet worden vermomd als lege data.

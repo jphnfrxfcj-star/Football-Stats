@@ -3677,3 +3677,32 @@ td {
     content: 'Away team history';
   }
 }
+
+.combo-assessment,
+.finder-leg > .combo-assessment {
+  justify-content: normal;
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.combo-assessment summary,
+.combo-rejections > summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.combo-rejections {
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.combo-rejections article {
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 720px) {
+  .combo-finder .combo-assessment-control {
+    grid-column: 1 / -1;
+  }
+}

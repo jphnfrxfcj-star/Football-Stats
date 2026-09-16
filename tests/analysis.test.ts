@@ -1,3 +1,4 @@
+import { h2hWeight } from '../src/analysis/config';
 import { describe, expect, it } from 'vitest';
 import {
   analyze,
@@ -118,7 +119,7 @@ describe('weighted model', () => {
     const old = { ...fixture(0, 0, 1), kickoff: '2020-01-01T00:00:00Z' };
     const result = weightedMarket(data([recent], [recent], [recent, old]), 'over25');
     expect(result.sampleSize).toBe(2);
-    expect(result.percentage).toBeCloseTo((1.1 / (1.1 + 0.15)) * 100);
+    expect(result.percentage).toBeCloseTo((1.1 / (1.1 + h2hWeight(base.fixture.kickoff, old.kickoff))) * 100);
   });
   it('returns finite probabilities summing to 100 for 1/X/2', () => {
     const p = probabilities(base);

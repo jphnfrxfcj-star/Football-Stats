@@ -1,3 +1,4 @@
+import { assessComboPrice } from '../analysis/combo-assessment';
 import { z } from 'zod';
 import { occurrence } from '../analysis/engine';
 import { comboMarkets, comboRates, type Combination } from '../analysis/combinations';
@@ -24,6 +25,17 @@ const legSchema = z.object({
   homeHits: z.number().int().nonnegative(),
   awayHits: z.number().int().nonnegative(),
   quoteUpdatedAt: z.string().nullable(),
+  quoteObservedAt: z.string().optional(),
+  assessment: z
+    .object({
+      version: z.string(),
+      asOf: z.string(),
+      weightedProbability: z.number().nullable(),
+      goalsProbability: z.number().nullable(),
+      status: z.enum(['passes', 'insufficient-history', 'unverified-price', 'insufficient-margin']),
+      margin: z.number().nullable(),
+    })
+    .optional(),
 });
 export const savedComboSchema = z
   .object({
@@ -31,6 +43,7 @@ export const savedComboSchema = z
     savedAt: z.string().datetime(),
     bookmaker: z.string(),
     window: z.union([z.literal(5), z.literal(10), z.literal(20)]),
+    priceChecked: z.boolean().optional(),
     minimumRate: z.number().refine((n) => comboRates.some((rate) => rate === n)),
     legs: z.array(legSchema).min(2).max(8),
   })
@@ -82,6 +95,7 @@ export function saveProposal(
     bookmaker: combo.bookmaker,
     window,
     minimumRate,
+    priceChecked: combo.priceChecked,
     legs: combo.legs.map(({ selection: s, quote: q }) => ({
       fixtureId: s.fixture.id,
       homeId: s.fixture.home.id,
@@ -93,6 +107,17 @@ export function saveProposal(
       market: s.market,
       decimal: q.decimal,
       quoteUpdatedAt: q.updatedAt,
+      quoteObservedAt: q.observedAt,
+      assessment: s.model
+        ? {
+            version: s.model.version,
+            asOf: s.model.asOf,
+            weightedProbability: s.model.weightedProbability,
+            goalsProbability: s.model.goalsProbability,
+            status: assessComboPrice(s, q, now).status,
+            margin: assessComboPrice(s, q, now).margin,
+          }
+        : undefined,
       homeHits: s.homeEvidence.filter((f) => occurrence(f, s.fixture.home.id, s.market) === true)
         .length,
       awayHits: s.awayEvidence.filter((f) => occurrence(f, s.fixture.away.id, s.market) === true)

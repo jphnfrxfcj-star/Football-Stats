@@ -1,0 +1,6090 @@
+{
+  "generatedAt": "2026-09-16T11:39:37.288Z",
+  "sources": [
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2223/E0.csv",
+      "sha256": "8442792d3b614c94ea3cf381bd2736805889cc1713169035368fff19c3d02380"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2324/E0.csv",
+      "sha256": "b2e057b0ed959f198b0f63d2391c01239f3608e6de5db68edab3f88e04d07ff3"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2425/E0.csv",
+      "sha256": "a0fb4e281b6f0e0fce66ac4c6bca53e54686d2db6054b5eb49b90decf161c12f"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2223/SP1.csv",
+      "sha256": "53348112526b5165539df240be350083989bb258f30c0ff7cacbc0165ca7e4b3"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2324/SP1.csv",
+      "sha256": "5323f596c7ed318e4bce95557a369d809d98501fa499ea5f41350cd45cf3c7d9"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2425/SP1.csv",
+      "sha256": "caf6feffad03388a5d681c3210130b15f329b5e23195298428d0d0568e922364"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2223/I1.csv",
+      "sha256": "9960837f37a97ae700f876c87b85a8b7a2f5a5d05a53077830c21b9db8880c45"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2324/I1.csv",
+      "sha256": "343a89db026fe4204ebeabd663cdfee8d02a45457828fc1cb63fa630ca170723"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2425/I1.csv",
+      "sha256": "0973077b99e9f7cba60fa80b8c2ed0c1326fd4950a6243b3fa213f6b51c0c205"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2223/F1.csv",
+      "sha256": "18ea07d922e8b6360b81189637efd5aaf44779765db856bff208d5b1acf69b2f"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2324/F1.csv",
+      "sha256": "ca0a4bf51d5b1ccfd0e1558ea41de6bb829df6c96c759888a87248d296d5adb7"
+    },
+    {
+      "url": "https://www.football-data.co.uk/mmz4281/2425/F1.csv",
+      "sha256": "f1cf48edf42cc28b9675f1aa801f60a74214d672892fc2ee3adc5ea5a5b374fa"
+    }
+  ],
+  "protocol": "2022/23 warm-up; 2023/24 and 2024/25 chronological evaluation. No tuning; at least 20 previous matches per team. Same-day results excluded. Recent5 is a descriptive baseline, not a probability model. No historical BTTS prices: no ROI claim.",
+  "byMarket": {
+    "btts": {
+      "n": 2565,
+      "observed": 0.5461988304093567,
+      "models": {
+        "recent": {
+          "mean": 0.550370370370371,
+          "brier": 0.26564912280701947,
+          "logLoss": 0.7378458154714708,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 2,
+              "p": 0,
+              "observed": 0
+            },
+            {
+              "lower": 0.1,
+              "n": 9,
+              "p": 0.09999999999999999,
+              "observed": 0.2222222222222222
+            },
+            {
+              "lower": 0.2,
+              "n": 73,
+              "p": 0.19999999999999973,
+              "observed": 0.4794520547945205
+            },
+            {
+              "lower": 0.3,
+              "n": 192,
+              "p": 0.299999999999999,
+              "observed": 0.515625
+            },
+            {
+              "lower": 0.4,
+              "n": 445,
+              "p": 0.40000000000000324,
+              "observed": 0.5280898876404494
+            },
+            {
+              "lower": 0.5,
+              "n": 553,
+              "p": 0.5,
+              "observed": 0.5244122965641953
+            },
+            {
+              "lower": 0.6,
+              "n": 567,
+              "p": 0.6000000000000025,
+              "observed": 0.5608465608465608
+            },
+            {
+              "lower": 0.7,
+              "n": 434,
+              "p": 0.6999999999999943,
+              "observed": 0.6105990783410138
+            },
+            {
+              "lower": 0.8,
+              "n": 214,
+              "p": 0.8000000000000013,
+              "observed": 0.5186915887850467
+            },
+            {
+              "lower": 0.9,
+              "n": 76,
+              "p": 0.9065789473684206,
+              "observed": 0.6052631578947368
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5339304928698734,
+          "brier": 0.24754433999282727,
+          "logLoss": 0.6882257765182155,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 124,
+              "p": 0.49561509486424055,
+              "observed": 0.5564516129032258
+            },
+            {
+              "lower": 0.5,
+              "n": 2441,
+              "p": 0.5358768711380819,
+              "observed": 0.5456780008193364
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.546332434261134,
+          "brier": 0.24828755711478284,
+          "logLoss": 0.6899318621161591,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 5,
+              "p": 0.2760018882229011,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.3,
+              "n": 108,
+              "p": 0.3708668089262905,
+              "observed": 0.42592592592592593
+            },
+            {
+              "lower": 0.4,
+              "n": 658,
+              "p": 0.4590277427986847,
+              "observed": 0.5121580547112462
+            },
+            {
+              "lower": 0.5,
+              "n": 1083,
+              "p": 0.5486114478709928,
+              "observed": 0.543859649122807
+            },
+            {
+              "lower": 0.6,
+              "n": 607,
+              "p": 0.638753760254344,
+              "observed": 0.5815485996705108
+            },
+            {
+              "lower": 0.7,
+              "n": 102,
+              "p": 0.7291716942144748,
+              "observed": 0.696078431372549
+            },
+            {
+              "lower": 0.8,
+              "n": 2,
+              "p": 0.8117854922853567,
+              "observed": 1
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5334028663757848,
+          "brier": 0.24698046306826513,
+          "logLoss": 0.6870835481191727,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.28773061462200017,
+              "observed": 0
+            },
+            {
+              "lower": 0.3,
+              "n": 81,
+              "p": 0.37906377755640236,
+              "observed": 0.49382716049382713
+            },
+            {
+              "lower": 0.4,
+              "n": 784,
+              "p": 0.4607511502370571,
+              "observed": 0.4961734693877551
+            },
+            {
+              "lower": 0.5,
+              "n": 1207,
+              "p": 0.5494588951446518,
+              "observed": 0.5492957746478874
+            },
+            {
+              "lower": 0.6,
+              "n": 472,
+              "p": 0.6323113136587029,
+              "observed": 0.6292372881355932
+            },
+            {
+              "lower": 0.7,
+              "n": 20,
+              "p": 0.7154863692420599,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "over05": {
+      "n": 2565,
+      "observed": 0.9380116959064327,
+      "models": {
+        "recent": {
+          "mean": 0.9380896686159982,
+          "brier": 0.06223781676413261,
+          "logLoss": 0.5269667448252618,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 8,
+              "p": 0.6,
+              "observed": 0.875
+            },
+            {
+              "lower": 0.7,
+              "n": 56,
+              "p": 0.7000000000000002,
+              "observed": 0.9107142857142857
+            },
+            {
+              "lower": 0.8,
+              "n": 282,
+              "p": 0.8000000000000037,
+              "observed": 0.900709219858156
+            },
+            {
+              "lower": 0.9,
+              "n": 2219,
+              "p": 0.962866155926109,
+              "observed": 0.9436683190626408
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.9339064577405396,
+          "brier": 0.05807410566065491,
+          "logLoss": 0.2316220789159997,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 2565,
+              "p": 0.9339064577405396,
+              "observed": 0.9380116959064327
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.9079070387390804,
+          "brier": 0.059633673144741585,
+          "logLoss": 0.23932126063123024,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 37,
+              "p": 0.7875749079663575,
+              "observed": 0.918918918918919
+            },
+            {
+              "lower": 0.8,
+              "n": 924,
+              "p": 0.8656909390362979,
+              "observed": 0.9199134199134199
+            },
+            {
+              "lower": 0.9,
+              "n": 1604,
+              "p": 0.935001779988438,
+              "observed": 0.9488778054862843
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.9295058341627086,
+          "brier": 0.057903074068740124,
+          "logLoss": 0.22968959786493437,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 1,
+              "p": 0.7882228396050217,
+              "observed": 1
+            },
+            {
+              "lower": 0.8,
+              "n": 366,
+              "p": 0.8825796814905156,
+              "observed": 0.8934426229508197
+            },
+            {
+              "lower": 0.9,
+              "n": 2198,
+              "p": 0.9373840210929113,
+              "observed": 0.9454049135577798
+            }
+          ]
+        }
+      }
+    },
+    "over15": {
+      "n": 2565,
+      "observed": 0.7734892787524367,
+      "models": {
+        "recent": {
+          "mean": 0.770604288499026,
+          "brier": 0.18998050682261283,
+          "logLoss": 0.7667680643839266,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.2,
+              "observed": 0
+            },
+            {
+              "lower": 0.3,
+              "n": 5,
+              "p": 0.3,
+              "observed": 1
+            },
+            {
+              "lower": 0.4,
+              "n": 42,
+              "p": 0.4000000000000001,
+              "observed": 0.7619047619047619
+            },
+            {
+              "lower": 0.5,
+              "n": 131,
+              "p": 0.5,
+              "observed": 0.7175572519083969
+            },
+            {
+              "lower": 0.6,
+              "n": 311,
+              "p": 0.5999999999999966,
+              "observed": 0.7556270096463023
+            },
+            {
+              "lower": 0.7,
+              "n": 566,
+              "p": 0.699999999999993,
+              "observed": 0.7720848056537103
+            },
+            {
+              "lower": 0.8,
+              "n": 716,
+              "p": 0.8000000000000023,
+              "observed": 0.7597765363128491
+            },
+            {
+              "lower": 0.9,
+              "n": 793,
+              "p": 0.9293820933165096,
+              "observed": 0.8032786885245902
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.7576962230298998,
+          "brier": 0.1739402493185054,
+          "logLoss": 0.5314193171773106,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 2145,
+              "p": 0.7475418396684295,
+              "observed": 0.7636363636363637
+            },
+            {
+              "lower": 0.8,
+              "n": 420,
+              "p": 0.8095561094831237,
+              "observed": 0.8238095238095238
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.7541099064270391,
+          "brier": 0.17546515277492292,
+          "logLoss": 0.5348962554533584,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 2,
+              "p": 0.4970032416184064,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.5,
+              "n": 75,
+              "p": 0.5706384237877647,
+              "observed": 0.72
+            },
+            {
+              "lower": 0.6,
+              "n": 563,
+              "p": 0.6613606289692397,
+              "observed": 0.7424511545293073
+            },
+            {
+              "lower": 0.7,
+              "n": 1161,
+              "p": 0.7512210984436986,
+              "observed": 0.7639965546942291
+            },
+            {
+              "lower": 0.8,
+              "n": 716,
+              "p": 0.8407105258118391,
+              "observed": 0.8142458100558659
+            },
+            {
+              "lower": 0.9,
+              "n": 48,
+              "p": 0.9174490798737738,
+              "observed": 0.8541666666666666
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.747466179780621,
+          "brier": 0.17419915545983455,
+          "logLoss": 0.5309969774930984,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 1,
+              "p": 0.4594979501322732,
+              "observed": 1
+            },
+            {
+              "lower": 0.5,
+              "n": 56,
+              "p": 0.5759971063641601,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.6,
+              "n": 604,
+              "p": 0.6640267183065826,
+              "observed": 0.7086092715231788
+            },
+            {
+              "lower": 0.7,
+              "n": 1263,
+              "p": 0.7526518726390461,
+              "observed": 0.7688044338875692
+            },
+            {
+              "lower": 0.8,
+              "n": 637,
+              "p": 0.8308507011426747,
+              "observed": 0.8445839874411303
+            },
+            {
+              "lower": 0.9,
+              "n": 4,
+              "p": 0.9030164006483057,
+              "observed": 1
+            }
+          ]
+        }
+      }
+    },
+    "over25": {
+      "n": 2565,
+      "observed": 0.5321637426900585,
+      "models": {
+        "recent": {
+          "mean": 0.5302144249512672,
+          "brier": 0.2653567251462008,
+          "logLoss": 0.7362277989934791,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 19,
+              "p": 0.10000000000000003,
+              "observed": 0.42105263157894735
+            },
+            {
+              "lower": 0.2,
+              "n": 104,
+              "p": 0.1999999999999996,
+              "observed": 0.49038461538461536
+            },
+            {
+              "lower": 0.3,
+              "n": 246,
+              "p": 0.2999999999999986,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.4,
+              "n": 457,
+              "p": 0.4000000000000033,
+              "observed": 0.48577680525164113
+            },
+            {
+              "lower": 0.5,
+              "n": 559,
+              "p": 0.5,
+              "observed": 0.5313059033989267
+            },
+            {
+              "lower": 0.6,
+              "n": 554,
+              "p": 0.6000000000000021,
+              "observed": 0.555956678700361
+            },
+            {
+              "lower": 0.7,
+              "n": 390,
+              "p": 0.6999999999999948,
+              "observed": 0.5333333333333333
+            },
+            {
+              "lower": 0.8,
+              "n": 176,
+              "p": 0.799999999999999,
+              "observed": 0.625
+            },
+            {
+              "lower": 0.9,
+              "n": 60,
+              "p": 0.916666666666666,
+              "observed": 0.6333333333333333
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5160273622632178,
+          "brier": 0.2470917160168805,
+          "logLoss": 0.6873098987985439,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 1329,
+              "p": 0.47269457727277525,
+              "observed": 0.48457486832204666
+            },
+            {
+              "lower": 0.5,
+              "n": 1236,
+              "p": 0.5626206237942052,
+              "observed": 0.5833333333333334
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5284026108892654,
+          "brier": 0.24587175752986223,
+          "logLoss": 0.6851376279280399,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 1,
+              "p": 0.1774432604447055,
+              "observed": 1
+            },
+            {
+              "lower": 0.2,
+              "n": 23,
+              "p": 0.2833331777290668,
+              "observed": 0.2608695652173913
+            },
+            {
+              "lower": 0.3,
+              "n": 249,
+              "p": 0.3630061967273099,
+              "observed": 0.39759036144578314
+            },
+            {
+              "lower": 0.4,
+              "n": 723,
+              "p": 0.45427773841209046,
+              "observed": 0.46473029045643155
+            },
+            {
+              "lower": 0.5,
+              "n": 914,
+              "p": 0.5501890456783449,
+              "observed": 0.574398249452954
+            },
+            {
+              "lower": 0.6,
+              "n": 559,
+              "p": 0.638313837371332,
+              "observed": 0.59391771019678
+            },
+            {
+              "lower": 0.7,
+              "n": 92,
+              "p": 0.7269975755419703,
+              "observed": 0.7065217391304348
+            },
+            {
+              "lower": 0.8,
+              "n": 4,
+              "p": 0.8133107338173937,
+              "observed": 0.25
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5076915814377159,
+          "brier": 0.24454684041227462,
+          "logLoss": 0.6821777204018903,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 20,
+              "p": 0.2827058282764484,
+              "observed": 0.35
+            },
+            {
+              "lower": 0.3,
+              "n": 319,
+              "p": 0.36466997187109434,
+              "observed": 0.43260188087774293
+            },
+            {
+              "lower": 0.4,
+              "n": 879,
+              "p": 0.4541066056835863,
+              "observed": 0.4937428896473265
+            },
+            {
+              "lower": 0.5,
+              "n": 901,
+              "p": 0.5491663668909689,
+              "observed": 0.5549389567147613
+            },
+            {
+              "lower": 0.6,
+              "n": 412,
+              "p": 0.6353972860259541,
+              "observed": 0.6383495145631068
+            },
+            {
+              "lower": 0.7,
+              "n": 34,
+              "p": 0.7206701172942547,
+              "observed": 0.6764705882352942
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "over35": {
+      "n": 2565,
+      "observed": 0.30994152046783624,
+      "models": {
+        "recent": {
+          "mean": 0.30596491228070194,
+          "brier": 0.22723586744639443,
+          "logLoss": 0.7168950074321315,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 91,
+              "p": 0,
+              "observed": 0.16483516483516483
+            },
+            {
+              "lower": 0.1,
+              "n": 332,
+              "p": 0.1000000000000006,
+              "observed": 0.24096385542168675
+            },
+            {
+              "lower": 0.2,
+              "n": 596,
+              "p": 0.20000000000000193,
+              "observed": 0.31711409395973156
+            },
+            {
+              "lower": 0.3,
+              "n": 601,
+              "p": 0.3000000000000019,
+              "observed": 0.324459234608985
+            },
+            {
+              "lower": 0.4,
+              "n": 486,
+              "p": 0.40000000000000346,
+              "observed": 0.3045267489711934
+            },
+            {
+              "lower": 0.5,
+              "n": 274,
+              "p": 0.5,
+              "observed": 0.3357664233576642
+            },
+            {
+              "lower": 0.6,
+              "n": 112,
+              "p": 0.6000000000000006,
+              "observed": 0.39285714285714285
+            },
+            {
+              "lower": 0.7,
+              "n": 52,
+              "p": 0.7,
+              "observed": 0.38461538461538464
+            },
+            {
+              "lower": 0.8,
+              "n": 18,
+              "p": 0.8000000000000003,
+              "observed": 0.5555555555555556
+            },
+            {
+              "lower": 0.9,
+              "n": 3,
+              "p": 0.9,
+              "observed": 0.6666666666666666
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.28873739976323454,
+          "brier": 0.21166357883244602,
+          "logLoss": 0.6139781383657114,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1656,
+              "p": 0.25653756622387114,
+              "observed": 0.2711352657004831
+            },
+            {
+              "lower": 0.3,
+              "n": 909,
+              "p": 0.3473984826468286,
+              "observed": 0.38063806380638066
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.3179876647198461,
+          "brier": 0.21120584378399654,
+          "logLoss": 0.6125532430373244,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 5,
+              "p": 0.07895279985501394,
+              "observed": 0.2
+            },
+            {
+              "lower": 0.1,
+              "n": 238,
+              "p": 0.16944428426480876,
+              "observed": 0.18067226890756302
+            },
+            {
+              "lower": 0.2,
+              "n": 923,
+              "p": 0.2546689859449641,
+              "observed": 0.28169014084507044
+            },
+            {
+              "lower": 0.3,
+              "n": 914,
+              "p": 0.3469898509488168,
+              "observed": 0.32713347921225383
+            },
+            {
+              "lower": 0.4,
+              "n": 396,
+              "p": 0.43993391181259417,
+              "observed": 0.3838383838383838
+            },
+            {
+              "lower": 0.5,
+              "n": 79,
+              "p": 0.5343211058764198,
+              "observed": 0.4430379746835443
+            },
+            {
+              "lower": 0.6,
+              "n": 10,
+              "p": 0.6282462115660252,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.29294695577603364,
+          "brier": 0.2086438671422079,
+          "logLoss": 0.606320086547754,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 1,
+              "p": 0.07236680432649345,
+              "observed": 0
+            },
+            {
+              "lower": 0.1,
+              "n": 356,
+              "p": 0.17047361244282494,
+              "observed": 0.17134831460674158
+            },
+            {
+              "lower": 0.2,
+              "n": 1055,
+              "p": 0.2508500580450105,
+              "observed": 0.2909952606635071
+            },
+            {
+              "lower": 0.3,
+              "n": 864,
+              "p": 0.34547678041026336,
+              "observed": 0.3414351851851852
+            },
+            {
+              "lower": 0.4,
+              "n": 265,
+              "p": 0.43384182661915116,
+              "observed": 0.45660377358490567
+            },
+            {
+              "lower": 0.5,
+              "n": 24,
+              "p": 0.5225472985635281,
+              "observed": 0.4583333333333333
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "under25": {
+      "n": 2565,
+      "observed": 0.4678362573099415,
+      "models": {
+        "recent": {
+          "mean": 0.4697855750487339,
+          "brier": 0.2653567251462008,
+          "logLoss": 0.7362277989934903,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 10,
+              "p": 0,
+              "observed": 0.1
+            },
+            {
+              "lower": 0.1,
+              "n": 50,
+              "p": 0.09999999999999996,
+              "observed": 0.42
+            },
+            {
+              "lower": 0.2,
+              "n": 176,
+              "p": 0.19999999999999976,
+              "observed": 0.375
+            },
+            {
+              "lower": 0.3,
+              "n": 390,
+              "p": 0.29999999999999805,
+              "observed": 0.4666666666666667
+            },
+            {
+              "lower": 0.4,
+              "n": 554,
+              "p": 0.40000000000000374,
+              "observed": 0.44404332129963897
+            },
+            {
+              "lower": 0.5,
+              "n": 559,
+              "p": 0.5,
+              "observed": 0.46869409660107336
+            },
+            {
+              "lower": 0.6,
+              "n": 457,
+              "p": 0.5999999999999978,
+              "observed": 0.5142231947483589
+            },
+            {
+              "lower": 0.7,
+              "n": 246,
+              "p": 0.6999999999999985,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.8,
+              "n": 104,
+              "p": 0.7999999999999984,
+              "observed": 0.5096153846153846
+            },
+            {
+              "lower": 0.9,
+              "n": 19,
+              "p": 0.9,
+              "observed": 0.5789473684210527
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.48397263773678345,
+          "brier": 0.24709171601688057,
+          "logLoss": 0.6873098987985439,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 1236,
+              "p": 0.43737937620579487,
+              "observed": 0.4166666666666667
+            },
+            {
+              "lower": 0.5,
+              "n": 1329,
+              "p": 0.5273054227272247,
+              "observed": 0.5154251316779533
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.4715973891107344,
+          "brier": 0.24587175752986223,
+          "logLoss": 0.6851376279280401,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 4,
+              "p": 0.18668926618260628,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.2,
+              "n": 92,
+              "p": 0.2730024244580299,
+              "observed": 0.29347826086956524
+            },
+            {
+              "lower": 0.3,
+              "n": 559,
+              "p": 0.36168616262866804,
+              "observed": 0.40608228980322003
+            },
+            {
+              "lower": 0.4,
+              "n": 914,
+              "p": 0.4498109543216548,
+              "observed": 0.42560175054704596
+            },
+            {
+              "lower": 0.5,
+              "n": 723,
+              "p": 0.5457222615879097,
+              "observed": 0.5352697095435685
+            },
+            {
+              "lower": 0.6,
+              "n": 249,
+              "p": 0.63699380327269,
+              "observed": 0.6024096385542169
+            },
+            {
+              "lower": 0.7,
+              "n": 23,
+              "p": 0.7166668222709334,
+              "observed": 0.7391304347826086
+            },
+            {
+              "lower": 0.8,
+              "n": 1,
+              "p": 0.8225567395552944,
+              "observed": 0
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.49230841856228447,
+          "brier": 0.24454684041227462,
+          "logLoss": 0.6821777204018903,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 34,
+              "p": 0.27932988270574527,
+              "observed": 0.3235294117647059
+            },
+            {
+              "lower": 0.3,
+              "n": 412,
+              "p": 0.36460271397404675,
+              "observed": 0.3616504854368932
+            },
+            {
+              "lower": 0.4,
+              "n": 901,
+              "p": 0.4508336331090312,
+              "observed": 0.4450610432852386
+            },
+            {
+              "lower": 0.5,
+              "n": 879,
+              "p": 0.5458933943164139,
+              "observed": 0.5062571103526735
+            },
+            {
+              "lower": 0.6,
+              "n": 319,
+              "p": 0.635330028128905,
+              "observed": 0.567398119122257
+            },
+            {
+              "lower": 0.7,
+              "n": 20,
+              "p": 0.7172941717235518,
+              "observed": 0.65
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "firstHalf05": {
+      "n": 2565,
+      "observed": 0.7153996101364523,
+      "models": {
+        "recent": {
+          "mean": 0.7133333333333327,
+          "brier": 0.22093957115009805,
+          "logLoss": 0.7136272082124376,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 2,
+              "p": 0.2,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.3,
+              "n": 14,
+              "p": 0.29999999999999993,
+              "observed": 0.7857142857142857
+            },
+            {
+              "lower": 0.4,
+              "n": 73,
+              "p": 0.39999999999999947,
+              "observed": 0.6712328767123288
+            },
+            {
+              "lower": 0.5,
+              "n": 251,
+              "p": 0.5,
+              "observed": 0.6972111553784861
+            },
+            {
+              "lower": 0.6,
+              "n": 503,
+              "p": 0.6,
+              "observed": 0.7435387673956262
+            },
+            {
+              "lower": 0.7,
+              "n": 662,
+              "p": 0.6999999999999923,
+              "observed": 0.6873111782477341
+            },
+            {
+              "lower": 0.8,
+              "n": 590,
+              "p": 0.8000000000000077,
+              "observed": 0.7016949152542373
+            },
+            {
+              "lower": 0.9,
+              "n": 470,
+              "p": 0.921702127659569,
+              "observed": 0.7574468085106383
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.7091231036241156,
+          "brier": 0.20331489158661467,
+          "logLoss": 0.5964842621589616,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 770,
+              "p": 0.6731988630405724,
+              "observed": 0.6935064935064935
+            },
+            {
+              "lower": 0.7,
+              "n": 1795,
+              "p": 0.724533502091711,
+              "observed": 0.7247910863509749
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.6995800259822877,
+          "brier": 0.20541061842523267,
+          "logLoss": 0.6014824595363126,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 16,
+              "p": 0.48533766611809914,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.5,
+              "n": 240,
+              "p": 0.5682551849881965,
+              "observed": 0.6791666666666667
+            },
+            {
+              "lower": 0.6,
+              "n": 1025,
+              "p": 0.6560072137702431,
+              "observed": 0.6907317073170731
+            },
+            {
+              "lower": 0.7,
+              "n": 1031,
+              "p": 0.7439836918903938,
+              "observed": 0.7371483996120272
+            },
+            {
+              "lower": 0.8,
+              "n": 244,
+              "p": 0.8303905785203877,
+              "observed": 0.7540983606557377
+            },
+            {
+              "lower": 0.9,
+              "n": 9,
+              "p": 0.9118042196708301,
+              "observed": 0.8888888888888888
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.6880892332357217,
+          "brier": 0.2048110789708252,
+          "logLoss": 0.5996499700814287,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 20,
+              "p": 0.4756244129431505,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.5,
+              "n": 227,
+              "p": 0.5666708975966812,
+              "observed": 0.6475770925110133
+            },
+            {
+              "lower": 0.6,
+              "n": 1135,
+              "p": 0.6558747199199455,
+              "observed": 0.7083700440528634
+            },
+            {
+              "lower": 0.7,
+              "n": 1105,
+              "p": 0.7408480256719785,
+              "observed": 0.7330316742081447
+            },
+            {
+              "lower": 0.8,
+              "n": 78,
+              "p": 0.8172721251235849,
+              "observed": 0.7948717948717948
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "firstHalf15": {
+      "n": 2565,
+      "observed": 0.35360623781676415,
+      "models": {
+        "recent": {
+          "mean": 0.35013645224171336,
+          "brier": 0.2515438596491234,
+          "logLoss": 0.736114252634178,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 39,
+              "p": 0,
+              "observed": 0.1794871794871795
+            },
+            {
+              "lower": 0.1,
+              "n": 175,
+              "p": 0.09999999999999988,
+              "observed": 0.32
+            },
+            {
+              "lower": 0.2,
+              "n": 464,
+              "p": 0.20000000000000168,
+              "observed": 0.3857758620689655
+            },
+            {
+              "lower": 0.3,
+              "n": 634,
+              "p": 0.3000000000000024,
+              "observed": 0.3659305993690852
+            },
+            {
+              "lower": 0.4,
+              "n": 604,
+              "p": 0.4000000000000039,
+              "observed": 0.3509933774834437
+            },
+            {
+              "lower": 0.5,
+              "n": 423,
+              "p": 0.5,
+              "observed": 0.3380614657210402
+            },
+            {
+              "lower": 0.6,
+              "n": 152,
+              "p": 0.599999999999999,
+              "observed": 0.34210526315789475
+            },
+            {
+              "lower": 0.7,
+              "n": 60,
+              "p": 0.7000000000000004,
+              "observed": 0.31666666666666665
+            },
+            {
+              "lower": 0.8,
+              "n": 13,
+              "p": 0.8,
+              "observed": 0.5384615384615384
+            },
+            {
+              "lower": 0.9,
+              "n": 1,
+              "p": 0.9,
+              "observed": 0
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.34661577152280565,
+          "brier": 0.22821827198856987,
+          "logLoss": 0.6489105412346408,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 20,
+              "p": 0.29714586186504843,
+              "observed": 0.35
+            },
+            {
+              "lower": 0.3,
+              "n": 2545,
+              "p": 0.34700453309182544,
+              "observed": 0.35363457760314343
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.35986187383776774,
+          "brier": 0.23152056893140846,
+          "logLoss": 0.6560786378738821,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 46,
+              "p": 0.17893094553571762,
+              "observed": 0.30434782608695654
+            },
+            {
+              "lower": 0.2,
+              "n": 564,
+              "p": 0.261563276469348,
+              "observed": 0.32092198581560283
+            },
+            {
+              "lower": 0.3,
+              "n": 1157,
+              "p": 0.3501598197284969,
+              "observed": 0.35177182368193605
+            },
+            {
+              "lower": 0.4,
+              "n": 683,
+              "p": 0.4412330499396549,
+              "observed": 0.3923865300146413
+            },
+            {
+              "lower": 0.5,
+              "n": 114,
+              "p": 0.5279882553942528,
+              "observed": 0.32456140350877194
+            },
+            {
+              "lower": 0.6,
+              "n": 1,
+              "p": 0.6054493209188714,
+              "observed": 0
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.33192783271473114,
+          "brier": 0.23065654665663185,
+          "logLoss": 0.6549892512865216,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 95,
+              "p": 0.17084433278163733,
+              "observed": 0.29473684210526313
+            },
+            {
+              "lower": 0.2,
+              "n": 819,
+              "p": 0.2595161657051167,
+              "observed": 0.32234432234432236
+            },
+            {
+              "lower": 0.3,
+              "n": 1149,
+              "p": 0.3479533702425353,
+              "observed": 0.37162750217580504
+            },
+            {
+              "lower": 0.4,
+              "n": 460,
+              "p": 0.4365823552392889,
+              "observed": 0.3673913043478261
+            },
+            {
+              "lower": 0.5,
+              "n": 42,
+              "p": 0.5236817563760336,
+              "observed": 0.4523809523809524
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    }
+  },
+  "qualified80": {
+    "btts": {
+      "n": 211,
+      "observed": 0.5450236966824644,
+      "models": {
+        "recent": {
+          "mean": 0.838388625592419,
+          "brier": 0.3313270142180099,
+          "logLoss": 0.9793148396858979,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 135,
+              "p": 0.7999999999999982,
+              "observed": 0.5111111111111111
+            },
+            {
+              "lower": 0.9,
+              "n": 76,
+              "p": 0.9065789473684206,
+              "observed": 0.6052631578947368
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5478793309936564,
+          "brier": 0.24778548276014234,
+          "logLoss": 0.6887443560193117,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 3,
+              "p": 0.4963295163503882,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.5,
+              "n": 208,
+              "p": 0.5486228379356266,
+              "observed": 0.5432692307692307
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.6619757178560186,
+          "brier": 0.25308299596406786,
+          "logLoss": 0.7005437298395548,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 28,
+              "p": 0.5607934492473662,
+              "observed": 0.35714285714285715
+            },
+            {
+              "lower": 0.6,
+              "n": 126,
+              "p": 0.6510000119971916,
+              "observed": 0.49206349206349204
+            },
+            {
+              "lower": 0.7,
+              "n": 56,
+              "p": 0.73445318940711,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.8,
+              "n": 1,
+              "p": 0.819279770249445,
+              "observed": 1
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5979980482523043,
+          "brier": 0.23996453269559084,
+          "logLoss": 0.6725039124608564,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 1,
+              "p": 0.37965446400767094,
+              "observed": 0
+            },
+            {
+              "lower": 0.4,
+              "n": 14,
+              "p": 0.4820895189863893,
+              "observed": 0.42857142857142855
+            },
+            {
+              "lower": 0.5,
+              "n": 86,
+              "p": 0.5631950068969117,
+              "observed": 0.4418604651162791
+            },
+            {
+              "lower": 0.6,
+              "n": 104,
+              "p": 0.6379774617970111,
+              "observed": 0.6442307692307693
+            },
+            {
+              "lower": 0.7,
+              "n": 6,
+              "p": 0.7107089718992384,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "over05": {
+      "n": 2370,
+      "observed": 0.9409282700421941,
+      "models": {
+        "recent": {
+          "mean": 0.9524894514768075,
+          "brier": 0.05826160337552802,
+          "logLoss": 0.5382758279744001,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 151,
+              "p": 0.799999999999998,
+              "observed": 0.9006622516556292
+            },
+            {
+              "lower": 0.9,
+              "n": 2219,
+              "p": 0.962866155926109,
+              "observed": 0.9436683190626408
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.9342498038734388,
+          "brier": 0.05549021366394438,
+          "logLoss": 0.223407781372225,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 2370,
+              "p": 0.9342498038734388,
+              "observed": 0.9409282700421941
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.9132345472527083,
+          "brier": 0.056830451231948104,
+          "logLoss": 0.2308068853258461,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 14,
+              "p": 0.7876893497213319,
+              "observed": 0.8571428571428571
+            },
+            {
+              "lower": 0.8,
+              "n": 752,
+              "p": 0.8691427805736296,
+              "observed": 0.925531914893617
+            },
+            {
+              "lower": 0.9,
+              "n": 1604,
+              "p": 0.935001779988438,
+              "observed": 0.9488778054862843
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.9312687990000555,
+          "brier": 0.05534690123785267,
+          "logLoss": 0.2216464200245589,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 1,
+              "p": 0.7882228396050217,
+              "observed": 1
+            },
+            {
+              "lower": 0.8,
+              "n": 291,
+              "p": 0.8834697683962359,
+              "observed": 0.8900343642611683
+            },
+            {
+              "lower": 0.9,
+              "n": 2078,
+              "p": 0.9380313417647851,
+              "observed": 0.9480269489894129
+            }
+          ]
+        }
+      }
+    },
+    "over15": {
+      "n": 1217,
+      "observed": 0.7888249794576828,
+      "models": {
+        "recent": {
+          "mean": 0.8843056696795261,
+          "brier": 0.17843878389482173,
+          "logLoss": 0.9620697298034798,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 424,
+              "p": 0.8000000000000063,
+              "observed": 0.7617924528301887
+            },
+            {
+              "lower": 0.9,
+              "n": 793,
+              "p": 0.9293820933165096,
+              "observed": 0.8032786885245902
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.7677125575638576,
+          "brier": 0.16529866769260557,
+          "logLoss": 0.5118104540266151,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 942,
+              "p": 0.75552478200189,
+              "observed": 0.7760084925690022
+            },
+            {
+              "lower": 0.8,
+              "n": 275,
+              "p": 0.8094612287615841,
+              "observed": 0.8327272727272728
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.8029795657938008,
+          "brier": 0.16411915467671268,
+          "logLoss": 0.5093904461493194,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 1,
+              "p": 0.5922273205980594,
+              "observed": 0
+            },
+            {
+              "lower": 0.6,
+              "n": 66,
+              "p": 0.6690582944554565,
+              "observed": 0.6515151515151515
+            },
+            {
+              "lower": 0.7,
+              "n": 505,
+              "p": 0.7608718286698452,
+              "observed": 0.7722772277227723
+            },
+            {
+              "lower": 0.8,
+              "n": 597,
+              "p": 0.8445531448981319,
+              "observed": 0.8140703517587939
+            },
+            {
+              "lower": 0.9,
+              "n": 48,
+              "p": 0.9174490798737738,
+              "observed": 0.8541666666666666
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.7810418909859068,
+          "brier": 0.16350247675156032,
+          "logLoss": 0.5060264891482028,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 1,
+              "p": 0.5707951643029531,
+              "observed": 0
+            },
+            {
+              "lower": 0.6,
+              "n": 122,
+              "p": 0.6724558986820426,
+              "observed": 0.6721311475409836
+            },
+            {
+              "lower": 0.7,
+              "n": 588,
+              "p": 0.7585858859055259,
+              "observed": 0.7619047619047619
+            },
+            {
+              "lower": 0.8,
+              "n": 502,
+              "p": 0.8331812749228946,
+              "observed": 0.848605577689243
+            },
+            {
+              "lower": 0.9,
+              "n": 4,
+              "p": 0.9030164006483057,
+              "observed": 1
+            }
+          ]
+        }
+      }
+    },
+    "over25": {
+      "n": 153,
+      "observed": 0.6405228758169934,
+      "models": {
+        "recent": {
+          "mean": 0.8457516339869275,
+          "brier": 0.27333333333333315,
+          "logLoss": 0.8609498408762736,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 93,
+              "p": 0.7999999999999985,
+              "observed": 0.6451612903225806
+            },
+            {
+              "lower": 0.9,
+              "n": 60,
+              "p": 0.916666666666666,
+              "observed": 0.6333333333333333
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5482902584266984,
+          "brier": 0.23890431635715956,
+          "logLoss": 0.67080999373072,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 34,
+              "p": 0.47315364921153413,
+              "observed": 0.5882352941176471
+            },
+            {
+              "lower": 0.5,
+              "n": 119,
+              "p": 0.5697578610596025,
+              "observed": 0.6554621848739496
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.6699148737444728,
+          "brier": 0.23314054786948296,
+          "logLoss": 0.6612459572138909,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 1,
+              "p": 0.4717165684876891,
+              "observed": 0
+            },
+            {
+              "lower": 0.5,
+              "n": 18,
+              "p": 0.58065272839479,
+              "observed": 0.5555555555555556
+            },
+            {
+              "lower": 0.6,
+              "n": 83,
+              "p": 0.6501237112499855,
+              "observed": 0.6385542168674698
+            },
+            {
+              "lower": 0.7,
+              "n": 47,
+              "p": 0.7310638092402569,
+              "observed": 0.723404255319149
+            },
+            {
+              "lower": 0.8,
+              "n": 4,
+              "p": 0.8133107338173937,
+              "observed": 0.25
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.6207465829444144,
+          "brier": 0.22974837196420905,
+          "logLoss": 0.65273652611419,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 8,
+              "p": 0.466331187983362,
+              "observed": 0.625
+            },
+            {
+              "lower": 0.5,
+              "n": 44,
+              "p": 0.5655962597167098,
+              "observed": 0.5227272727272727
+            },
+            {
+              "lower": 0.6,
+              "n": 83,
+              "p": 0.6429790750528681,
+              "observed": 0.7228915662650602
+            },
+            {
+              "lower": 0.7,
+              "n": 18,
+              "p": 0.7216710572058458,
+              "observed": 0.5555555555555556
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "over35": {
+      "n": 12,
+      "observed": 0.6666666666666666,
+      "models": {
+        "recent": {
+          "mean": 0.8250000000000002,
+          "brier": 0.24916666666666673,
+          "logLoss": 0.7233734307914382,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 9,
+              "p": 0.7999999999999999,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.9,
+              "n": 3,
+              "p": 0.9,
+              "observed": 0.6666666666666666
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.36320410984901547,
+          "brier": 0.3145124511451602,
+          "logLoss": 0.8259982143581933,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 12,
+              "p": 0.36320410984901547,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5575780312105244,
+          "brier": 0.2510853509494047,
+          "logLoss": 0.6949995126745997,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 4,
+              "p": 0.479877257849973,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.5,
+              "n": 3,
+              "p": 0.5456988660665488,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.6,
+              "n": 5,
+              "p": 0.6268661489853508,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.47720855113784305,
+          "brier": 0.2505744692519782,
+          "logLoss": 0.6938412140045146,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 1,
+              "p": 0.3675241782362287,
+              "observed": 0
+            },
+            {
+              "lower": 0.4,
+              "n": 7,
+              "p": 0.4566239493637165,
+              "observed": 0.8571428571428571
+            },
+            {
+              "lower": 0.5,
+              "n": 4,
+              "p": 0.5406526974679682,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "under25": {
+      "n": 73,
+      "observed": 0.4383561643835616,
+      "models": {
+        "recent": {
+          "mean": 0.826027397260273,
+          "brier": 0.39109589041095905,
+          "logLoss": 1.0599604397823592,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 54,
+              "p": 0.7999999999999995,
+              "observed": 0.3888888888888889
+            },
+            {
+              "lower": 0.9,
+              "n": 19,
+              "p": 0.9,
+              "observed": 0.5789473684210527
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5229206679634545,
+          "brier": 0.25403624334907543,
+          "logLoss": 0.7012533832681673,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 5,
+              "p": 0.4472538013594021,
+              "observed": 0.4
+            },
+            {
+              "lower": 0.5,
+              "n": 68,
+              "p": 0.5284844081549289,
+              "observed": 0.4411764705882353
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.6331348012794186,
+          "brier": 0.2771170776879522,
+          "logLoss": 0.7518553863325546,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 3,
+              "p": 0.46791107061570975,
+              "observed": 0
+            },
+            {
+              "lower": 0.5,
+              "n": 17,
+              "p": 0.5666137168103244,
+              "observed": 0.35294117647058826
+            },
+            {
+              "lower": 0.6,
+              "n": 42,
+              "p": 0.6461992409886513,
+              "observed": 0.4523809523809524
+            },
+            {
+              "lower": 0.7,
+              "n": 10,
+              "p": 0.7219749234696253,
+              "observed": 0.7
+            },
+            {
+              "lower": 0.8,
+              "n": 1,
+              "p": 0.8225567395552944,
+              "observed": 0
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.6193951716495216,
+          "brier": 0.2792579820065367,
+          "logLoss": 0.7557535965976999,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 1,
+              "p": 0.4225657435773034,
+              "observed": 0
+            },
+            {
+              "lower": 0.5,
+              "n": 24,
+              "p": 0.5601167206036356,
+              "observed": 0.4166666666666667
+            },
+            {
+              "lower": 0.6,
+              "n": 44,
+              "p": 0.6455225900959456,
+              "observed": 0.4772727272727273
+            },
+            {
+              "lower": 0.7,
+              "n": 4,
+              "p": 0.7368716320322293,
+              "observed": 0.25
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "firstHalf05": {
+      "n": 790,
+      "observed": 0.7265822784810126,
+      "models": {
+        "recent": {
+          "mean": 0.8724050632911311,
+          "brier": 0.21807594936708824,
+          "logLoss": 0.8855382019030573,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 320,
+              "p": 0.8000000000000046,
+              "observed": 0.68125
+            },
+            {
+              "lower": 0.9,
+              "n": 470,
+              "p": 0.921702127659569,
+              "observed": 0.7574468085106383
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.7155725442580888,
+          "brier": 0.19934698311681548,
+          "logLoss": 0.5882011181856232,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 188,
+              "p": 0.6729784008437871,
+              "observed": 0.7287234042553191
+            },
+            {
+              "lower": 0.7,
+              "n": 602,
+              "p": 0.7288743697761759,
+              "observed": 0.7259136212624585
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.7631890730380149,
+          "brier": 0.19842252731266813,
+          "logLoss": 0.5875051773133089,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 113,
+              "p": 0.6693624745945586,
+              "observed": 0.5752212389380531
+            },
+            {
+              "lower": 0.7,
+              "n": 466,
+              "p": 0.7527210314960163,
+              "observed": 0.7532188841201717
+            },
+            {
+              "lower": 0.8,
+              "n": 202,
+              "p": 0.8332038089933963,
+              "observed": 0.7425742574257426
+            },
+            {
+              "lower": 0.9,
+              "n": 9,
+              "p": 0.9118042196708301,
+              "observed": 0.8888888888888888
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.730561285222296,
+          "brier": 0.1972497201045806,
+          "logLoss": 0.5831762940096815,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 8,
+              "p": 0.5592019059357745,
+              "observed": 0.625
+            },
+            {
+              "lower": 0.6,
+              "n": 194,
+              "p": 0.663283860320825,
+              "observed": 0.6752577319587629
+            },
+            {
+              "lower": 0.7,
+              "n": 536,
+              "p": 0.7489248710827324,
+              "observed": 0.7406716417910447
+            },
+            {
+              "lower": 0.8,
+              "n": 52,
+              "p": 0.8186346206835141,
+              "observed": 0.7884615384615384
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "firstHalf15": {
+      "n": 10,
+      "observed": 0.5,
+      "models": {
+        "recent": {
+          "mean": 0.8099999999999999,
+          "brier": 0.3570000000000001,
+          "logLoss": 0.9856054499301496,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 9,
+              "p": 0.7999999999999999,
+              "observed": 0.5555555555555556
+            },
+            {
+              "lower": 0.9,
+              "n": 1,
+              "p": 0.9,
+              "observed": 0
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.38044568560024417,
+          "brier": 0.274281080690823,
+          "logLoss": 0.7445376347461455,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 10,
+              "p": 0.38044568560024417,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5399779031252974,
+          "brier": 0.24955065706135898,
+          "logLoss": 0.6922576266400127,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 2,
+              "p": 0.4975618790995915,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.5,
+              "n": 8,
+              "p": 0.5505819091317239,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.48803771208254504,
+          "brier": 0.26187540421982236,
+          "logLoss": 0.7170229812637685,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 5,
+              "p": 0.45388782571095704,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.5,
+              "n": 5,
+              "p": 0.5221875984541329,
+              "observed": 0.4
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    }
+  },
+  "bySeason": {
+    "2324": {
+      "n": 1236,
+      "observed": 0.5428802588996764,
+      "models": {
+        "recent": {
+          "mean": 0.5453074433656958,
+          "brier": 0.2666990291262156,
+          "logLoss": 0.7344736377577185,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 1,
+              "p": 0,
+              "observed": 0
+            },
+            {
+              "lower": 0.1,
+              "n": 3,
+              "p": 0.10000000000000002,
+              "observed": 0
+            },
+            {
+              "lower": 0.2,
+              "n": 42,
+              "p": 0.20000000000000004,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.3,
+              "n": 95,
+              "p": 0.3000000000000005,
+              "observed": 0.5157894736842106
+            },
+            {
+              "lower": 0.4,
+              "n": 222,
+              "p": 0.4000000000000008,
+              "observed": 0.5405405405405406
+            },
+            {
+              "lower": 0.5,
+              "n": 261,
+              "p": 0.5,
+              "observed": 0.5134099616858238
+            },
+            {
+              "lower": 0.6,
+              "n": 271,
+              "p": 0.599999999999997,
+              "observed": 0.5571955719557196
+            },
+            {
+              "lower": 0.7,
+              "n": 210,
+              "p": 0.7000000000000003,
+              "observed": 0.5857142857142857
+            },
+            {
+              "lower": 0.8,
+              "n": 102,
+              "p": 0.7999999999999984,
+              "observed": 0.5392156862745098
+            },
+            {
+              "lower": 0.9,
+              "n": 29,
+              "p": 0.9068965517241376,
+              "observed": 0.6206896551724138
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5283962854214919,
+          "brier": 0.24756470713920337,
+          "logLoss": 0.6882694610941773,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 114,
+              "p": 0.49534076092465146,
+              "observed": 0.543859649122807
+            },
+            {
+              "lower": 0.5,
+              "n": 1122,
+              "p": 0.5317548681243787,
+              "observed": 0.5427807486631016
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5373661348344129,
+          "brier": 0.24872724192288156,
+          "logLoss": 0.6907963941735826,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.286034375212104,
+              "observed": 1
+            },
+            {
+              "lower": 0.3,
+              "n": 65,
+              "p": 0.3706396777487009,
+              "observed": 0.47692307692307695
+            },
+            {
+              "lower": 0.4,
+              "n": 360,
+              "p": 0.4589873042689794,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.5,
+              "n": 519,
+              "p": 0.5467806825042633,
+              "observed": 0.535645472061657
+            },
+            {
+              "lower": 0.6,
+              "n": 243,
+              "p": 0.6395253652768207,
+              "observed": 0.6131687242798354
+            },
+            {
+              "lower": 0.7,
+              "n": 46,
+              "p": 0.734001972240754,
+              "observed": 0.6521739130434783
+            },
+            {
+              "lower": 0.8,
+              "n": 2,
+              "p": 0.8117854922853567,
+              "observed": 1
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5304825753310871,
+          "brier": 0.24650780171145084,
+          "logLoss": 0.6860476383946444,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 40,
+              "p": 0.38054516080779394,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.4,
+              "n": 418,
+              "p": 0.45998081922069306,
+              "observed": 0.49760765550239233
+            },
+            {
+              "lower": 0.5,
+              "n": 546,
+              "p": 0.5486922415587889,
+              "observed": 0.5347985347985348
+            },
+            {
+              "lower": 0.6,
+              "n": 217,
+              "p": 0.6351623571001049,
+              "observed": 0.6497695852534562
+            },
+            {
+              "lower": 0.7,
+              "n": 15,
+              "p": 0.7177652573893604,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "2425": {
+      "n": 1329,
+      "observed": 0.5492851768246803,
+      "models": {
+        "recent": {
+          "mean": 0.555079006772009,
+          "brier": 0.26467268623025014,
+          "logLoss": 0.7409820168666363,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 1,
+              "p": 0,
+              "observed": 0
+            },
+            {
+              "lower": 0.1,
+              "n": 6,
+              "p": 0.09999999999999999,
+              "observed": 0.3333333333333333
+            },
+            {
+              "lower": 0.2,
+              "n": 31,
+              "p": 0.2000000000000001,
+              "observed": 0.45161290322580644
+            },
+            {
+              "lower": 0.3,
+              "n": 97,
+              "p": 0.3000000000000005,
+              "observed": 0.5154639175257731
+            },
+            {
+              "lower": 0.4,
+              "n": 223,
+              "p": 0.40000000000000085,
+              "observed": 0.515695067264574
+            },
+            {
+              "lower": 0.5,
+              "n": 292,
+              "p": 0.5,
+              "observed": 0.5342465753424658
+            },
+            {
+              "lower": 0.6,
+              "n": 296,
+              "p": 0.5999999999999968,
+              "observed": 0.5641891891891891
+            },
+            {
+              "lower": 0.7,
+              "n": 224,
+              "p": 0.6999999999999995,
+              "observed": 0.6339285714285714
+            },
+            {
+              "lower": 0.8,
+              "n": 112,
+              "p": 0.7999999999999983,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.9,
+              "n": 47,
+              "p": 0.9063829787234036,
+              "observed": 0.5957446808510638
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5390774307225432,
+          "brier": 0.2475253980869416,
+          "logLoss": 0.6881851488764688,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 10,
+              "p": 0.49874250177555923,
+              "observed": 0.7
+            },
+            {
+              "lower": 0.5,
+              "n": 1319,
+              "p": 0.5393832300322249,
+              "observed": 0.5481425322213799
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5546712951275182,
+          "brier": 0.24787864031808568,
+          "logLoss": 0.6891278277873581,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 4,
+              "p": 0.2734937664756004,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.3,
+              "n": 43,
+              "p": 0.3712101467528793,
+              "observed": 0.3488372093023256
+            },
+            {
+              "lower": 0.4,
+              "n": 298,
+              "p": 0.45907659471376366,
+              "observed": 0.5268456375838926
+            },
+            {
+              "lower": 0.5,
+              "n": 564,
+              "p": 0.5502961415329297,
+              "observed": 0.5514184397163121
+            },
+            {
+              "lower": 0.6,
+              "n": 364,
+              "p": 0.6382386503080199,
+              "observed": 0.5604395604395604
+            },
+            {
+              "lower": 0.7,
+              "n": 56,
+              "p": 0.7252039658357459,
+              "observed": 0.7321428571428571
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5361188029681444,
+          "brier": 0.2474200487996595,
+          "logLoss": 0.6880469675469484,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.28773061462200017,
+              "observed": 0
+            },
+            {
+              "lower": 0.3,
+              "n": 41,
+              "p": 0.3776185256038251,
+              "observed": 0.4878048780487805
+            },
+            {
+              "lower": 0.4,
+              "n": 366,
+              "p": 0.4616309271901725,
+              "observed": 0.49453551912568305
+            },
+            {
+              "lower": 0.5,
+              "n": 661,
+              "p": 0.5500921672443222,
+              "observed": 0.5612708018154312
+            },
+            {
+              "lower": 0.6,
+              "n": 255,
+              "p": 0.6298851315928825,
+              "observed": 0.611764705882353
+            },
+            {
+              "lower": 0.7,
+              "n": 5,
+              "p": 0.7086497048001583,
+              "observed": 0.4
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    }
+  },
+  "byLeague": {
+    "E0": {
+      "n": 683,
+      "observed": 0.5944363103953147,
+      "models": {
+        "recent": {
+          "mean": 0.5960468521229868,
+          "brier": 0.2577891654465601,
+          "logLoss": 0.717135058565769,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 1,
+              "p": 0.1,
+              "observed": 0
+            },
+            {
+              "lower": 0.2,
+              "n": 4,
+              "p": 0.2,
+              "observed": 0.75
+            },
+            {
+              "lower": 0.3,
+              "n": 31,
+              "p": 0.30000000000000004,
+              "observed": 0.5483870967741935
+            },
+            {
+              "lower": 0.4,
+              "n": 99,
+              "p": 0.39999999999999925,
+              "observed": 0.5656565656565656
+            },
+            {
+              "lower": 0.5,
+              "n": 127,
+              "p": 0.5,
+              "observed": 0.5669291338582677
+            },
+            {
+              "lower": 0.6,
+              "n": 165,
+              "p": 0.5999999999999986,
+              "observed": 0.5878787878787879
+            },
+            {
+              "lower": 0.7,
+              "n": 132,
+              "p": 0.7000000000000016,
+              "observed": 0.6515151515151515
+            },
+            {
+              "lower": 0.8,
+              "n": 94,
+              "p": 0.7999999999999985,
+              "observed": 0.5851063829787234
+            },
+            {
+              "lower": 0.9,
+              "n": 30,
+              "p": 0.9066666666666663,
+              "observed": 0.6666666666666666
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5598333757260585,
+          "brier": 0.2433032821430839,
+          "logLoss": 0.6797167550377344,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 683,
+              "p": 0.5598333757260585,
+              "observed": 0.5944363103953147
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5857108022205642,
+          "brier": 0.2422684333433348,
+          "logLoss": 0.6778609816956946,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 8,
+              "p": 0.36914633211172865,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.4,
+              "n": 100,
+              "p": 0.4650315901687956,
+              "observed": 0.48
+            },
+            {
+              "lower": 0.5,
+              "n": 265,
+              "p": 0.551047726937733,
+              "observed": 0.5811320754716981
+            },
+            {
+              "lower": 0.6,
+              "n": 252,
+              "p": 0.6422485548415813,
+              "observed": 0.6349206349206349
+            },
+            {
+              "lower": 0.7,
+              "n": 56,
+              "p": 0.7336838178522068,
+              "observed": 0.6785714285714286
+            },
+            {
+              "lower": 0.8,
+              "n": 2,
+              "p": 0.8117854922853567,
+              "observed": 1
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5929585978216011,
+          "brier": 0.24055596198493762,
+          "logLoss": 0.6741063781384404,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 45,
+              "p": 0.4730935488160369,
+              "observed": 0.5777777777777777
+            },
+            {
+              "lower": 0.5,
+              "n": 323,
+              "p": 0.5610929987459758,
+              "observed": 0.56656346749226
+            },
+            {
+              "lower": 0.6,
+              "n": 295,
+              "p": 0.6378262597818349,
+              "observed": 0.6271186440677966
+            },
+            {
+              "lower": 0.7,
+              "n": 20,
+              "p": 0.7154863692420599,
+              "observed": 0.6
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "SP1": {
+      "n": 683,
+      "observed": 0.5241581259150805,
+      "models": {
+        "recent": {
+          "mean": 0.5281112737920941,
+          "brier": 0.2748901903367503,
+          "logLoss": 0.768512243674091,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 1,
+              "p": 0.1,
+              "observed": 1
+            },
+            {
+              "lower": 0.2,
+              "n": 32,
+              "p": 0.2000000000000001,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.3,
+              "n": 55,
+              "p": 0.3000000000000003,
+              "observed": 0.509090909090909
+            },
+            {
+              "lower": 0.4,
+              "n": 129,
+              "p": 0.3999999999999991,
+              "observed": 0.5658914728682171
+            },
+            {
+              "lower": 0.5,
+              "n": 159,
+              "p": 0.5,
+              "observed": 0.5031446540880503
+            },
+            {
+              "lower": 0.6,
+              "n": 148,
+              "p": 0.5999999999999991,
+              "observed": 0.49324324324324326
+            },
+            {
+              "lower": 0.7,
+              "n": 111,
+              "p": 0.7000000000000014,
+              "observed": 0.5585585585585585
+            },
+            {
+              "lower": 0.8,
+              "n": 33,
+              "p": 0.8000000000000004,
+              "observed": 0.48484848484848486
+            },
+            {
+              "lower": 0.9,
+              "n": 15,
+              "p": 0.9133333333333336,
+              "observed": 0.6
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5079505612680166,
+          "brier": 0.25000469399116326,
+          "logLoss": 0.693156639705753,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 64,
+              "p": 0.497702146062303,
+              "observed": 0.625
+            },
+            {
+              "lower": 0.5,
+              "n": 619,
+              "p": 0.5090101712408207,
+              "observed": 0.5137318255250404
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5259107752345176,
+          "brier": 0.2481489270936076,
+          "logLoss": 0.6895284501739528,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 2,
+              "p": 0.2795069456546607,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.3,
+              "n": 46,
+              "p": 0.37195767337046304,
+              "observed": 0.43478260869565216
+            },
+            {
+              "lower": 0.4,
+              "n": 219,
+              "p": 0.4560938701659152,
+              "observed": 0.4977168949771689
+            },
+            {
+              "lower": 0.5,
+              "n": 277,
+              "p": 0.5485288669832669,
+              "observed": 0.5270758122743683
+            },
+            {
+              "lower": 0.6,
+              "n": 124,
+              "p": 0.6352955595674036,
+              "observed": 0.5564516129032258
+            },
+            {
+              "lower": 0.7,
+              "n": 15,
+              "p": 0.7282859674511047,
+              "observed": 0.8666666666666667
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5053530031873457,
+          "brier": 0.24656042466858163,
+          "logLoss": 0.6861988386477332,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.28773061462200017,
+              "observed": 0
+            },
+            {
+              "lower": 0.3,
+              "n": 36,
+              "p": 0.3792057077525335,
+              "observed": 0.3888888888888889
+            },
+            {
+              "lower": 0.4,
+              "n": 274,
+              "p": 0.456915929278752,
+              "observed": 0.4781021897810219
+            },
+            {
+              "lower": 0.5,
+              "n": 319,
+              "p": 0.5423476677552783,
+              "observed": 0.5517241379310345
+            },
+            {
+              "lower": 0.6,
+              "n": 53,
+              "p": 0.6228885744704126,
+              "observed": 0.6981132075471698
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "I1": {
+      "n": 646,
+      "observed": 0.5046439628482973,
+      "models": {
+        "recent": {
+          "mean": 0.5114551083591325,
+          "brier": 0.2726625386996905,
+          "logLoss": 0.7464134134531759,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 5,
+              "p": 0.1,
+              "observed": 0.2
+            },
+            {
+              "lower": 0.2,
+              "n": 23,
+              "p": 0.20000000000000007,
+              "observed": 0.4782608695652174
+            },
+            {
+              "lower": 0.3,
+              "n": 67,
+              "p": 0.3000000000000004,
+              "observed": 0.5074626865671642
+            },
+            {
+              "lower": 0.4,
+              "n": 139,
+              "p": 0.399999999999999,
+              "observed": 0.49640287769784175
+            },
+            {
+              "lower": 0.5,
+              "n": 157,
+              "p": 0.5,
+              "observed": 0.49044585987261147
+            },
+            {
+              "lower": 0.6,
+              "n": 123,
+              "p": 0.6000000000000001,
+              "observed": 0.5853658536585366
+            },
+            {
+              "lower": 0.7,
+              "n": 90,
+              "p": 0.7000000000000012,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.8,
+              "n": 35,
+              "p": 0.8000000000000004,
+              "observed": 0.34285714285714286
+            },
+            {
+              "lower": 0.9,
+              "n": 7,
+              "p": 0.9000000000000001,
+              "observed": 0.7142857142857143
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5093281542056937,
+          "brier": 0.2501932557860772,
+          "logLoss": 0.6935340475337268,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 60,
+              "p": 0.4933889069196408,
+              "observed": 0.48333333333333334
+            },
+            {
+              "lower": 0.5,
+              "n": 586,
+              "p": 0.5109601590472695,
+              "observed": 0.5068259385665529
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5170757287464413,
+          "brier": 0.25682589375199577,
+          "logLoss": 0.7072695656261238,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 2,
+              "p": 0.284125979690503,
+              "observed": 1
+            },
+            {
+              "lower": 0.3,
+              "n": 36,
+              "p": 0.37211509793998054,
+              "observed": 0.4444444444444444
+            },
+            {
+              "lower": 0.4,
+              "n": 220,
+              "p": 0.4579973267511316,
+              "observed": 0.5181818181818182
+            },
+            {
+              "lower": 0.5,
+              "n": 293,
+              "p": 0.5434169440145075,
+              "observed": 0.5017064846416383
+            },
+            {
+              "lower": 0.6,
+              "n": 91,
+              "p": 0.6289626445971613,
+              "observed": 0.4945054945054945
+            },
+            {
+              "lower": 0.7,
+              "n": 4,
+              "p": 0.7125870362848113,
+              "observed": 0.5
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.49497694499270967,
+          "brier": 0.2542022563169474,
+          "logLoss": 0.7017560866504211,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 34,
+              "p": 0.37945964348193145,
+              "observed": 0.6470588235294118
+            },
+            {
+              "lower": 0.4,
+              "n": 320,
+              "p": 0.4612575995066874,
+              "observed": 0.478125
+            },
+            {
+              "lower": 0.5,
+              "n": 273,
+              "p": 0.539929885982345,
+              "observed": 0.5164835164835165
+            },
+            {
+              "lower": 0.6,
+              "n": 19,
+              "p": 0.6236940985044535,
+              "observed": 0.5263157894736842
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    },
+    "F1": {
+      "n": 553,
+      "observed": 0.5623869801084991,
+      "models": {
+        "recent": {
+          "mean": 0.5669077757685351,
+          "brier": 0.2557504520795661,
+          "logLoss": 0.7155413095184951,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 2,
+              "p": 0,
+              "observed": 0
+            },
+            {
+              "lower": 0.1,
+              "n": 2,
+              "p": 0.1,
+              "observed": 0
+            },
+            {
+              "lower": 0.2,
+              "n": 14,
+              "p": 0.2,
+              "observed": 0.35714285714285715
+            },
+            {
+              "lower": 0.3,
+              "n": 39,
+              "p": 0.30000000000000016,
+              "observed": 0.5128205128205128
+            },
+            {
+              "lower": 0.4,
+              "n": 78,
+              "p": 0.3999999999999994,
+              "observed": 0.47435897435897434
+            },
+            {
+              "lower": 0.5,
+              "n": 110,
+              "p": 0.5,
+              "observed": 0.5545454545454546
+            },
+            {
+              "lower": 0.6,
+              "n": 131,
+              "p": 0.5999999999999998,
+              "observed": 0.5801526717557252
+            },
+            {
+              "lower": 0.7,
+              "n": 101,
+              "p": 0.7000000000000013,
+              "observed": 0.7128712871287128
+            },
+            {
+              "lower": 0.8,
+              "n": 52,
+              "p": 0.7999999999999996,
+              "observed": 0.5384615384615384
+            },
+            {
+              "lower": 0.9,
+              "n": 24,
+              "p": 0.9041666666666665,
+              "observed": 0.5
+            }
+          ]
+        },
+        "league": {
+          "mean": 0.5627654568307271,
+          "brier": 0.24664926065841866,
+          "logLoss": 0.6864441111259352,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.4,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.5,
+              "n": 553,
+              "p": 0.5627654568307271,
+              "observed": 0.5623869801084991
+            },
+            {
+              "lower": 0.6,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "weighted": {
+          "mean": 0.5570962671026847,
+          "brier": 0.24591862469655915,
+          "logLoss": 0.6850851807712534,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 1,
+              "p": 0.25274359042417816,
+              "observed": 0
+            },
+            {
+              "lower": 0.3,
+              "n": 18,
+              "p": 0.36634712257027413,
+              "observed": 0.3333333333333333
+            },
+            {
+              "lower": 0.4,
+              "n": 119,
+              "p": 0.4612867755720198,
+              "observed": 0.5546218487394958
+            },
+            {
+              "lower": 0.5,
+              "n": 248,
+              "p": 0.5522374582869759,
+              "observed": 0.5725806451612904
+            },
+            {
+              "lower": 0.6,
+              "n": 140,
+              "p": 0.6418903329257742,
+              "observed": 0.5642857142857143
+            },
+            {
+              "lower": 0.7,
+              "n": 27,
+              "p": 0.7227622723424827,
+              "observed": 0.6666666666666666
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        },
+        "poisson": {
+          "mean": 0.5393787021690538,
+          "brier": 0.24699771809222223,
+          "logLoss": 0.6870640251076834,
+          "bins": [
+            {
+              "lower": 0,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.1,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.2,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.3,
+              "n": 11,
+              "p": 0.3773756931447011,
+              "observed": 0.36363636363636365
+            },
+            {
+              "lower": 0.4,
+              "n": 145,
+              "p": 0.4630503146525044,
+              "observed": 0.5448275862068965
+            },
+            {
+              "lower": 0.5,
+              "n": 292,
+              "p": 0.5532674073888061,
+              "observed": 0.5582191780821918
+            },
+            {
+              "lower": 0.6,
+              "n": 105,
+              "p": 0.6231324865976194,
+              "observed": 0.6190476190476191
+            },
+            {
+              "lower": 0.7,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.8,
+              "n": 0,
+              "p": null,
+              "observed": null
+            },
+            {
+              "lower": 0.9,
+              "n": 0,
+              "p": null,
+              "observed": null
+            }
+          ]
+        }
+      }
+    }
+  }
+}
