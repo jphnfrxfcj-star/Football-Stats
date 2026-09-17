@@ -33,7 +33,13 @@ export interface SourceStamp {
   url: string;
   fetchedAt: string;
 }
+export interface DataAvailability {
+  status: 'fallback' | 'stale' | 'partial';
+  source: string;
+  updatedAt: string | null;
+}
 export interface Fixture {
+  availability?: DataAvailability;
   sourceDate?: string;
   kickoffKnown?: boolean;
   provenance?: {
@@ -64,6 +70,7 @@ export interface MatchEvent {
   detail: string;
 }
 export interface MatchData {
+  availability?: DataAvailability;
   fixture: Fixture;
   homeHistory: Fixture[];
   awayHistory: Fixture[];

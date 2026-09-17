@@ -1,10 +1,11 @@
-import type { Fixture } from '../domain/models';
+import type { Fixture, DataAvailability } from '../domain/models';
 import type { Probability } from './probability';
 import { canonicalClubName } from '../domain/club-names';
 import type { OddsSnapshot, SpotlightCard, SpotlightReport } from '../domain/spotlight';
 export function buildSpotlight(
   matches: {
     fixture: Fixture;
+    availability?: DataAvailability;
     probabilities: Probability[];
     homeSamples: number;
     awaySamples: number;
@@ -15,6 +16,10 @@ export function buildSpotlight(
   const candidates: SpotlightCard[] = [];
   for (const m of matches) {
     const f = m.fixture;
+    if (
+      [m.availability, f.availability].some((a) => a?.status === 'partial' || a?.status === 'stale')
+    )
+      continue;
     if (
       f.status !== 'scheduled' ||
       f.kickoffKnown === false ||
@@ -77,6 +82,9 @@ export function buildSpotlight(
     })
     .slice(0, 3);
   return {
+    availability: matches.flatMap((m) =>
+      [m.availability, m.fixture.availability].filter((a): a is DataAvailability => !!a),
+    ),
     cards,
     checked: matches.length,
     eligible: seen.size,

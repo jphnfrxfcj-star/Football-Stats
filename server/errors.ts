@@ -8,3 +8,10 @@ export class ServiceError extends Error {
     this.name = 'ServiceError';
   }
 }
+export class BusyError extends Error {}
+export function sourceUnavailable(error: unknown) {
+  return (
+    error instanceof BusyError ||
+    (error instanceof ServiceError && error.code === 'FREE_SOURCE_UNAVAILABLE')
+  );
+}

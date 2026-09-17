@@ -407,10 +407,30 @@ export function mergeFixtures(
 }
 export async function downloadSource(url: string): Promise<SourceDocument> {
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(15000),
-      headers: { 'User-Agent': 'Matchday/1.0 (football statistics importer)' },
-    });
+    const signal = AbortSignal.timeout(15000);
+    const origin = new URL(url);
+    let target = origin;
+    let response: Response;
+    for (let redirects = 0; ; redirects++) {
+      response = await fetch(target.href, {
+        signal,
+        redirect: 'manual',
+        headers: { 'User-Agent': 'Matchday/1.0 (football statistics importer)' },
+      });
+      if (![301, 302, 303, 307, 308].includes(response.status)) break;
+      const location = response.headers.get('location');
+      if (!location || redirects >= 3) throw new Error('Invalid source redirect');
+      const next = new URL(location, target);
+      // The source currently redirects to localhost. Never follow it into the server's network.
+      if (
+        next.protocol !== 'https:' ||
+        next.username ||
+        next.password ||
+        next.hostname.replace(/^www\./, '') !== origin.hostname.replace(/^www\./, '')
+      )
+        throw new Error('Invalid source redirect');
+      target = next;
+    }
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const text = await response.text();
     if (text.length > 4_000_000) throw new Error('Response too large');

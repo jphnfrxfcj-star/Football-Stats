@@ -2,7 +2,8 @@ import { packMarketHistory, unpackMarketHistory } from './market-history';
 import { isUpcoming } from '../src/analysis/recap';
 import { buildMarkets, fixtureQuotes } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
-import { ServiceError } from './errors';
+import { ServiceError, BusyError, sourceUnavailable } from './errors';
+export { BusyError } from './errors';
 import { buildSpotlight } from '../src/analysis/spotlight';
 import { getOdds } from './providers/odds';
 import type { Fixture, MatchData, Team } from '../src/domain/models';
@@ -12,7 +13,6 @@ import { analysisWeights } from '../src/analysis/config';
 import { probabilities } from '../src/analysis/probability';
 import type { FootballDataProvider } from './providers/provider';
 import { Repository } from './repositories/supabase';
-export class BusyError extends Error {}
 export class FootballService {
   private inFlight = new Map<string, Promise<unknown>>();
   private async maintenance(operation: string, task: () => Promise<unknown>) {
@@ -203,7 +203,12 @@ export class FootballService {
       `${this.scope()}:analysis:${analysisWeights.version}:${id}`,
       900,
       async () => {
-        const data = await this.data(id);
+        const data = await this.data(id).catch(async (error) => {
+          if (!sourceUnavailable(error) || !this.provider.fallbackData) throw error;
+          const prefix = this.provider.fixtureIdPrefix;
+          if (!prefix || !id.startsWith(prefix)) throw error;
+          return this.provider.fallbackData(id.slice(prefix.length));
+        });
         if (!data) return null;
         const analysis = analyze(data);
         return { data, analysis, probabilities: probabilities(data, analysis) };
@@ -231,7 +236,7 @@ export class FootballService {
   }
   async markets(date: string, window: number, days = 1, minimumRate = 100) {
     const packed = await this.cached(
-      `${this.scope()}:markets-data:v4:${date}:${days}`,
+      `${this.scope()}:markets-data:v5:${date}:${days}`,
       900,
       async () => {
         if (days > 1) {
@@ -287,6 +292,7 @@ export class FootballService {
             const analysis = analyze(data);
             return {
               fixture: data.fixture,
+              availability: data.availability,
               probabilities: probabilities(data, analysis),
               homeSamples: analysis.home[2].available,
               awaySamples: analysis.away[2].available,

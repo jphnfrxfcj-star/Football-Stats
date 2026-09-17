@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 16 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 17 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -81,6 +81,10 @@ De gratis multiprovider ondersteunt vier competities, centraal gedefinieerd in
 - **OpenFootball**: seizoensprogramma’s en beschikbare uitslagen.
 - **Football-Data.co.uk**: CSV met eindstanden, ruststanden, historie,
   wedstrijdstatistieken en periodieke bookmakerprijzen.
+- **Football-data.org**: onafhankelijke terugval voor programma en uitslagen van
+  onze vier competities. Servervariabele `FOOTBALL_DATA_ORG_KEY`; nooit `VITE_`.
+  Huidig seizoen 15 minuten gecachet, vorig seizoen één dag; gedeeld maximum
+  negen aanvragen per minuut. Geen bookmakerodds of verzonnen wedstrijdstatistieken.
 - **ESPN**: aanvullende uitslagen en spelerstatistieken. Primaire host
   `site.web.api.espn.com`; `site.api.espn.com` is fallback en kan vanaf Netlify 403 geven.
 - **Unibet België / openbare Kambi-feed**: beschikbare pre-matchodds, gekoppeld aan
@@ -140,6 +144,37 @@ de bronmelding bij de resultaten, ook bij gedeeltelijke of volledige bronuitval.
 - Unibet kan vanaf Netlify tijdelijk onbereikbaar zijn. Geen garantie op volledige
   of live odds; een lege bron mag niet worden vervangen door fictieve prijzen.
 - CSV-odds zijn momentopnames, geen bevestigde actuele bookmakerdeals.
+
+## Uitval en alternatieve gegevens
+
+Sinds 17 september 2026 kan Football-Data.co.uk naar localhost doorverwijzen.
+De downloader volgt alleen HTTPS-redirects binnen hetzelfde brondomein (www mag
+wijzigen). Een omleiding naar localhost wordt vóór de vervolgaanvraag geweigerd.
+
+- `ResilientFootballProvider` probeert de bestaande multiprovider eerst. Alleen
+  bronuitval of een bezette broncache activeert de terugval; database-autorisatie-
+  en configuratiefouten blijven fouten. Na uitval één minuut geen nieuwe primaire poging.
+- Programma: Football-data.org → zelfstandig OpenFootball → eerder opgeslagen
+  fixtures, maximaal zeven dagen oud. Alle getoonde terugvalgegevens hebben
+  `availability` met bron en oorspronkelijke update-tijd. Geen bron en geen
+  bruikbare opslag geeft een fout, geen schijnbaar lege wedstrijdlijst.
+- Analyse: huidig en vorig seizoen van Football-data.org, aangevuld met opgeslagen
+  statistieken uitsluitend bij overeenkomende eindstanden. Automatische voorstellen
+  gebruiken alleen de twee opgehaalde seizoenen wanneer eerdere wedstrijden van
+  beide teams een bevestigde uitslag hebben (of geannuleerd/uitgesteld zijn).
+  Ontbrekende ruststanden blijven null en kwalificeren niet voor rustmarkten.
+- Kan deze historie niet volledig worden bevestigd, dan toont de analyse beschikbare
+  uitslagen en opgeslagen historie als `partial`. Combibuilder en spotlight sluiten
+  die data uit, ook bij een lagere historische drempel. De interface legt dit uit.
+  Onvoldoende steekproeven blijven onder de bestaande selectievoorwaarden vallen.
+- Opgeslagen fixtures worden nooit opnieuw opgeslagen met een kunstmatig nieuwe
+  waarnemingstijd. Ontbrekende statistieken/ruststanden wissen bekende gegevens
+  niet wanneer de bevestigde eindstand gelijk blijft.
+- Dezelfde terugval geldt bij de nachtelijke programma-update; de rapportage telt
+  `fallbackFixtures`. Namespace multiprovider `v3`, compacte combihistorie `v5`;
+  de compacte cache bewaart ook beschikbaarheidsstatus, waarschuwingen en tijdstip.
+- Bronmeldingen verschijnen bij programma, wedstrijdkiezer, analyse, spotlight en
+  combivoorstellen, in Nederlands en Engels. Echte odds blijven onafhankelijk nodig.
 
 ## Twee verschillende builders
 
@@ -246,7 +281,7 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 - Verlopen cachepayloads worden al in de DB-query uitgesloten.
 - Meerdaagse combihistorie wordt compact opgeslagen: gedeelde fixtures eenmaal,
   laatste 20 per ploeg plus maximaal 10 relevante thuis-/uitduels en 10 H2H,
-  geen onnodige statistiekpayload voor goalmarkten. Cache `markets-data:v4` bewaart
+  geen onnodige statistiekpayload voor goalmarkten. Cache `markets-data:v5` bewaart
   nu ook H2H; eerdere cacheversies gooiden die context weg.
 - Succesvolle publieke GETs hebben korte browser-/Netlify-CDN-caching met queryvariatie.
   Fouten en writes niet publiek cachen.
@@ -262,17 +297,18 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 Zie `.env.example` en `server/config.ts`. Zet productievariabelen in de juiste
 Netlify-context en scope, en redeploy na wijzigingen.
 
-| Variabele                                           | Gebruik                                                 |
-| --------------------------------------------------- | ------------------------------------------------------- |
-| `VITE_DEMO_MODE`                                    | Build/frontend; `false` voor echte data.                |
-| `DEMO_MODE`                                         | Functions; `false` voor echte data.                     |
-| `FOOTBALL_PROVIDER`                                 | Standaard `free-football`; optioneel `api-football`.    |
-| `FOOTBALL_SEASON`                                   | Seizoenstartjaar; momenteel 2026 betekent 2026/27.      |
-| `SUPABASE_URL`                                      | Supabase-project-URL.                                   |
-| `SUPABASE_SERVICE_ROLE_KEY`                         | Alleen serveromgeving, nooit in browser of repository.  |
-| `SYNC_SECRET`                                       | Serversecret voor beschermde synchronisatie/updates.    |
-| `API_FOOTBALL_KEY`                                  | Alleen nodig bij de optionele betaalde legacy-provider. |
-| `ODDS_API_KEY`, `ODDS_REGION`, `ODDS_CACHE_SECONDS` | Optionele oddsvergelijkingsfeed.                        |
+| Variabele                                           | Gebruik                                                   |
+| --------------------------------------------------- | --------------------------------------------------------- |
+| `VITE_DEMO_MODE`                                    | Build/frontend; `false` voor echte data.                  |
+| `DEMO_MODE`                                         | Functions; `false` voor echte data.                       |
+| `FOOTBALL_PROVIDER`                                 | Standaard `free-football`; optioneel `api-football`.      |
+| `FOOTBALL_SEASON`                                   | Seizoenstartjaar; momenteel 2026 betekent 2026/27.        |
+| `SUPABASE_URL`                                      | Supabase-project-URL.                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`                         | Alleen serveromgeving, nooit in browser of repository.    |
+| `SYNC_SECRET`                                       | Serversecret voor beschermde synchronisatie/updates.      |
+| `FOOTBALL_DATA_ORG_KEY`                             | Optionele terugvalbron; uitsluitend Production Functions. |
+| `API_FOOTBALL_KEY`                                  | Alleen nodig bij de optionele betaalde legacy-provider.   |
+| `ODDS_API_KEY`, `ODDS_REGION`, `ODDS_CACHE_SECONDS` | Optionele oddsvergelijkingsfeed.                          |
 
 Geen echte sleutels in dit document, screenshots, logs, commits of browserconsole.
 Gebruik nooit `VITE_` voor een secret. RLS en API-validatie niet uitschakelen om een

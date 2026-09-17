@@ -1,4 +1,5 @@
 import { MultiLeagueProvider } from '../../server/providers/multi-league';
+import { ResilientFootballProvider } from '../../server/providers/resilient-football';
 import { buildMarkets, comboRates } from '../../src/analysis/combinations';
 import { getOdds } from '../../server/providers/odds';
 import { canonicalClubName } from '../../src/domain/club-names';
@@ -45,8 +46,16 @@ function getService() {
   const repository = new Repository(config.supabaseUrl, config.supabaseKey);
   const provider =
     config.provider === 'free-football'
-      ? new MultiLeagueProvider(config.season, (url, ttl) =>
-          service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+      ? new ResilientFootballProvider(
+          config.season,
+          new MultiLeagueProvider(config.season, (url, ttl) =>
+            service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+          ),
+          repository,
+          (url, ttl) =>
+            service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+          (key, ttl, loader) => service!.cached(key, ttl, loader),
+          process.env.FOOTBALL_DATA_ORG_KEY?.trim(),
         )
       : new ApiFootballProvider(
           config.apiKey,

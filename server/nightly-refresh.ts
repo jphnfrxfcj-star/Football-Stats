@@ -3,6 +3,10 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { serverConfig } from './config';
 import type { Fixture } from '../src/domain/models';
 import { Repository } from './repositories/supabase';
+import { ResilientFootballProvider } from './providers/resilient-football';
+import { MultiLeagueProvider } from './providers/multi-league';
+import { FootballService } from './service';
+import { sourceUnavailable } from './errors';
 import { downloadSource, FreeFootballProvider, type Division } from './providers/free-football';
 export function refreshToken(secret: string) {
   return createHmac('sha256', secret).update('matchday:nightly-refresh:v1').digest('hex');
@@ -33,7 +37,22 @@ export async function refreshLeague(repo: Repository, year: number, division: Di
     },
     division,
   );
-  const rows = await provider.seasonFixtures();
+  const rows = await provider.seasonFixtures().catch(async (error) => {
+    if (!sourceUnavailable(error)) throw error;
+    let service: FootballService;
+    const read = (url: string, ttl: number) =>
+      service.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url));
+    const fallback = new ResilientFootballProvider(
+      year,
+      new MultiLeagueProvider(year, read),
+      repo,
+      read,
+      (key, ttl, load) => service.cached(key, ttl, load),
+      process.env.FOOTBALL_DATA_ORG_KEY?.trim(),
+    );
+    service = new FootballService(fallback, repo);
+    return fallback.seasonFixtures(division);
+  });
   // Idempotent batches preserve stable IDs and also apply corrected results earlier in the season.
   const saved: Fixture[] = [];
   for (let i = 0; i < rows.length; i += 100)
@@ -41,6 +60,7 @@ export async function refreshLeague(repo: Repository, year: number, division: Di
   return {
     division,
     fixtures: rows.length,
+    fallbackFixtures: rows.filter((f) => f.availability).length,
     finished: saved.filter((f) => f.status === 'finished').length,
     pendingResults: saved.filter(
       (f) =>
@@ -79,7 +99,7 @@ export async function runNightlyRefresh() {
       const { error } = await repo.db
         .from(table)
         .delete()
-        .like('cache_key', `free-football:multi:v2:${config.season}:%`);
+        .like('cache_key', `free-football:multi:v3:${config.season}:%`);
       if (error) throw new Error('Derived cache invalidation failed');
     }
     const report = { updatedAt: new Date().toISOString(), results, failed };

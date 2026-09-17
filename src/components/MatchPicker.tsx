@@ -1,3 +1,4 @@
+import DataNotice from './DataNotice';
 import { t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
@@ -99,6 +100,7 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           </select>
         </label>
       </div>
+      {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
       {loading ? (
         <Loading />
       ) : error ? (

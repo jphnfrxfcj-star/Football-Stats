@@ -6,6 +6,7 @@ export interface FootballDataProvider {
   readonly fixtureIdPrefix?: string;
   readonly statisticsProvider?: string;
   readonly warnings?: string[];
+  fallbackData?(externalId: string): Promise<MatchData | null>;
   leagues(): Promise<League[]>;
   fixtures(date: string): Promise<Fixture[]>;
   fixture(externalId: string): Promise<Fixture | null>;

@@ -1,3 +1,4 @@
+import DataNotice from './DataNotice';
 import { tr, t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { ArrowRight, Sparkles, Clock3 } from 'lucide-react';
@@ -82,6 +83,7 @@ export default function Spotlight({
       </button>
       {report && (
         <>
+          <DataNotice items={report.availability ?? []} />
           {cards.length ? (
             <div
               className="spotlight-grid"

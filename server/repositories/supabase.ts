@@ -153,6 +153,12 @@ export class Repository {
   }
   async saveFixtures(inputs: Fixture[]): Promise<Fixture[]> {
     if (!inputs.length) return [];
+    // Reading an old snapshot must never make its observation time look fresh.
+    const current = inputs.filter((f) => f.availability?.status !== 'stale');
+    if (current.length !== inputs.length) {
+      const saved = new Map((await this.saveFixtures(current)).map((f) => [f.id, f]));
+      return inputs.map((f) => saved.get(f.id) ?? f);
+    }
     const maps = new Map<string, string>();
     for (const kind of ['team', 'league', 'fixture'] as const) {
       const entities =
@@ -194,7 +200,13 @@ export class Repository {
       league: canonical('league', f.league),
     }));
     const incomplete = fixtures.filter(
-      (f) => f.status !== 'finished' || f.homeGoals === null || f.awayGoals === null,
+      (f) =>
+        f.status !== 'finished' ||
+        f.homeGoals === null ||
+        f.awayGoals === null ||
+        !f.statistics ||
+        f.halfHomeGoals === null ||
+        f.halfAwayGoals === null,
     );
     if (incomplete.length) {
       const { data: stored, error } = await this.db
@@ -310,6 +322,46 @@ export class Repository {
         halfAwayGoals: f.halfAwayGoals,
       };
     });
+  }
+  async storedSeason(leagueId: string, year: number): Promise<Fixture[]> {
+    const { data, error } = await this.db
+      .from('fixtures')
+      .select('data,updated_at')
+      .eq('league_id', leagueId)
+      .gte('kickoff', `${year}-07-01T00:00:00Z`)
+      .lt('kickoff', `${year + 1}-07-01T00:00:00Z`)
+      .gte('updated_at', new Date(Date.now() - 7 * 86400000).toISOString())
+      .limit(500);
+    this.assert(error);
+    return (data ?? [])
+      .map((r) => ({
+        ...(r.data as Fixture),
+        availability: {
+          status: 'stale' as const,
+          source: 'Opgeslagen wedstrijddata',
+          updatedAt: (r.data as Fixture).availability?.updatedAt ?? r.updated_at,
+        },
+      }))
+      .filter((f) => Date.parse(f.availability.updatedAt) >= Date.now() - 7 * 86400000);
+  }
+  async storedLeagueHistory(leagueId: string, cutoff: string): Promise<Fixture[]> {
+    const { data, error } = await this.db
+      .from('fixtures')
+      .select('data,updated_at')
+      .eq('league_id', leagueId)
+      .eq('status', 'finished')
+      .lt('kickoff', cutoff)
+      .order('kickoff', { ascending: false })
+      .limit(1000);
+    this.assert(error);
+    return (data ?? []).map((r) => ({
+      ...(r.data as Fixture),
+      availability: {
+        status: 'stale' as const,
+        source: 'Opgeslagen wedstrijddata',
+        updatedAt: (r.data as Fixture).availability?.updatedAt ?? r.updated_at,
+      },
+    }));
   }
   async fixture(id: string): Promise<Fixture | null> {
     const { data, error } = await this.db

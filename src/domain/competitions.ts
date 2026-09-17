@@ -87,7 +87,7 @@ export const italianClubs: Record<string, string[]> = {
   Sampdoria: ['UC Sampdoria'],
   Spezia: ['Spezia Calcio'],
   Verona: ['Hellas Verona', 'Hellas Verona FC'],
-  Pisa: ['Pisa SC'],
+  Pisa: ['Pisa SC', 'AC Pisa 1909', 'AC Pisa'],
 };
 export const frenchClubs: Record<string, string[]> = {
   Auxerre: ['AJ Auxerre'],

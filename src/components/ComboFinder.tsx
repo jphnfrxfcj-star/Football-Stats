@@ -1,3 +1,4 @@
+import DataNotice from './DataNotice';
 import ComboAssessment, { comboPriceLabels, comboComparisonLabels } from './ComboAssessment';
 import { tr, t, locale } from '../i18n';
 import { saveProposal, type SavedCombo } from '../domain/combo-history';
@@ -93,6 +94,8 @@ export default function ComboFinder({
     );
   }, [combos, window, minimumRate, onSave]);
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
+  const historyBlocked =
+    !!report?.fixtures.length && report.blockedFixtures === report.fixtures.length;
   const candidates = comboCandidates(eligible, book, cutoff, maxOdd);
   const priced = new Set(candidates.map((c) => c.selection.fixture.id)).size;
   const approved = candidates.filter((c) => c.assessment.status === 'passes');
@@ -311,6 +314,7 @@ export default function ComboFinder({
         <Loading />
       ) : (
         <>
+          <DataNotice items={report.availability ?? []} />
           {report.odds.message && (
             <p className="spotlight-note" role="status">
               {t(report.odds.message)}
@@ -536,9 +540,15 @@ export default function ComboFinder({
           ) : (
             <div className="spotlight-placeholder">
               <strong>
-                {t('Geen passende combi bij ')}
-                {t(book)}
-                {t(' in deze periode.')}
+                {historyBlocked ? (
+                  t('Combi’s wachten op volledige historie.')
+                ) : (
+                  <>
+                    {t('Geen passende combi bij ')}
+                    {t(book)}
+                    {t(' in deze periode.')}
+                  </>
+                )}
               </strong>
               {priceCheck && (
                 <p>
@@ -548,20 +558,28 @@ export default function ComboFinder({
                   )}
                 </p>
               )}
-              <p>
-                {t(
-                  (priceCheck ? approvedFixtures : priced) < 2
-                    ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
-                    : tr(
-                        'Geen voorstel gevonden binnen {0}–{1} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.',
-                        [minOdd.toFixed(2), maxOdd.toFixed(2)],
-                      ),
-                )}{' '}
-                {t('Probeer een andere bookmaker of startdatum. Met de ingestelde ')}
-                {t(minimumRate)}
-                {t('%-eis verzinnen we geen prijzen.')}
-              </p>
-              {minimumRate === 100 && (
+              {historyBlocked ? (
+                <p>
+                  {t(
+                    'Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.',
+                  )}
+                </p>
+              ) : (
+                <p>
+                  {t(
+                    (priceCheck ? approvedFixtures : priced) < 2
+                      ? 'Voor een combi zijn minimaal twee verschillende wedstrijden met passende odds nodig.'
+                      : tr(
+                          'Geen voorstel gevonden binnen {0}–{1} met maximaal acht wedstrijden zonder terugkerende ploegen. De zoekruimte is begrensd om de berekening snel te houden.',
+                          [minOdd.toFixed(2), maxOdd.toFixed(2)],
+                        ),
+                  )}{' '}
+                  {t('Probeer een andere bookmaker of startdatum. Met de ingestelde ')}
+                  {t(minimumRate)}
+                  {t('%-eis verzinnen we geen prijzen.')}
+                </p>
+              )}
+              {!historyBlocked && minimumRate === 100 && (
                 <button
                   className="secondary-button"
                   onClick={() => {

@@ -3748,3 +3748,20 @@ td {
   background: #fff8e7;
   border-left: 3px solid #b28b43;
 }
+
+.data-notice {
+  margin: 12px 0;
+  padding: 12px 14px;
+  background: #fff8e7;
+  border-left: 3px solid #b28b43;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.data-notice p {
+  margin: 0;
+}
+.data-notice p + p {
+  margin-top: 8px;
+}

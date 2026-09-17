@@ -30,6 +30,7 @@ export interface SpotlightCard {
   edgePercent: number | null;
 }
 export interface SpotlightReport {
+  availability?: import('./models').DataAvailability[];
   cards: SpotlightCard[];
   checked: number;
   eligible: number;

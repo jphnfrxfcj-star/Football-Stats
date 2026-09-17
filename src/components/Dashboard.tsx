@@ -1,3 +1,4 @@
+import DataNotice from './DataNotice';
 import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
@@ -327,6 +328,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </button>
         </p>
       )}
+      {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
       {isDemo && (
         <div className="demo-note">
           <Info size={15} />

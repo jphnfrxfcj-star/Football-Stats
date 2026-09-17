@@ -1,3 +1,4 @@
+import DataNotice from './DataNotice';
 import { tr, t, locale } from '../i18n';
 import { MatchRecap } from './Recap';
 import { isUpcoming } from '../analysis/recap';
@@ -177,6 +178,7 @@ export default function MatchPage({
         <a href="#metrics">{t('Wedstrijdstatistieken')}</a>
         <a href="#h2h">{t('Head-to-head')}</a>
       </div>
+      <DataNotice items={[data.availability, data.fixture.availability]} />
       {data.sourceLabel && (
         <div className="demo-note">
           <Database size={15} />

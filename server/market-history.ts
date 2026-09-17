@@ -1,9 +1,17 @@
-import { before, type Fixture, type MatchData } from '../src/domain/models';
+import { before, type Fixture, type MatchData, type DataAvailability } from '../src/domain/models';
 import { isUpcoming } from '../src/analysis/recap';
 /** Goal-market evidence needs scores and identities, not duplicated full statistics/provenance. */
 export interface MarketHistory {
   fixtures: Fixture[];
-  matches: { fixture: number; home: number[]; away: number[]; h2h: number[] }[];
+  matches: {
+    fixture: number;
+    home: number[];
+    away: number[];
+    h2h: number[];
+    availability?: DataAvailability;
+    warnings?: string[];
+    updatedAt?: string;
+  }[];
 }
 export function packMarketHistory(data: MatchData[], now = Date.now()): MarketHistory {
   const fixtures: Fixture[] = [],
@@ -34,6 +42,9 @@ export function packMarketHistory(data: MatchData[], now = Date.now()): MarketHi
           ].map(index);
         };
         return {
+          availability: d.availability,
+          warnings: d.warnings,
+          updatedAt: d.updatedAt,
           fixture: index(d.fixture),
           home: history(d.homeHistory, d.fixture.home.id, 'home'),
           away: history(d.awayHistory, d.fixture.away.id, 'away'),
@@ -57,7 +68,8 @@ export function unpackMarketHistory(packed: MarketHistory): MatchData[] {
     awayHistory: m.away.map((i) => packed.fixtures[i]),
     h2h: m.h2h.map((i) => packed.fixtures[i]),
     source: 'live',
-    updatedAt: new Date().toISOString(),
-    warnings: [],
+    updatedAt: m.updatedAt ?? new Date().toISOString(),
+    warnings: m.warnings ?? [],
+    availability: m.availability,
   }));
 }

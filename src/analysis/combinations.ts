@@ -1,5 +1,5 @@
 import { comboModelEvidence, assessComboPrice, type ComboModelEvidence } from './combo-assessment';
-import { before, type Fixture, type MatchData } from '../domain/models';
+import { before, type Fixture, type MatchData, type DataAvailability } from '../domain/models';
 import { canonicalClubName } from '../domain/club-names';
 import type { OddsQuote, OddsSnapshot } from '../domain/spotlight';
 import { occurrence, marketLabels, type Market } from './engine';
@@ -27,6 +27,8 @@ export interface PerfectSelection {
   oddsKind?: OddsSnapshot['kind'];
 }
 export interface MarketsReport {
+  blockedFixtures?: number;
+  availability?: DataAvailability[];
   window: number;
   fixtures: { fixture: Fixture; quotes: OddsQuote[] }[];
   selections: PerfectSelection[];
@@ -69,12 +71,21 @@ export function buildMarkets(
   if (![5, 10, 20].includes(window)) throw new Error('Ongeldig analysevenster');
   const fixtures: MarketsReport['fixtures'] = [],
     selections: PerfectSelection[] = [];
+  let blockedFixtures = 0;
   for (const data of matches) {
     const f = data.fixture;
     if (f.status !== 'scheduled' || f.kickoffKnown === false || !(Date.parse(f.kickoff) > now))
       continue;
     const quotes = fixtureQuotes(f, odds);
     fixtures.push({ fixture: f, quotes });
+    if (
+      [data.availability, f.availability].some(
+        (a) => a?.status === 'partial' || a?.status === 'stale',
+      )
+    ) {
+      blockedFixtures++;
+      continue;
+    }
     const history = (rows: Fixture[], team: string) =>
       before(rows, new Date(Math.min(now, Date.parse(f.kickoff))).toISOString())
         .filter((row) => row.home.id === team || row.away.id === team)
@@ -105,7 +116,16 @@ export function buildMarkets(
     }
   }
   const { quotes: _, ...metadata } = odds;
-  return { window, fixtures, selections, odds: metadata };
+  return {
+    window,
+    fixtures,
+    selections,
+    blockedFixtures,
+    odds: metadata,
+    availability: matches.flatMap((d) =>
+      [d.availability, d.fixture.availability].filter((a): a is DataAvailability => !!a),
+    ),
+  };
 }
 /** Pick the newest applicable price first; never cherry-pick an older price that passes a filter. */
 export function comboCandidates(

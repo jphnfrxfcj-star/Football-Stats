@@ -547,5 +547,16 @@
   "De eerste twaalf selecties worden getoond.": "The first twelve selections are shown.",
   "Met modelbeoordeling": "With model assessment",
   "Experimentele margefilter": "Experimental margin filter",
-  "Historische selectie": "Historical selection"
+  "Historische selectie": "Historical selection",
+  "Historie kon niet volledig worden vernieuwd. Opgeslagen gegevens en beschikbare uitslagen worden getoond; automatische combivoorstellen zijn uitgeschakeld.": "History could not be fully refreshed. Saved data and available results are shown; automatic combination proposals are disabled.",
+  "De databron is niet bereikbaar. Dit zijn eerder opgeslagen gegevens; aftrappen en uitslagen kunnen gewijzigd zijn.": "The data source is unavailable. These are previously saved records; kickoffs and results may have changed.",
+  "Een databron is tijdelijk niet beschikbaar. Het programma wordt via een alternatieve bron geladen.": "A data source is temporarily unavailable. Fixtures are loaded from an alternative source.",
+  "Bron: {0}. Laatste beschikbare update: {1}.": "Source: {0}. Last available update: {1}.",
+  "Opgeslagen wedstrijddata": "Saved match data",
+  "Opgeslagen historie en beschikbare uitslagen": "Saved history and available results",
+  "OpenFootball + Football-Data.co.uk + ESPN; Football-data.org als terugvalbron": "OpenFootball + Football-Data.co.uk + ESPN; Football-data.org as a fallback source",
+  "Een databron is tijdelijk niet beschikbaar. De gegevens worden via een alternatieve bron geladen.": "A data source is temporarily unavailable. Data is loaded from an alternative source.",
+  "Alternatieve historie: huidig en vorig seizoen. Alleen beschikbare uitslagen tellen mee; ontbrekende ruststanden en statistieken blijven onbekend.": "Alternative history: current and previous season. Only available results count; missing half-time scores and statistics remain unknown.",
+  "Combi’s wachten op volledige historie.": "Combinations are waiting for complete history.",
+  "Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.": "Refresh when history is available again. A lower threshold or another bookmaker cannot restore missing data."
 }
