@@ -127,6 +127,7 @@ export const frenchClubs: Record<string, string[]> = {
   'Saint-Etienne': ['Saint-Étienne', 'AS Saint-Étienne', 'St Etienne'],
 };
 export const germanClubs: Record<string, string[]> = {
+  'Holstein Kiel': ['KSV Holstein Kiel'],
   'St Pauli': ['FC St. Pauli 1910', 'FC St. Pauli', 'St. Pauli'],
   'Bayern Munich': ['FC Bayern München', 'Bayern München', 'Bayern Munich', 'Bayern'],
   'Borussia Dortmund': ['Dortmund'],
@@ -146,7 +147,7 @@ export const germanClubs: Record<string, string[]> = {
   Augsburg: ['FC Augsburg'],
   'Union Berlin': ['1. FC Union Berlin', 'FC Union Berlin'],
   Hoffenheim: ['TSG 1899 Hoffenheim', 'TSG Hoffenheim'],
-  Cologne: ['1. FC Köln', '1. FC Cologne', 'FC Cologne', 'FC Köln', 'Köln'],
+  Cologne: ['1. FC Köln', '1. FC Cologne', 'FC Cologne', 'FC Koln', 'FC Köln', 'Köln'],
   Hamburg: ['Hamburger SV', 'Hamburg SV'],
   'Schalke 04': ['FC Schalke 04', 'Schalke'],
   Paderborn: ['SC Paderborn 07', 'SC Paderborn'],
@@ -155,7 +156,7 @@ export const germanClubs: Record<string, string[]> = {
   Heidenheim: ['1. FC Heidenheim 1846', '1. FC Heidenheim', 'FC Heidenheim'],
   Bochum: ['VfL Bochum 1848', 'VfL Bochum'],
   Darmstadt: ['SV Darmstadt 98', 'Darmstadt 98'],
-  'Hertha Berlin': ['Hertha BSC'],
+  'Hertha Berlin': ['Hertha BSC', 'Hertha'],
   'Greuther Furth': ['SpVgg Greuther Fürth', 'Greuther Fürth', 'Greuther Fuerth'],
   'Arminia Bielefeld': ['DSC Arminia Bielefeld', 'Bielefeld'],
 };

@@ -52,5 +52,6 @@ it('keeps Bundesliga identity across schedule and fallback, including former lea
   expect(canonicalClubName('Borussia Mönchengladbach')).toBe(
     canonicalClubName('Borussia M.Gladbach'),
   );
+  expect(canonicalClubName('FC Koln')).toBe('Cologne');
   expect(canonicalClubName('Bayern Munich II')).toBeNull();
 });
