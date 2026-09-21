@@ -40,6 +40,16 @@ export const competitions = {
     unibet: 'football/france/ligue_1',
     group: 1000094991,
   },
+  D1: {
+    name: 'Bundesliga',
+    country: 'Duitsland',
+    file: 'de',
+    timezone: 'Europe/Berlin',
+    espn: 'ger.1',
+    apiId: '78',
+    unibet: 'football/germany/bundesliga',
+    group: 1000094994,
+  },
 } as const;
 export type Division = keyof typeof competitions;
 export const divisions = Object.keys(competitions) as Division[];
@@ -116,7 +126,40 @@ export const frenchClubs: Record<string, string[]> = {
   Reims: ['Stade de Reims'],
   'Saint-Etienne': ['Saint-Étienne', 'AS Saint-Étienne', 'St Etienne'],
 };
-export const additionalClubs = { ...italianClubs, ...frenchClubs };
+export const germanClubs: Record<string, string[]> = {
+  'St Pauli': ['FC St. Pauli 1910', 'FC St. Pauli', 'St. Pauli'],
+  'Bayern Munich': ['FC Bayern München', 'Bayern München', 'Bayern Munich', 'Bayern'],
+  'Borussia Dortmund': ['Dortmund'],
+  'Bayer Leverkusen': ['Bayer 04 Leverkusen', 'Leverkusen'],
+  'RB Leipzig': ['RasenBallsport Leipzig'],
+  'Eintracht Frankfurt': ['Ein Frankfurt', 'Frankfurt'],
+  Freiburg: ['SC Freiburg'],
+  Mainz: ['1. FSV Mainz 05', 'FSV Mainz 05', 'Mainz 05'],
+  'Borussia Monchengladbach': [
+    'Borussia Mönchengladbach',
+    'Borussia M.Gladbach',
+    "M'gladbach",
+    'Mönchengladbach',
+  ],
+  'Werder Bremen': ['SV Werder Bremen', 'Werder'],
+  Stuttgart: ['VfB Stuttgart'],
+  Augsburg: ['FC Augsburg'],
+  'Union Berlin': ['1. FC Union Berlin', 'FC Union Berlin'],
+  Hoffenheim: ['TSG 1899 Hoffenheim', 'TSG Hoffenheim'],
+  Cologne: ['1. FC Köln', '1. FC Cologne', 'FC Cologne', 'FC Köln', 'Köln'],
+  Hamburg: ['Hamburger SV', 'Hamburg SV'],
+  'Schalke 04': ['FC Schalke 04', 'Schalke'],
+  Paderborn: ['SC Paderborn 07', 'SC Paderborn'],
+  Elversberg: ['SV 07 Elversberg', 'SV Elversberg'],
+  Wolfsburg: ['VfL Wolfsburg'],
+  Heidenheim: ['1. FC Heidenheim 1846', '1. FC Heidenheim', 'FC Heidenheim'],
+  Bochum: ['VfL Bochum 1848', 'VfL Bochum'],
+  Darmstadt: ['SV Darmstadt 98', 'Darmstadt 98'],
+  'Hertha Berlin': ['Hertha BSC'],
+  'Greuther Furth': ['SpVgg Greuther Fürth', 'Greuther Fürth', 'Greuther Fuerth'],
+  'Arminia Bielefeld': ['DSC Arminia Bielefeld', 'Bielefeld'],
+};
+export const additionalClubs = { ...italianClubs, ...frenchClubs, ...germanClubs };
 export const additionalClubName = (name: string) =>
   Object.keys(additionalClubs).find(
     (k) => k === name.trim() || additionalClubs[k].includes(name.trim()),

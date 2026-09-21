@@ -5,7 +5,7 @@ import type { Fixture } from '../../src/domain/models';
 import { ServiceError } from '../errors';
 import { fixtureKey, freeTeam, type SourceDocument } from './free-football';
 
-export const orgCodes = { E0: 'PL', SP1: 'PD', I1: 'SA', F1: 'FL1' } as const;
+export const orgCodes = { E0: 'PL', SP1: 'PD', I1: 'SA', F1: 'FL1', D1: 'BL1' } as const;
 const score = z.object({
   home: z.number().int().nonnegative().nullable(),
   away: z.number().int().nonnegative().nullable(),

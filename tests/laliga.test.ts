@@ -47,6 +47,7 @@ it('exposes both leagues and routes Spanish history only through SP1 sources', a
     'La Liga',
     'Serie A',
     'Ligue 1',
+    'Bundesliga',
   ]);
   await provider.history('barcelona', '2026-09-14T10:00:00Z');
   expect(urls.some((u) => u.endsWith('/SP1.csv'))).toBe(true);

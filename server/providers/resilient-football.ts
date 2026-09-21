@@ -37,7 +37,7 @@ export class ResilientFootballProvider implements FootballDataProvider {
     private cache: Cache,
     private orgKey = '',
   ) {
-    this.cacheNamespace = `free-football:multi:v3:${year}`;
+    this.cacheNamespace = `free-football:multi:v4:${year}`;
   }
   private async resilient<T>(primary: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
     if (Date.now() < this.failedUntil) return fallback();

@@ -99,7 +99,7 @@ export async function runNightlyRefresh() {
       const { error } = await repo.db
         .from(table)
         .delete()
-        .like('cache_key', `free-football:multi:v3:${config.season}:%`);
+        .like('cache_key', `free-football:multi:v4:${config.season}:%`);
       if (error) throw new Error('Derived cache invalidation failed');
     }
     const report = { updatedAt: new Date().toISOString(), results, failed };

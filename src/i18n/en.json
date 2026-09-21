@@ -129,7 +129,7 @@
   "instellen": "set target",
   "Van": "From",
   "t/m": "to",
-  ". We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens": ". We combine 2 to 8 different matches from the Premier League, La Liga, Serie A and Ligue 1. Each team appears only once in a combination. Each selection occurred in at least",
+  ". We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A, Ligue 1 en Bundesliga. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens": ". We combine 2 to 8 different matches from the Premier League, La Liga, Serie A, Ligue 1 and Bundesliga. Each team appears only once in a combination. Each selection occurred in at least",
   "% van de laatste": "% of the last",
   "competitieduels van elk team. Elke selectie heeft een odd van minimaal 1,10.": "league matches for each team. Each selection has minimum odds of 1.10.",
   "Tot 9 voorstellen. Meer variatie geeft voorkeur aan verschillende markten en minder herhaalde selecties tussen voorstellen. De historische drempel blijft gelijk; variatie is geen hogere winstkans.": "Up to 9 suggestions. More variety favours different markets and fewer repeated selections across suggestions. The historical threshold stays the same; variety does not mean a higher chance of winning.",
@@ -444,7 +444,7 @@
   "Geen spelergegevens voor {0} – {1} ({2}). {3}": "No player data for {0} – {1} ({2}). {3}",
   "Wedstrijddatum of teams komen niet overeen.": "The match date or teams do not match.",
   "Deze databron ondersteunt nog geen meerdaagse combi.": "This data source does not support multi-day combinations yet.",
-  "De gratis bron ondersteunt Premier League, La Liga, Serie A en Ligue 1.": "The free source supports the Premier League, La Liga, Serie A and Ligue 1.",
+  "De gratis bron ondersteunt Premier League, La Liga, Serie A, Ligue 1 en Bundesliga.": "The free source supports the Premier League, La Liga, Serie A, Ligue 1 and Bundesliga.",
   "Statistieken worden pas na afloop permanent opgeslagen.": "Statistics are only stored permanently after full-time.",
   "Een teamnaam in de gratis bron is nog niet gekoppeld. De import is gestopt om dubbele teams te voorkomen.": "A team name in the free source has not been mapped yet. Import stopped to prevent duplicate teams.",
   "API-Football antwoordt met HTTP {0}. Controleer API_FOOTBALL_KEY en je API-abonnement.": "API-Football returned HTTP {0}. Check API_FOOTBALL_KEY and your API subscription.",
@@ -558,5 +558,6 @@
   "Een databron is tijdelijk niet beschikbaar. De gegevens worden via een alternatieve bron geladen.": "A data source is temporarily unavailable. Data is loaded from an alternative source.",
   "Alternatieve historie: huidig en vorig seizoen. Alleen beschikbare uitslagen tellen mee; ontbrekende ruststanden en statistieken blijven onbekend.": "Alternative history: current and previous season. Only available results count; missing half-time scores and statistics remain unknown.",
   "Combi’s wachten op volledige historie.": "Combinations are waiting for complete history.",
-  "Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.": "Refresh when history is available again. A lower threshold or another bookmaker cannot restore missing data."
+  "Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.": "Refresh when history is available again. A lower threshold or another bookmaker cannot restore missing data.",
+  "Duitsland": "Germany"
 }

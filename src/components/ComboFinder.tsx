@@ -130,7 +130,7 @@ export default function ComboFinder({
           {t(' t/m ')}
           {t(end)}
           {t(
-            '. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A en Ligue 1. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens ',
+            '. We combineren 2 tot 8 verschillende wedstrijden uit de Premier League, La Liga, Serie A, Ligue 1 en Bundesliga. Elke ploeg komt maximaal één keer in een combi voor. Iedere selectie kwam voor in minstens ',
           )}
           {t(minimumRate)}
           {t('% van de laatste ')}

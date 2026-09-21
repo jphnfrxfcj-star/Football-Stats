@@ -11,7 +11,7 @@ test('competition filters populate teams and reset dependent selections', async 
   const fixtures = demoFixtures('2026-09-12').slice(0, 2);
   fixtures[1] = {
     ...fixtures[1],
-    league: { ...fixtures[1].league, id: 'test-league', name: 'Test League' },
+    league: { ...fixtures[1].league, id: 'test-league', name: 'Bundesliga' },
   };
   await page.evaluate(
     async ({ path, fixtures }) => {
@@ -29,10 +29,14 @@ test('competition filters populate teams and reset dependent selections', async 
   await team.selectOption(fixtures[0].away.id);
   await expect(page.locator('.match-picker-row')).toHaveCount(1);
   await expect(page.locator('.match-picker-row')).toContainText(fixtures[0].away.name);
+  await expect(league.locator('option[value="test-league"]')).toHaveText('Bundesliga');
   await league.selectOption('test-league');
   await expect(team).toHaveValue('');
   await expect(team.locator('option')).toHaveCount(3);
   await expect(page.locator('.match-picker-row')).toContainText(fixtures[1].home.name);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
   await team.selectOption(fixtures[1].home.id);
   await page.getByLabel('Analysedatum').fill('2026-09-13');
   await expect(league).toHaveValue('');

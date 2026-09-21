@@ -136,9 +136,9 @@ function setup({
 it('uses the independent schedule when CSV fails, without querying historical data', async () => {
   const { provider, repo, read } = setup();
   const f = await provider.fixtures('2026-09-18');
-  expect(f).toHaveLength(4);
+  expect(f).toHaveLength(5);
   expect(f.every((f) => f.availability?.source === 'OpenFootball')).toBe(true);
-  expect(read).toHaveBeenCalledTimes(4);
+  expect(read).toHaveBeenCalledTimes(5);
   expect(repo.storedLeagueHistory).not.toHaveBeenCalled();
 });
 it('does not hide database authentication failures behind a fallback', async () => {
@@ -255,11 +255,11 @@ it('uses independently verified seasons for automatic history without mixing in 
   const old = normalizeOrg(doc({ ...match, status: 'FINISHED' }), 2026, 'E0')[0];
   repo.storedLeagueHistory.mockResolvedValue([old] as never);
   const data = await provider.previewRange('2026-09-18', 1);
-  expect(data).toHaveLength(4);
+  expect(data).toHaveLength(5);
   expect(data.every((d) => d.availability?.status === 'fallback')).toBe(true);
   expect(data[0].homeHistory).toHaveLength(1);
   expect(data[0].homeHistory[0].kickoff).toBe('2025-09-18T19:00:00Z');
-  expect(repo.rateLimit).toHaveBeenCalledTimes(8);
+  expect(repo.rateLimit).toHaveBeenCalledTimes(10);
 });
 it('marks history incomplete when a previous fixture still has no confirmed result', async () => {
   const { provider } = setup({ key: 'test-key' });

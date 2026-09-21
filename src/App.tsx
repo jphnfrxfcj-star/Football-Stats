@@ -177,7 +177,7 @@ export default function App() {
           <span className="green-dot" />
         </div>
         {!isDemo &&
-          ['La Liga', 'Serie A', 'Ligue 1'].map((name) => (
+          ['La Liga', 'Serie A', 'Ligue 1', 'Bundesliga'].map((name) => (
             <div className="league-nav" key={name}>
               <Trophy size={17} />
               <span>{t(name)}</span>

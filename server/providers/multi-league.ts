@@ -1,4 +1,4 @@
-import { divisions, italianClubs, frenchClubs } from '../../src/domain/competitions';
+import { divisions, italianClubs, frenchClubs, germanClubs } from '../../src/domain/competitions';
 import { FreeFootballProvider, type SourceReader } from './free-football';
 import { spanishClubs, spanishSlug } from '../../src/domain/spanish-clubs';
 import type { FootballDataProvider } from './provider';
@@ -8,7 +8,7 @@ export class MultiLeagueProvider implements FootballDataProvider {
   readonly fixtureIdPrefix = 'free-fixture-';
   readonly statisticsProvider = 'football-data-co-uk';
   readonly label =
-    'OpenFootball + Football-Data.co.uk + ESPN · Premier League · La Liga · Serie A · Ligue 1';
+    'OpenFootball + Football-Data.co.uk + ESPN · Premier League · La Liga · Serie A · Ligue 1 · Bundesliga';
   readonly warnings = [
     'Periodieke bronupdates, geen livescores.',
     'Maximaal vijf seizoenen per competitie; gepromoveerde teams kunnen minder historie hebben.',
@@ -16,11 +16,11 @@ export class MultiLeagueProvider implements FootballDataProvider {
   readonly cacheNamespace: string;
   private providers: FreeFootballProvider[];
   constructor(year: number, read?: SourceReader) {
-    this.cacheNamespace = `free-football:multi:v2:${year}`;
+    this.cacheNamespace = `free-football:multi:v4:${year}`;
     this.providers = divisions.map((d) => new FreeFootballProvider(year, read, d));
   }
   private forTeam(slug: string) {
-    const groups = [spanishClubs, italianClubs, frenchClubs];
+    const groups = [spanishClubs, italianClubs, frenchClubs, germanClubs];
     const index = groups.findIndex((clubs) =>
       Object.keys(clubs).some((n) => spanishSlug(n) === slug),
     );

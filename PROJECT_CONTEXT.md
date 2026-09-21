@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 17 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 21 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -68,7 +68,7 @@ beschikbaar. Desktop behoudt de uitgebreidere weergave.
 
 ## Competities en bronnen
 
-De gratis multiprovider ondersteunt vier competities, centraal gedefinieerd in
+De gratis multiprovider ondersteunt vijf competities, centraal gedefinieerd in
 `src/domain/competitions.ts`:
 
 | Divisie | Competitie     | ESPN-code | Legacy API-ID |
@@ -77,12 +77,13 @@ De gratis multiprovider ondersteunt vier competities, centraal gedefinieerd in
 | SP1     | La Liga        | esp.1     | 140           |
 | I1      | Serie A        | ita.1     | 135           |
 | F1      | Ligue 1        | fra.1     | 61            |
+| D1      | Bundesliga     | ger.1     | 78            |
 
 - **OpenFootball**: seizoensprogramma’s en beschikbare uitslagen.
 - **Football-Data.co.uk**: CSV met eindstanden, ruststanden, historie,
   wedstrijdstatistieken en periodieke bookmakerprijzen.
 - **Football-data.org**: onafhankelijke terugval voor programma en uitslagen van
-  onze vier competities. Servervariabele `FOOTBALL_DATA_ORG_KEY`; nooit `VITE_`.
+  onze vijf competities. Servervariabele `FOOTBALL_DATA_ORG_KEY`; nooit `VITE_`.
   Huidig seizoen 15 minuten gecachet, vorig seizoen één dag; gedeeld maximum
   negen aanvragen per minuut. Geen bookmakerodds of verzonnen wedstrijdstatistieken.
 - **ESPN**: aanvullende uitslagen en spelerstatistieken. Primaire host
@@ -171,7 +172,7 @@ wijzigen). Een omleiding naar localhost wordt vóór de vervolgaanvraag geweiger
   waarnemingstijd. Ontbrekende statistieken/ruststanden wissen bekende gegevens
   niet wanneer de bevestigde eindstand gelijk blijft.
 - Dezelfde terugval geldt bij de nachtelijke programma-update; de rapportage telt
-  `fallbackFixtures`. Namespace multiprovider `v3`, compacte combihistorie `v5`;
+  `fallbackFixtures`. Namespace multiprovider `v4`, compacte combihistorie `v5`;
   de compacte cache bewaart ook beschikbaarheidsstatus, waarschuwingen en tijdstip.
 - Bronmeldingen verschijnen bij programma, wedstrijdkiezer, analyse, spotlight en
   combivoorstellen, in Nederlands en Engels. Echte odds blijven onafhankelijk nodig.
@@ -361,3 +362,5 @@ bookmaker-betbuilderafrekening. Meer variatie of hogere doelodds verandert dat n
 Nieuwe competities vragen meer dan een dropdown: gecontroleerde aliases, IDs,
 bronroutes, tijdzones, odds-mapping, spelersmapping, logo’s en tests. Nieuwe
 statistiekmarkten vragen voldoende historische dekking én corresponderende odds.
+
+Bundesliga gebruikt OpenFootball `de.1`, CSV `D1`, Football-data.org `BL1` en de gecontroleerde Unibet-groep `1000094994`. Clubaliases omvatten ook eerdere seizoenen; ontbrekende historische logo’s behouden de schildweergave. De gedeelde limiet van negen Football-data.org-aanvragen per minuut blijft gelden: bij volledig lege caches vragen vijf competities met twee seizoenen tien aanvragen, waardoor een deel pas bij een volgende aanvraag na de minuutgrens volledig kan zijn. Onvolledige historie blijft uitgesloten van automatische voorstellen.

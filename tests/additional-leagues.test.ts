@@ -6,6 +6,7 @@ import { MultiLeagueProvider } from '../server/providers/multi-league';
 import { normalizeUnibet } from '../server/providers/unibet';
 const doc = (text: string) => ({ text, fetchedAt: '2026-09-14T08:00:00Z' });
 for (const [division, home, away, csvHome, csvAway] of [
+  ['D1', 'FC Bayern München', 'Borussia Dortmund', 'Bayern Munich', 'Dortmund'],
   ['I1', 'Juventus FC', 'AC Milan', 'Juventus', 'Milan'],
   ['F1', 'Paris Saint-Germain FC', 'AS Monaco FC', 'Paris SG', 'Monaco'],
 ] as const) {
@@ -76,7 +77,7 @@ for (const [division, home, away, csvHome, csvAway] of [
     expect(urls.some((u) => u.endsWith(`/${division}.csv`))).toBe(true);
     expect(
       urls
-        .filter((u) => /\/(E0|SP1|I1|F1)\.csv$/.test(u))
+        .filter((u) => /\/(E0|SP1|I1|F1|D1)\.csv$/.test(u))
         .every((u) => u.endsWith(`/${division}.csv`)),
     ).toBe(true);
   });
