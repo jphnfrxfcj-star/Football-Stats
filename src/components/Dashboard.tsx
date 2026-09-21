@@ -459,7 +459,13 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         </div>
       )}
       {date >= today() && (
-        <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} />
+        <ComboFinder
+          key={date}
+          date={date}
+          navigate={navigate}
+          onSave={archive.add}
+          savedCombos={archive.combos}
+        />
       )}
       {date >= today() && (
         <button className="text-button" onClick={() => navigate('/combis')}>

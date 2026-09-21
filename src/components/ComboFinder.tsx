@@ -1,7 +1,7 @@
 import DataNotice from './DataNotice';
 import ComboAssessment, { comboPriceLabels, comboComparisonLabels } from './ComboAssessment';
 import { tr, t, locale } from '../i18n';
-import { saveProposal, type SavedCombo } from '../domain/combo-history';
+import { comboIdentity, saveProposal, type SavedCombo } from '../domain/combo-history';
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { api, isDemo } from '../api';
@@ -17,8 +17,10 @@ export default function ComboFinder({
   date,
   navigate,
   onSave,
+  savedCombos,
   compact = false,
 }: {
+  savedCombos: SavedCombo[];
   compact?: boolean;
   onSave: (proposals: SavedCombo[]) => void;
   date: string;
@@ -84,15 +86,8 @@ export default function ComboFinder({
       }),
     [report, book, cutoff, compact, diverse, minOdd, maxOdd, priceCheck],
   );
-  useEffect(() => {
-    if (isDemo) return;
-    onSave(
-      combos.flatMap((combo) => {
-        const saved = saveProposal(combo, window, minimumRate);
-        return saved ? [saved] : [];
-      }),
-    );
-  }, [combos, window, minimumRate, onSave]);
+  const [saveError, setSaveError] = useState('');
+  const savedIds = new Set(savedCombos.map((combo) => combo.id));
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
   const historyBlocked =
     !!report?.fixtures.length && report.blockedFixtures === report.fixtures.length;
@@ -395,6 +390,7 @@ export default function ComboFinder({
               )}
             </details>
           )}
+          {saveError && <p role="alert">{t(saveError)}</p>}
           {combos.length ? (
             <div className="combo-grid">
               {combos.map((combo, i) => (
@@ -417,6 +413,29 @@ export default function ComboFinder({
                     {' ·'} {t(combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × '))}
                     {' ='} {t(combo.decimal.toFixed(2))}
                   </p>
+                  <button
+                    className="secondary-button"
+                    disabled={isDemo || savedIds.has(comboIdentity(combo))}
+                    onClick={() => {
+                      const saved = saveProposal(combo, window, minimumRate);
+                      if (!saved) {
+                        setSaveError(
+                          'Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.',
+                        );
+                        return;
+                      }
+                      setSaveError('');
+                      onSave([saved]);
+                    }}
+                  >
+                    {t(
+                      isDemo
+                        ? 'Bijhouden niet beschikbaar in demo'
+                        : savedIds.has(comboIdentity(combo))
+                          ? 'Bewaard'
+                          : 'Bijhouden',
+                    )}
+                  </button>
                   {compact && (
                     <p
                       className="combo-model-summary"

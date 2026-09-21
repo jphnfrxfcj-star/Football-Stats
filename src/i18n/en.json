@@ -179,7 +179,6 @@
   "Demo: fictieve historie, geen bookmakerprijzen.": "Demo: fictional history, no bookmaker prices.",
   "Combihistoriek": "Combination history",
   "bewaard)": "saved)",
-  "Getoonde voorstellen worden vóór de aftrap automatisch bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.": "Displayed suggestions are automatically saved before kick-off in this browser on this device. Original odds and history stay fixed. This checks match outcomes, not bookmaker settlement.",
   "Nog geen voorstellen bewaard. Eerdere voorstellen kunnen we niet achteraf reconstrueren. Demovoorstellen worden niet opgeslagen.": "No suggestions saved yet. Past suggestions cannot be reconstructed retrospectively. Demo suggestions are not saved.",
   "Uitslagen laden…": "Loading results…",
   "Uitslagen verversen": "Refresh results",
@@ -559,5 +558,10 @@
   "Alternatieve historie: huidig en vorig seizoen. Alleen beschikbare uitslagen tellen mee; ontbrekende ruststanden en statistieken blijven onbekend.": "Alternative history: current and previous season. Only available results count; missing half-time scores and statistics remain unknown.",
   "Combi’s wachten op volledige historie.": "Combinations are waiting for complete history.",
   "Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.": "Refresh when history is available again. A lower threshold or another bookmaker cannot restore missing data.",
-  "Duitsland": "Germany"
+  "Duitsland": "Germany",
+  "Alleen voorstellen die je met ‘Bijhouden’ selecteert, worden vóór de aftrap bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.": "Only proposals you select with “Save” are saved before kickoff in this browser on this device. The original odds and history remain fixed. This checks match results; it is not bookmaker settlement.",
+  "Bijhouden": "Save",
+  "Bewaard": "Saved",
+  "Bijhouden niet beschikbaar in demo": "Saving unavailable in demo",
+  "Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.": "This combination can no longer be saved. Request new proposals."
 }

@@ -27,7 +27,14 @@ export default function CombinationsPage({ navigate }: { navigate: (path: string
           }}
         />
       </label>
-      <ComboFinder key={date} date={date} navigate={navigate} onSave={archive.add} compact />
+      <ComboFinder
+        key={date}
+        date={date}
+        navigate={navigate}
+        onSave={archive.add}
+        savedCombos={archive.combos}
+        compact
+      />
       <ComboHistory
         combos={archive.combos}
         error={archive.error}

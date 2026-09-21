@@ -242,7 +242,7 @@ bij de bookmaker worden bevestigd; een handmatig ingevoerde prijs is expliciet g
 
 ## Combihistoriek
 
-- Getoonde echte voorstellen worden vóór de aftrap automatisch lokaal opgeslagen.
+- Echte voorstellen worden alleen lokaal opgeslagen na een klik op ‘Bijhouden’, vóór de aftrap. Homepage en combipagina tonen ‘Bewaard’ voor reeds opgeslagen voorstellen. Nieuwe zoekresultaten worden niet automatisch opgeslagen; bestaande historiek blijft behouden.
 - Browserkey: `matchday:combo-history:v1`; demo gebruikt een aparte suffix `:demo`.
   Demovoorstellen worden niet automatisch opgeslagen.
 - Geen Supabase-historiektabel en geen synchronisatie tussen apparaten/accounts.
