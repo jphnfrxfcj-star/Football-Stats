@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import DataNotice from './DataNotice';
 import ComboAssessment, { comboPriceLabels, comboComparisonLabels } from './ComboAssessment';
 import { tr, t, locale } from '../i18n';
@@ -17,10 +18,14 @@ export default function ComboFinder({
   date,
   navigate,
   onSave,
+  onRemove,
+  storageError,
   savedCombos,
   compact = false,
 }: {
   savedCombos: SavedCombo[];
+  onRemove: (id: string) => void;
+  storageError: string;
   compact?: boolean;
   onSave: (proposals: SavedCombo[]) => void;
   date: string;
@@ -390,7 +395,14 @@ export default function ComboFinder({
               )}
             </details>
           )}
-          {saveError && <p role="alert">{t(saveError)}</p>}
+          {(saveError || storageError) && <p role="alert">{t(saveError || storageError)}</p>}
+          {!!combos.length && (
+            <p className="muted">
+              {t(
+                'Klik op het sterretje om een combi te bewaren. Alleen je favorieten worden bijgehouden.',
+              )}
+            </p>
+          )}
           {combos.length ? (
             <div className="combo-grid">
               {combos.map((combo, i) => (
@@ -403,6 +415,43 @@ export default function ComboFinder({
                       {t(combo.legs.length)}
                       {t(' wedstrijden')}
                     </strong>
+                    <button
+                      type="button"
+                      className="combo-favorite"
+                      aria-pressed={savedIds.has(comboIdentity(combo))}
+                      aria-label={t(
+                        isDemo
+                          ? 'Favorieten niet beschikbaar in demo'
+                          : savedIds.has(comboIdentity(combo))
+                            ? 'Verwijderen uit favorieten'
+                            : 'Toevoegen aan favorieten',
+                      )}
+                      title={t(
+                        isDemo
+                          ? 'Favorieten niet beschikbaar in demo'
+                          : savedIds.has(comboIdentity(combo))
+                            ? 'Verwijderen uit favorieten'
+                            : 'Toevoegen aan favorieten',
+                      )}
+                      disabled={isDemo}
+                      onClick={() => {
+                        setSaveError('');
+                        if (savedIds.has(comboIdentity(combo))) {
+                          onRemove(comboIdentity(combo));
+                          return;
+                        }
+                        const saved = saveProposal(combo, window, minimumRate);
+                        if (!saved) {
+                          setSaveError(
+                            'Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.',
+                          );
+                          return;
+                        }
+                        onSave([saved]);
+                      }}
+                    >
+                      <Star size={20} aria-hidden="true" />
+                    </button>
                     <span className="combo-total">
                       {t('×')}
                       {t(combo.decimal.toFixed(2))}
@@ -413,29 +462,6 @@ export default function ComboFinder({
                     {' ·'} {t(combo.legs.map((l) => l.quote.decimal.toFixed(2)).join(' × '))}
                     {' ='} {t(combo.decimal.toFixed(2))}
                   </p>
-                  <button
-                    className="secondary-button"
-                    disabled={isDemo || savedIds.has(comboIdentity(combo))}
-                    onClick={() => {
-                      const saved = saveProposal(combo, window, minimumRate);
-                      if (!saved) {
-                        setSaveError(
-                          'Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.',
-                        );
-                        return;
-                      }
-                      setSaveError('');
-                      onSave([saved]);
-                    }}
-                  >
-                    {t(
-                      isDemo
-                        ? 'Bijhouden niet beschikbaar in demo'
-                        : savedIds.has(comboIdentity(combo))
-                          ? 'Bewaard'
-                          : 'Bijhouden',
-                    )}
-                  </button>
                   {compact && (
                     <p
                       className="combo-model-summary"

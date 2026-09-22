@@ -32,6 +32,8 @@ export default function CombinationsPage({ navigate }: { navigate: (path: string
         date={date}
         navigate={navigate}
         onSave={archive.add}
+        onRemove={archive.remove}
+        storageError={archive.error}
         savedCombos={archive.combos}
         compact
       />

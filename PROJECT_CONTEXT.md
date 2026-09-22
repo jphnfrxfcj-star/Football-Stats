@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 21 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 22 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -242,7 +242,7 @@ bij de bookmaker worden bevestigd; een handmatig ingevoerde prijs is expliciet g
 
 ## Combihistoriek
 
-- Echte voorstellen worden alleen lokaal opgeslagen na een klik op ‘Bijhouden’, vóór de aftrap. Homepage en combipagina tonen ‘Bewaard’ voor reeds opgeslagen voorstellen. Nieuwe zoekresultaten worden niet automatisch opgeslagen; bestaande historiek blijft behouden.
+- Echte voorstellen worden alleen lokaal opgeslagen na een klik op het lege favorietensterretje, vóór de aftrap. Homepage en combipagina tonen een gevuld sterretje voor opgeslagen voorstellen. Nogmaals klikken verwijdert de combi uit de historiek. Opslagfouten staan direct bij de voorstellen. Nieuwe zoekresultaten worden niet automatisch opgeslagen; bestaande historiek blijft behouden.
 - Browserkey: `matchday:combo-history:v1`; demo gebruikt een aparte suffix `:demo`.
   Demovoorstellen worden niet automatisch opgeslagen.
 - Geen Supabase-historiektabel en geen synchronisatie tussen apparaten/accounts.

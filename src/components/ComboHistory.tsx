@@ -78,7 +78,12 @@ export default function ComboHistory({
         </summary>
         <p className="section-intro">
           {t(
-            'Alleen voorstellen die je met ‘Bijhouden’ selecteert, worden vóór de aftrap bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.',
+            'Alleen voorstellen die je met het sterretje selecteert, worden vóór de aftrap bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.',
+          )}
+        </p>
+        <p className="muted">
+          {t(
+            'Eerder bewaarde combi’s blijven hier staan tot je ze verwijdert. Nieuwe voorstellen worden niet automatisch toegevoegd.',
           )}
         </p>
         {error && <p role="alert">{t(error)}</p>}

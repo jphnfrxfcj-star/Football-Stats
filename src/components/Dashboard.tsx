@@ -464,6 +464,8 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           date={date}
           navigate={navigate}
           onSave={archive.add}
+          onRemove={archive.remove}
+          storageError={archive.error}
           savedCombos={archive.combos}
         />
       )}

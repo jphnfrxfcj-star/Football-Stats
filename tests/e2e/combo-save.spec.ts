@@ -86,15 +86,29 @@ test('saves proposals only on request and retains saved state across pages', asy
       () => JSON.parse(localStorage.getItem('matchday:combo-history:v1') ?? '{"combos":[]}').combos,
     );
   expect(await stored()).toHaveLength(0);
-  await finder.getByRole('button', { name: 'Bijhouden', exact: true }).first().click();
-  await expect(finder.getByRole('button', { name: 'Bewaard', exact: true })).toHaveCount(1);
+  await finder
+    .getByRole('button', { name: 'Toevoegen aan favorieten', exact: true })
+    .first()
+    .click();
+  await expect(
+    finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }),
+  ).toHaveCount(1);
   const original = await stored();
   expect(original).toHaveLength(1);
   await page.getByRole('button', { name: 'Combivoorstellen', exact: true }).click();
   await finder.getByLabel('Combi minimumfrequentie').selectOption('80');
   await finder.getByRole('button', { name: 'Doe een voorstel' }).click();
   await expect(finder.locator('.combo-card')).toHaveCount(3);
-  await expect(finder.getByRole('button', { name: 'Bewaard', exact: true })).toHaveCount(1);
+  await expect(
+    finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }),
+  ).toHaveCount(1);
   expect(await stored()).toEqual(original);
+  await finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }).click();
+  expect(await stored()).toHaveLength(0);
+  await expect(
+    finder.getByRole('button', { name: 'Toevoegen aan favorieten', exact: true }),
+  ).toHaveCount(3);
+  await page.clock.fastForward(60000);
+  expect(await stored()).toHaveLength(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

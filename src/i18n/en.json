@@ -559,9 +559,14 @@
   "Combi’s wachten op volledige historie.": "Combinations are waiting for complete history.",
   "Ververs zodra de historie weer beschikbaar is. Een lagere drempel of andere bookmaker herstelt ontbrekende gegevens niet.": "Refresh when history is available again. A lower threshold or another bookmaker cannot restore missing data.",
   "Duitsland": "Germany",
-  "Alleen voorstellen die je met ‘Bijhouden’ selecteert, worden vóór de aftrap bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.": "Only proposals you select with “Save” are saved before kickoff in this browser on this device. The original odds and history remain fixed. This checks match results; it is not bookmaker settlement.",
   "Bijhouden": "Save",
   "Bewaard": "Saved",
   "Bijhouden niet beschikbaar in demo": "Saving unavailable in demo",
-  "Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.": "This combination can no longer be saved. Request new proposals."
+  "Deze combi kan niet meer worden bewaard. Vraag nieuwe voorstellen op.": "This combination can no longer be saved. Request new proposals.",
+  "Alleen voorstellen die je met het sterretje selecteert, worden vóór de aftrap bewaard in deze browser op dit toestel. De oorspronkelijke odds en historie blijven vaststaan. Dit is een controle van wedstrijdresultaten, geen afrekening door de bookmaker.": "Only proposals you select with the star are saved before kickoff in this browser on this device. The original odds and history remain fixed. This checks match results; it is not bookmaker settlement.",
+  "Favorieten niet beschikbaar in demo": "Favorites unavailable in demo",
+  "Verwijderen uit favorieten": "Remove from favorites",
+  "Toevoegen aan favorieten": "Add to favorites",
+  "Klik op het sterretje om een combi te bewaren. Alleen je favorieten worden bijgehouden.": "Click the star to save a combination. Only your favorites are saved.",
+  "Eerder bewaarde combi’s blijven hier staan tot je ze verwijdert. Nieuwe voorstellen worden niet automatisch toegevoegd.": "Previously saved combinations stay here until you remove them. New proposals are not added automatically."
 }

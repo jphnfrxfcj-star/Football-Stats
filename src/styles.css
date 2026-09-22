@@ -3765,3 +3765,34 @@ td {
 .data-notice p + p {
   margin-top: 8px;
 }
+
+.combo-favorite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #63776b;
+  cursor: pointer;
+}
+.combo-favorite:hover {
+  background: #edf5ef;
+}
+.combo-favorite[aria-pressed='true'] {
+  color: #177348;
+}
+.combo-favorite[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+.combo-favorite:focus-visible {
+  outline: 2px solid #177348;
+  outline-offset: 2px;
+}
+.combo-favorite:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
