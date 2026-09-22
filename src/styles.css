@@ -3854,3 +3854,11 @@ td {
     font-size: 24px;
   }
 }
+
+.combo-history > details > .section-intro {
+  margin: 16px 0 12px;
+}
+.combo-history > details > .muted {
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
