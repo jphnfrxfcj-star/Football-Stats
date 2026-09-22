@@ -242,7 +242,7 @@ bij de bookmaker worden bevestigd; een handmatig ingevoerde prijs is expliciet g
 
 ## Combihistoriek
 
-- Echte voorstellen worden alleen lokaal opgeslagen na een klik op het lege favorietensterretje, vóór de aftrap. Homepage en combipagina tonen een gevuld sterretje voor opgeslagen voorstellen. Nogmaals klikken verwijdert de combi uit de historiek. Opslagfouten staan direct bij de voorstellen. Nieuwe zoekresultaten worden niet automatisch opgeslagen; bestaande historiek blijft behouden.
+- Echte voorstellen worden alleen lokaal opgeslagen na een klik op het lege favorietensterretje, vóór de aftrap. Homepage en combipagina tonen een gevuld sterretje voor opgeslagen voorstellen. Nogmaals klikken verwijdert de combi uit de historiek. Het gevulde sterretje staat ook op kaarten in de historiek en verwijdert ze daar direct. Kaartkoppen gebruiken vaste kolommen voor status, odd en ster; metadata staat op aparte regels. Opslagfouten staan direct bij de voorstellen. Nieuwe zoekresultaten worden niet automatisch opgeslagen; bestaande historiek blijft behouden.
 - Browserkey: `matchday:combo-history:v1`; demo gebruikt een aparte suffix `:demo`.
   Demovoorstellen worden niet automatisch opgeslagen.
 - Geen Supabase-historiektabel en geen synchronisatie tussen apparaten/accounts.

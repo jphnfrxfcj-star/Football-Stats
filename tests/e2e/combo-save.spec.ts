@@ -13,7 +13,13 @@ test('saves proposals only on request and retains saved state across pages', asy
     );
     await route.fulfill({ response, body });
   });
-  await page.route('**/api/**', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/**', (route) =>
+    route.fulfill({
+      json: route.request().url().includes('/api/results')
+        ? { results: [], checkedAt: new Date(now).toISOString() }
+        : [],
+    }),
+  );
   await page.clock.setFixedTime(new Date(now));
   let apiPath = '';
   page.on('request', (request) => {
@@ -103,7 +109,20 @@ test('saves proposals only on request and retains saved state across pages', asy
     finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }),
   ).toHaveCount(1);
   expect(await stored()).toEqual(original);
-  await finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }).click();
+  const history = page.locator('.combo-history');
+  await history.locator('summary').first().click();
+  const favorite = history.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true });
+  await expect(favorite).toBeVisible();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  const heading = history.locator('.combo-heading');
+  const price = await heading.locator('.combo-total').boundingBox();
+  const star = await favorite.boundingBox();
+  expect(star!.x).toBeGreaterThan(price!.x + price!.width);
+  await page.screenshot({
+    path: `/tmp/combo-history-${page.viewportSize()!.width}.png`,
+    fullPage: true,
+  });
+  await favorite.click();
   expect(await stored()).toHaveLength(0);
   await expect(
     finder.getByRole('button', { name: 'Toevoegen aan favorieten', exact: true }),

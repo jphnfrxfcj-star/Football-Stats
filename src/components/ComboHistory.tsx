@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import { tr, t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
@@ -131,28 +132,41 @@ export default function ComboHistory({
                         {t('×')}
                         {t(evaluated.decimal.toFixed(2))}
                       </span>
+                      <button
+                        type="button"
+                        className="combo-favorite"
+                        aria-pressed="true"
+                        aria-label={t('Verwijderen uit favorieten')}
+                        title={t('Verwijderen uit favorieten')}
+                        onClick={() => remove(combo.id)}
+                      >
+                        <Star size={20} aria-hidden="true" />
+                      </button>
                     </div>
-                    <p>
-                      {t(combo.bookmaker)}
-                      {t(' · bewaard ')}
-                      {t(new Date(combo.savedAt).toLocaleString(locale()))}
-                    </p>
-                    <small>
-                      {t(
-                        combo.evaluationMode === 'review'
-                          ? 'Met modelbeoordeling'
-                          : combo.priceChecked
-                            ? 'Experimentele margefilter'
-                            : 'Historische selectie',
-                      )}
-                    </small>
-                    <small>
-                      {t('Minstens ')}
-                      {t(combo.minimumRate)}
-                      {t('% in de laatste ')}
-                      {t(combo.window)}
-                      {t(' duels per team')}
-                    </small>
+                    <div className="combo-history-meta">
+                      <p>
+                        {t(combo.bookmaker)}
+                        <br />
+                        {t('Bewaard op ')}
+                        {t(new Date(combo.savedAt).toLocaleString(locale()))}
+                      </p>
+                      <small>
+                        {t(
+                          combo.evaluationMode === 'review'
+                            ? 'Met modelbeoordeling'
+                            : combo.priceChecked
+                              ? 'Experimentele margefilter'
+                              : 'Historische selectie',
+                        )}
+                      </small>
+                      <small>
+                        {t('Minstens ')}
+                        {t(combo.minimumRate)}
+                        {t('% in de laatste ')}
+                        {t(combo.window)}
+                        {t(' duels per team')}
+                      </small>
+                    </div>
                     <ol>
                       {evaluated.legs.map(({ leg, result, status }) => (
                         <li className="finder-leg" key={leg.fixtureId}>
@@ -196,9 +210,6 @@ export default function ComboHistory({
                         </li>
                       ))}
                     </ol>
-                    <button className="text-button" onClick={() => remove(combo.id)}>
-                      {t('Verwijderen uit historiek')}
-                    </button>
                   </article>
                 );
               })}
