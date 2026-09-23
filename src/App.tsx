@@ -16,7 +16,7 @@ import {
 import { isDemo } from './api';
 import Dashboard from './components/Dashboard';
 import { analysisWeights as w } from './analysis/config';
-import MatchPage from './components/MatchPage';
+const MatchPage = lazy(() => import('./components/MatchPage'));
 const CombinationsPage = lazy(() => import('./components/CombinationsPage'));
 const MatchPicker = lazy(() => import('./components/MatchPicker'));
 function Modal({ onClose }: { onClose: () => void }) {
@@ -250,7 +250,9 @@ export default function App() {
         </header>
         <main>
           {matchId ? (
-            <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
+            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
+              <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
+            </Suspense>
           ) : route === '/analyse' ? (
             <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
               <MatchPicker navigate={navigate} />

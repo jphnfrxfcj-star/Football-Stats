@@ -5,6 +5,8 @@ test('separate combinations page loads only on request and shows compact expanda
 }) => {
   await page.clock.setFixedTime(new Date('2026-09-12T08:00:00Z'));
   let apiPath = '';
+  let workers = 0;
+  page.on('worker', () => workers++);
   page.on('request', (request) => {
     if (/\/src\/api\.ts(?:\?|$)/.test(request.url())) apiPath = request.url();
   });
@@ -56,6 +58,7 @@ test('separate combinations page loads only on request and shows compact expanda
   await expect(page.getByLabel('Beoordeling combi')).toHaveValue('review');
   await page.getByRole('button', { name: 'Doe een voorstel' }).click();
   await expect(page.locator('.combo-finder-compact .combo-card')).toHaveCount(9);
+  expect(workers).toBeGreaterThan(0);
   await expect(page.locator('.combo-finder').getByRole('status')).toHaveText(
     'Sommige wedstrijden konden niet worden opgehaald.',
   );
@@ -96,4 +99,23 @@ test('match analysis navigation opens a fixture picker instead of model document
   await expect(page).toHaveURL(/\/match\//);
   await page.getByRole('button', { name: 'Ons model', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
+});
+
+test('worker startup failure is visible and a new search can recover', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-12T08:00:00Z'));
+  await page.goto('/combis');
+  await page.evaluate(() => {
+    const NativeWorker = window.Worker;
+    window.Worker = new Proxy(NativeWorker, {
+      construct() {
+        window.Worker = NativeWorker;
+        throw new Error('Simulated worker startup failure');
+      },
+    });
+  });
+  await page.getByRole('button', { name: 'Doe een voorstel' }).click();
+  await expect(page.getByRole('alert')).toContainText('Combivoorstellen berekenen is mislukt.');
+  await page.getByRole('button', { name: 'Combi zoeken / verversen' }).click();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.locator('.combo-finder')).toContainText('Geen passende combi');
 });

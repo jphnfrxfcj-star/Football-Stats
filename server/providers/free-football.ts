@@ -547,13 +547,16 @@ export class FreeFootballProvider implements FootballDataProvider {
     }
     return rows;
   }
-  private async historical() {
+  private async historical(season?: Fixture[]) {
     const sets = await Promise.all(
       Array.from({ length: 5 }, (_, i) => this.results(this.year - i)),
     );
     return mergeFixtures(
       [],
-      [...sets.flat(), ...(await this.seasonFixtures()).filter((f) => f.status === 'finished')],
+      [
+        ...sets.flat(),
+        ...(season ?? (await this.seasonFixtures())).filter((f) => f.status === 'finished'),
+      ],
       [],
     );
   }
@@ -571,8 +574,10 @@ export class FreeFootballProvider implements FootballDataProvider {
   }
   async previewRange(date: string, days: number): Promise<MatchData[]> {
     const end = new Date(Date.parse(date) + days * 86400000).toISOString().slice(0, 10);
-    const [season, history] = await Promise.all([this.seasonFixtures(), this.historical()]);
+    const season = await this.seasonFixtures();
     const fixtures = season.filter((f) => f.sourceDate! >= date && f.sourceDate! < end);
+    if (!fixtures.length) return [];
+    const history = await this.historical(season);
     return fixtures.map((fixture) => {
       const rows = before(history, fixture.kickoff);
       const includes = (f: Fixture, id: string) => f.home.id === id || f.away.id === id;

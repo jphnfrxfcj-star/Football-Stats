@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   FreeFootballProvider,
   freeTeam,
@@ -207,4 +207,31 @@ it('returns the same cutoff-safe histories in one batch as individual source rea
   expect(
     (await provider.matchHistory('arsenal', 'manchester-united', '2026-08-20T00:00:00Z')).h2h,
   ).toEqual([]);
+});
+
+it('skips historical downloads for empty periods and reuses the loaded season for previews', async () => {
+  const calls: string[] = [];
+  const provider = new FreeFootballProvider(2026, async (url) => {
+    calls.push(url);
+    return doc(
+      url.includes('githubusercontent')
+        ? schedule
+        : url.includes('espn.com')
+          ? JSON.stringify({ events: [] })
+          : url.endsWith('fixtures.csv')
+            ? 'Div,Date,Time,HomeTeam,AwayTeam\nE0,12/09/2026,15:00,Arsenal,Chelsea\n'
+            : played.replaceAll('2026', String(2000 + Number(url.match(/mmz4281\/(\d{2})/)![1]))),
+    );
+  });
+  const season = vi.spyOn(provider, 'seasonFixtures');
+  expect(await provider.previewRange('2026-10-01', 8)).toEqual([]);
+  expect(calls.filter((url) => url.includes('mmz4281'))).toHaveLength(1);
+  season.mockClear();
+  const previews = await provider.previewRange('2026-09-12', 1);
+  expect(season).toHaveBeenCalledTimes(1);
+  expect(previews).toHaveLength(1);
+  expect(previews[0].homeHistory).toHaveLength(5);
+  expect(previews[0].homeHistory).toEqual(
+    await provider.history('arsenal', previews[0].fixture.kickoff),
+  );
 });

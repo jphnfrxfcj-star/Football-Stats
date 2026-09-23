@@ -6,8 +6,8 @@ import { comboIdentity, saveProposal, type SavedCombo } from '../domain/combo-hi
 import { occurrence } from '../analysis/engine';
 import { useEffect, useMemo, useState } from 'react';
 import { api, isDemo } from '../api';
+import { useCombinationSearch } from './useCombinationSearch';
 import {
-  suggestCombinations,
   comboCandidates,
   comboEvidenceOrder,
   comboRates,
@@ -79,18 +79,27 @@ export default function ComboFinder({
       ...(report?.fixtures.flatMap((f) => f.quotes.map((q) => q.bookmaker)) ?? []),
     ]),
   ];
-  const combos = useMemo(
+  const searchRequest = useMemo(
     () =>
-      suggestCombinations(report?.selections ?? [], book, cutoff, 8, {
-        requirePriceCheck: priceCheck,
-        rankByAssessment: compact,
-        limit: compact ? 9 : 3,
-        diverse,
-        minOdd,
-        maxOdd,
-      }),
-    [report, book, cutoff, compact, diverse, minOdd, maxOdd, priceCheck],
+      report && validTarget
+        ? {
+            selections: report.selections,
+            bookmaker: book,
+            now: cutoff,
+            maxLegs: 8,
+            options: {
+              requirePriceCheck: priceCheck,
+              rankByAssessment: compact,
+              limit: compact ? 9 : 3,
+              diverse,
+              minOdd,
+              maxOdd,
+            },
+          }
+        : null,
+    [report, validTarget, book, cutoff, compact, diverse, minOdd, maxOdd, priceCheck],
   );
+  const { combos, searching, error: searchError } = useCombinationSearch(searchRequest);
   const [saveError, setSaveError] = useState('');
   const savedIds = new Set(savedCombos.map((combo) => combo.id));
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
@@ -305,12 +314,12 @@ export default function ComboFinder({
             'Kies je voorkeuren en klik op ‘Doe een voorstel’. De combianalyse wordt pas dan geladen.',
           )}
         </p>
-      ) : error ? (
+      ) : error || searchError ? (
         <p role="alert">
-          {t(error)}
+          {t(error || searchError)}
           {t(' Probeer opnieuw met ‘Combi zoeken / verversen’.')}
         </p>
-      ) : !report ? (
+      ) : !report || searching ? (
         <Loading />
       ) : (
         <>

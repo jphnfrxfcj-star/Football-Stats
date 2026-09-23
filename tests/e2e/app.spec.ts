@@ -4,6 +4,10 @@ test.beforeEach(async ({ page }) => {
 });
 test('filters, navigates, explains probabilities and switches windows', async ({ page }) => {
   const errors: string[] = [];
+  const matchRequests: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('/src/components/MatchPage.tsx')) matchRequests.push(request.url());
+  });
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Elke wedstrijd. Meer inzicht.' })).toBeVisible();
@@ -13,8 +17,10 @@ test('filters, navigates, explains probabilities and switches windows', async ({
   await expect(page.getByText('Geen wedstrijden gevonden')).toBeVisible();
   await page.getByRole('button', { name: 'Filters herstellen' }).click();
   await expect(page.locator('.fixture-row')).toHaveCount(4);
+  expect(matchRequests).toHaveLength(0);
   await page.locator('.fixture-row').first().click();
   await expect(page.getByRole('heading', { name: 'Kansen in één oogopslag' })).toBeVisible();
+  expect(matchRequests).toHaveLength(1);
   await page.locator('.probability-card').nth(3).click();
   await expect(page.locator('.explanation')).toContainText('Beta(1,1)');
   await page.locator('#form').getByRole('button', { name: 'Laatste 20', exact: true }).click();

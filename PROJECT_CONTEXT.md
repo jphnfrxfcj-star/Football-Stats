@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 22 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 23 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -277,6 +277,11 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 - Browser benadert uitsluitend `/api`, nooit Supabase met een serversleutel.
 - Gedeelde broncaches, in-flight-deduplicatie en database-locks beperken dubbele
   downloads. Een drukke lock geeft een tijdelijke fout met retry-instructies.
+- De combizoeker rekent in een Web Worker; gewijzigde instellingen breken de vorige
+  berekening af en verbergen verouderde voorstellen. Matchanalyse wordt als aparte
+  routebundel geladen.
+- Preview-aanvragen laden vijf seizoenen historie alleen voor competities met
+  wedstrijden in de gekozen periode en hergebruiken het opgehaalde seizoensprogramma.
 - Geheugencache per repository: maximaal 30 seconden, begrensd op aantallen/bytes,
   nooit langer dan de echte DB-expiry; fouten en ontbrekende (`null`) resultaten worden niet als cachehit bewaard.
 - Verlopen cachepayloads worden al in de DB-query uitgesloten.
