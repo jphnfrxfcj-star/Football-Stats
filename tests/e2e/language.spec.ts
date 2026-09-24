@@ -7,11 +7,17 @@ test('switches language without resetting filters and persists it across pages a
   page,
 }) => {
   await page.goto('/');
-  await page.getByPlaceholder('Zoek een team…').fill('Arsenal');
+  await page.getByRole('button', { name: 'Filter op ploeg' }).click();
+  await page.getByRole('button', { name: 'Arsenal', exact: true }).click();
   await expect(page.locator('.fixture-row')).toHaveCount(1);
   await page.getByLabel('Taal', { exact: true }).selectOption('en');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.getByPlaceholder('Search for a team…')).toHaveValue('Arsenal');
+  await expect(page.getByRole('button', { name: 'Filter by team' })).toContainText('Arsenal');
+  await page.getByRole('button', { name: 'Filter by team' }).click();
+  await expect(page.getByRole('region', { name: 'Choose a team' })).toContainText(
+    'Teams playing on this date',
+  );
+  await page.getByRole('button', { name: 'Arsenal', exact: true }).click();
   await expect(page.locator('.fixture-row')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: 'Every match. More insight.' })).toBeVisible();
   await page.locator('.fixture-row').click();

@@ -670,30 +670,6 @@ main {
   padding: 10px 5px;
   max-width: 190px;
 }
-.search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: white;
-  border: 1px solid #e1e7e2;
-  border-radius: 6px;
-  padding: 0 12px;
-  margin-left: auto;
-  min-width: 210px;
-  color: #9aa79c;
-}
-.search input {
-  font-size: 11px;
-  border: 0;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  min-width: 0;
-  padding: 11px 0;
-}
-.search input::placeholder {
-  color: #a1aaa3;
-}
 .demo-note {
   display: flex;
   align-items: flex-start;
@@ -1823,9 +1799,6 @@ td {
   .mini-bars {
     display: none;
   }
-  .search {
-    min-width: 160px;
-  }
   .feature-copy h2 {
     font-size: 27px;
   }
@@ -2032,10 +2005,6 @@ td {
   .select-wrap select {
     font-size: 10px;
     max-width: 140px;
-  }
-  .search {
-    width: 100%;
-    margin: 0;
   }
   .demo-note {
     font-size: 9px;
@@ -3529,10 +3498,14 @@ td {
     min-width: 0;
     font-size: 16px;
   }
-  .filters .search,
   .filters .select-wrap {
     width: 100%;
     min-width: 0;
+  }
+  .filters .select-wrap select {
+    flex: 1;
+    width: 100%;
+    max-width: none;
   }
   .filters input,
   .filters select {
@@ -3861,4 +3834,146 @@ td {
 .combo-history > details > .muted {
   margin: 0 0 20px;
   line-height: 1.6;
+}
+
+/* Team selection uses the fixtures already loaded for the selected day. */
+.team-filter {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 320px;
+  margin-left: auto;
+}
+.team-filter-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #e1e7e2;
+  border-radius: 6px;
+  background: white;
+  color: #536759;
+  text-align: left;
+  font-size: 12px;
+}
+.team-filter-trigger > span:not(.team-badge) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.team-filter-trigger > svg {
+  flex-shrink: 0;
+}
+.team-filter-trigger[aria-expanded='true'] {
+  border-color: #277a57;
+}
+.team-filter-trigger:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.team-filter-panel {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(460px, calc(100vw - 48px));
+  border: 1px solid #dce6df;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 12px 32px #173b2421;
+  overflow: hidden;
+}
+.team-filter-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf1ed;
+}
+.team-filter-heading strong {
+  font-size: 14px;
+}
+.team-filter-heading p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #718076;
+}
+.team-filter-options {
+  padding: 10px;
+  max-height: min(380px, 55vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.team-filter-group h3 {
+  margin: 16px 6px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #718076;
+}
+.team-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+.team-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: white;
+  color: #344c3e;
+  text-align: left;
+  font-size: 12px;
+}
+.team-filter-option > span:not(.team-badge) {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.team-filter-option > svg {
+  flex-shrink: 0;
+}
+.team-filter-option:hover {
+  background: #f4f7f4;
+}
+.team-filter-option[aria-pressed='true'] {
+  background: #edf5ee;
+  border-color: #cde1d1;
+  color: #236647;
+}
+.team-filter-all {
+  width: 100%;
+}
+.team-filter-trigger:focus-visible,
+.team-filter-option:focus-visible {
+  outline: 2px solid #277a57;
+  outline-offset: 2px;
+}
+@media (max-width: 720px) {
+  .team-filter {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+  .team-filter-trigger {
+    font-size: 16px;
+  }
+  .team-filter-panel {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+    box-shadow: none;
+  }
+  .team-filter-option {
+    font-size: 13px;
+  }
 }

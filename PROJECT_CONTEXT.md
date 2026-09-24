@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 23 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 24 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -26,7 +26,7 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 
 | Route        | Gedrag                                                                                                                                    |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`          | Dashboard: spotlight, programma met 1/X/2-odds, combizoeker, combihistoriek. Datum-, competitie- en teamfilter.                           |
+| `/`          | Dashboard: spotlight, programma met 1/X/2-odds, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.            |
 | `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                       |
 | `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
 | `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
@@ -40,6 +40,12 @@ scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
 Op `/analyse` staan datum, competitie en ploeg mobiel onder elkaar. Keuzelijsten
 worden gevuld met wedstrijden op de gekozen datum; de ploegkeuze volgt de competitie.
 Een andere competitie wist de ploegkeuze; een andere datum wist beide filters.
+Het dashboard gebruikt een visuele ploegkiezer in plaats van vrije tekst: clubs
+met logo, per competitie gegroepeerd, uitsluitend uit de gekozen speeldag en
+competitie. ‘Alle ploegen’ wist de ploegkeuze. Datum- en competitiewijzigingen
+wissen afhankelijke filters ook hier. Op mobiel klapt de kiezer in de pagina open;
+op desktop onder de knop. Escape, buiten klikken en toetsenbordnavigatie werken.
+Dit filter gebruikt al geladen fixtures en doet geen extra API-aanvraag.
 Op de oddsvergelijking zijn impliciete kans en modelverschil mobiel optioneel via
 ‘Toon impliciete kans en modelverschil’. Odds, model en historie blijven direct
 beschikbaar. Desktop behoudt de uitgebreidere weergave.

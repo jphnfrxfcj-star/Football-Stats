@@ -1,4 +1,5 @@
 import DataNotice from './DataNotice';
+import TeamFilter from './TeamFilter';
 import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
@@ -19,7 +20,6 @@ import {
   ChevronRight,
   SlidersHorizontal,
   Search,
-  X,
   Info,
   MapPin,
   TrendingUp,
@@ -33,7 +33,7 @@ import { Badge, SectionTitle, Loading, ErrorBox, time, dateLabel } from './ui';
 export default function Dashboard({ navigate }: { navigate: (s: string) => void }) {
   const archive = useComboHistory();
   const [date, setDate] = useState(today()),
-    [query, setQuery] = useState(''),
+    [team, setTeam] = useState(''),
     [league, setLeague] = useState('all');
   const [fixtures, setFixtures] = useState<Fixture[]>([]),
     [leagues, setLeagues] = useState<League[]>([]),
@@ -106,15 +106,20 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     }, 65000);
     return () => clearTimeout(timer);
   }, [hasUpcoming, oddsLoading, recoveredDate, date, oddsError, odds, fixtures]);
-  const filtered = fixtures.filter(
-    (f) =>
-      (league === 'all' || f.league.id === league) &&
-      `${f.home.name} ${f.away.name}`.toLowerCase().includes(query.toLowerCase()),
-  );
+  const leagueFixtures = fixtures.filter((f) => league === 'all' || f.league.id === league);
+  const filtered = leagueFixtures.filter((f) => !team || f.home.id === team || f.away.id === team);
+  const changeDate = (next: string) => {
+    if (!next || next === date) return;
+    setDate(next);
+    setFixtures([]);
+    setLoading(true);
+    setLeague('all');
+    setTeam('');
+  };
   const shift = (n: number) => {
     const d = new Date(`${date}T12:00:00Z`);
     d.setUTCDate(d.getUTCDate() + n);
-    setDate(d.toISOString().slice(0, 10));
+    changeDate(d.toISOString().slice(0, 10));
   };
   return (
     <>
@@ -269,7 +274,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
               aria-label={t('Wedstrijddatum')}
               type="date"
               value={date}
-              onChange={(e) => e.target.value && setDate(e.target.value)}
+              onChange={(e) => changeDate(e.target.value)}
             />
           </label>
           <button className="icon-button" onClick={() => shift(1)} aria-label={t('Volgende dag')}>
@@ -281,7 +286,10 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           <select
             aria-label={t('Filter op competitie')}
             value={league}
-            onChange={(e) => setLeague(e.target.value)}
+            onChange={(e) => {
+              setLeague(e.target.value);
+              setTeam('');
+            }}
           >
             <option value="all">{t('Alle competities')}</option>
             {leagues.map((l) => (
@@ -291,23 +299,13 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             ))}
           </select>
         </div>
-        <label className="search">
-          <Search size={17} />
-          <input
-            placeholder={t('Zoek een team…')}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          {query && (
-            <button
-              className="icon-button"
-              aria-label={t('Zoekopdracht wissen')}
-              onClick={() => setQuery('')}
-            >
-              <X size={14} />
-            </button>
-          )}
-        </label>
+        <TeamFilter
+          key={`${date}:${league}`}
+          fixtures={leagueFixtures}
+          value={team}
+          onChange={setTeam}
+          disabled={loading || !!error}
+        />
       </div>
       {hasUpcoming && (
         <p className="program-odds-note">
@@ -347,8 +345,8 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         <div className="empty-state">
           <Search size={30} />
           <h3>{t('Geen wedstrijden gevonden')}</h3>
-          <p>{t('Probeer een andere datum, competitie of teamnaam.')}</p>
-          {!query && (
+          <p>{t('Kies een andere datum, competitie of ploeg.')}</p>
+          {!team && (
             <button className="secondary-button" onClick={() => shift(1)}>
               {t('Volgende dag bekijken')}
             </button>
@@ -356,9 +354,9 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           <button
             className="secondary-button"
             onClick={() => {
-              setQuery('');
+              setTeam('');
               setLeague('all');
-              setDate(today());
+              changeDate(today());
             }}
           >
             {t('Filters herstellen')}

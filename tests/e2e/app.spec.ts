@@ -11,11 +11,11 @@ test('filters, navigates, explains probabilities and switches windows', async ({
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Elke wedstrijd. Meer inzicht.' })).toBeVisible();
-  await page.getByPlaceholder('Zoek een team…').fill('arsenal');
+  await page.getByRole('button', { name: 'Filter op ploeg' }).click();
+  await page.getByRole('button', { name: 'Arsenal', exact: true }).click();
   await expect(page.locator('.fixture-row')).toHaveCount(1);
-  await page.getByPlaceholder('Zoek een team…').fill('unknown-team');
-  await expect(page.getByText('Geen wedstrijden gevonden')).toBeVisible();
-  await page.getByRole('button', { name: 'Filters herstellen' }).click();
+  await page.getByRole('button', { name: 'Filter op ploeg' }).click();
+  await page.getByRole('button', { name: 'Alle ploegen', exact: true }).click();
   await expect(page.locator('.fixture-row')).toHaveCount(4);
   expect(matchRequests).toHaveLength(0);
   await page.locator('.fixture-row').first().click();
@@ -157,6 +157,10 @@ test('past dates and past match pages do not display odds or a builder', async (
 });
 
 test('multi-day x2-x3 finder remains visible on an empty program date', async ({ page }) => {
+  let apiPath = '';
+  page.on('request', (request) => {
+    if (/\/src\/api\.ts(?:\?|$)/.test(request.url())) apiPath = request.url();
+  });
   await page.goto('/');
   const finder = page.getByRole('region', { name: 'Combi x2 tot x3' });
   await expect(finder.getByRole('heading', { name: 'Combi x2–x3' })).toBeVisible();
@@ -167,7 +171,12 @@ test('multi-day x2-x3 finder remains visible on an empty program date', async ({
   await expect(finder).toContainText('Geen passende combi');
   await finder.getByLabel('Combi historie').selectOption('10');
   await expect(finder).toContainText('laatste 10');
-  await page.getByPlaceholder('Zoek een team…').fill('nonexistent');
+  await page.evaluate(async (path) => {
+    const { api } = await import(path);
+    api.fixtures = async () => [];
+  }, apiPath);
+  await page.getByLabel('Wedstrijddatum').fill('2026-09-13');
+  await expect(page.getByText('Geen wedstrijden gevonden', { exact: true })).toBeVisible();
   await expect(finder).toBeVisible();
   await page.getByLabel('Wedstrijddatum').fill('2026-09-11');
   await expect(finder).toHaveCount(0);

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { demoFixtures } from '../../src/demo/data';
 test('saved proposals survive reload and expose result checking and export', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-09-12T08:00:00Z'));
   const combos = [
     {
       id: 'history-test',
@@ -45,6 +46,6 @@ test('saved proposals survive reload and expose result checking and export', asy
   await page.reload();
   await expect(history.locator('summary').first()).toContainText('1 bewaard');
   await history.locator('summary').first().click();
-  await history.getByRole('button', { name: 'Verwijderen uit historiek' }).click();
+  await history.getByRole('button', { name: 'Verwijderen uit favorieten' }).click();
   await expect(history.getByText(/Nog geen voorstellen bewaard/)).toBeVisible();
 });

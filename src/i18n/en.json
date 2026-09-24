@@ -1,4 +1,7 @@
 {
+  "Filter op ploeg": "Filter by team",
+  "Kies een ploeg": "Choose a team",
+  "Ploegen op deze speeldag": "Teams playing on this date",
   "Combivoorstellen berekenen is mislukt.": "Could not calculate combination suggestions.",
   "Wedstrijden": "Matches",
   "Matchanalyse": "Match analysis",
@@ -73,7 +76,7 @@
   "Open een wedstrijd voor de volledige analyse.": "Open a match for the full analysis.",
   "Demo-omgeving · Alle wedstrijden en statistieken hieronder zijn fictieve voorbeelddata.": "Demo mode · All matches and statistics below are fictional sample data.",
   "Geen wedstrijden gevonden": "No matches found",
-  "Probeer een andere datum, competitie of teamnaam.": "Try another date, competition or team name.",
+  "Kies een andere datum, competitie of ploeg.": "Choose another date, competition or team.",
   "Filters herstellen": "Reset filters",
   "Wedstrijden op deze dag": "Matches on this day",
   "AFGELOPEN": "FINISHED",
