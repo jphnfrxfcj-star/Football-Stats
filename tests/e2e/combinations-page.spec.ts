@@ -93,7 +93,8 @@ test('match analysis navigation opens a fixture picker instead of model document
   await page.getByRole('button', { name: 'Matchanalyse', exact: true }).click();
   await expect(page).toHaveURL(/\/analyse$/);
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await page.getByLabel('Ploeg voor analyse').selectOption({ label: 'Arsenal' });
+  await page.getByRole('button', { name: 'Ploeg voor analyse' }).click();
+  await page.getByRole('button', { name: 'Arsenal', exact: true }).click();
   await expect(page.locator('.match-picker-row')).toHaveCount(1);
   await page.locator('.match-picker-row').click();
   await expect(page).toHaveURL(/\/match\//);

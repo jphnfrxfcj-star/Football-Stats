@@ -1,4 +1,5 @@
 import DataNotice from './DataNotice';
+import TeamFilter from './TeamFilter';
 import { t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
@@ -34,9 +35,6 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
     a.name.localeCompare(b.name, locale()),
   );
   const leagueFixtures = fixtures.filter((f) => !league || f.league.id === league);
-  const teams = [
-    ...new Map(leagueFixtures.flatMap((f) => [f.home, f.away]).map((t) => [t.id, t])).values(),
-  ].sort((a, b) => a.name.localeCompare(b.name, locale()));
   const filtered = leagueFixtures.filter((f) => !team || f.home.id === team || f.away.id === team);
   return (
     <section aria-label={t('Wedstrijd kiezen voor analyse')}>
@@ -83,22 +81,17 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
             ))}
           </select>
         </label>
-        <label>
-          {t('Ploeg')}
-          <select
-            aria-label={t('Ploeg voor analyse')}
+        <div className="match-picker-team-control">
+          <span>{t('Ploeg')}</span>
+          <TeamFilter
+            key={`${date}:${league}`}
+            fixtures={leagueFixtures}
             value={team}
-            disabled={loading || !!error || !teams.length}
-            onChange={(e) => setTeam(e.target.value)}
-          >
-            <option value="">{t('Alle ploegen')}</option>
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={setTeam}
+            disabled={loading || !!error}
+            label={t('Ploeg voor analyse')}
+          />
+        </div>
       </div>
       {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
       {loading ? (

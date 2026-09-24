@@ -3977,3 +3977,20 @@ td {
     font-size: 13px;
   }
 }
+
+.match-picker-team-control {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.match-picker-team-control .team-filter {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+.match-picker-team-control .team-filter-trigger {
+  min-height: 48px;
+  border-radius: 8px;
+}

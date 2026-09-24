@@ -40,7 +40,7 @@ scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
 Op `/analyse` staan datum, competitie en ploeg mobiel onder elkaar. Keuzelijsten
 worden gevuld met wedstrijden op de gekozen datum; de ploegkeuze volgt de competitie.
 Een andere competitie wist de ploegkeuze; een andere datum wist beide filters.
-Het dashboard gebruikt een visuele ploegkiezer in plaats van vrije tekst: clubs
+Het dashboard en `/analyse` delen dezelfde visuele ploegkiezer: clubs
 met logo, per competitie gegroepeerd, uitsluitend uit de gekozen speeldag en
 competitie. ‘Alle ploegen’ wist de ploegkeuze. Datum- en competitiewijzigingen
 wissen afhankelijke filters ook hier. Op mobiel klapt de kiezer in de pagina open;

@@ -9,11 +9,13 @@ export default function TeamFilter({
   value,
   onChange,
   disabled,
+  label = t('Filter op ploeg'),
 }: {
   fixtures: Fixture[];
   value: string;
   onChange: (id: string) => void;
   disabled: boolean;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -69,7 +71,7 @@ export default function TeamFilter({
         type="button"
         className="team-filter-trigger"
         ref={trigger}
-        aria-label={t('Filter op ploeg')}
+        aria-label={label}
         aria-expanded={open && available}
         aria-controls={`${id}-panel`}
         disabled={!available}
