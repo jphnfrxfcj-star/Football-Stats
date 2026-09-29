@@ -3303,7 +3303,7 @@ td {
   cursor: pointer;
   font: inherit;
 }
-.match-picker-row > span:nth-child(2) {
+.match-picker-match {
   flex: 1;
   min-width: 0;
 }
@@ -4098,4 +4098,33 @@ td {
   padding: 6px 0;
   font-size: 12px;
   color: #536759;
+}
+
+.match-picker-teams {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.match-picker-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.match-picker-team > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.match-picker-match small {
+  padding-left: 31px;
+}
+@media (max-width: 720px) {
+  .match-picker-teams {
+    display: grid;
+    gap: 6px;
+  }
+  .match-picker-separator {
+    display: none;
+  }
 }

@@ -112,12 +112,17 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
                 key={f.id}
                 onClick={() => navigate(`/match/${f.id}`)}
               >
-                <Badge team={f.home} />
-                <span>
-                  <strong>
-                    {t(f.home.name)}
-                    {' – '}
-                    {t(f.away.name)}
+                <span className="match-picker-match">
+                  <strong className="match-picker-teams">
+                    <span className="match-picker-team">
+                      <Badge team={f.home} size="small" />
+                      <span>{t(f.home.name)}</span>
+                    </span>
+                    <span className="match-picker-separator">{' – '}</span>
+                    <span className="match-picker-team">
+                      <Badge team={f.away} size="small" />
+                      <span>{t(f.away.name)}</span>
+                    </span>
                   </strong>
                   <small>
                     {t(f.league.name)}
