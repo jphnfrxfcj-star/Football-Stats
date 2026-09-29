@@ -1,11 +1,12 @@
 import DataNotice from './DataNotice';
 import TeamFilter from './TeamFilter';
+import FixtureRow from './FixtureRow';
 import { t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { today } from '../demo/data';
 import type { Fixture } from '../domain/models';
-import { Badge, Loading, time } from './ui';
+import { Loading } from './ui';
 export default function MatchPicker({ navigate }: { navigate: (path: string) => void }) {
   const [date, setDate] = useState(today()),
     [league, setLeague] = useState(''),
@@ -104,39 +105,10 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           </button>
         </p>
       ) : (
-        <div className="match-picker-list">
+        <div className={filtered.length ? 'match-picker-list fixture-group' : 'match-picker-list'}>
           {filtered.length ? (
             filtered.map((f) => (
-              <button
-                className="match-picker-row"
-                key={f.id}
-                onClick={() => navigate(`/match/${f.id}`)}
-              >
-                <span className="match-picker-match">
-                  <strong className="match-picker-teams">
-                    <span className="match-picker-team">
-                      <Badge team={f.home} size="small" />
-                      <span>{t(f.home.name)}</span>
-                    </span>
-                    <span className="match-picker-separator">{' – '}</span>
-                    <span className="match-picker-team">
-                      <Badge team={f.away} size="small" />
-                      <span>{t(f.away.name)}</span>
-                    </span>
-                  </strong>
-                  <small>
-                    {t(f.league.name)}
-                    {' · '}
-                    {t(time(f.kickoff))}
-                    {t(
-                      f.status === 'finished'
-                        ? ` · ${f.homeGoals ?? '–'}–${f.awayGoals ?? '–'}`
-                        : '',
-                    )}
-                  </small>
-                </span>
-                <span>{t('Analyse →')}</span>
-              </button>
+              <FixtureRow key={f.id} fixture={f} navigate={navigate} className="match-picker-row" />
             ))
           ) : (
             <p>{t('Geen wedstrijden gevonden voor deze datum en filters.')}</p>

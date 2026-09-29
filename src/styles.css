@@ -3263,10 +3263,6 @@ td {
   }
 }
 
-.match-picker-list {
-  display: grid;
-  gap: 10px;
-}
 .match-picker-controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3290,32 +3286,6 @@ td {
   color: #173b2e;
   font: inherit;
 }
-.match-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  text-align: left;
-  padding: 16px;
-  background: white;
-  border: 1px solid #dce3df;
-  border-radius: 8px;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-}
-.match-picker-match {
-  flex: 1;
-  min-width: 0;
-}
-.match-picker-row small {
-  display: block;
-  margin-top: 5px;
-  color: #68796e;
-}
-.match-picker-row > span:last-child {
-  font-size: 12px;
-}
-
 .language-control select {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -3588,10 +3558,6 @@ td {
   .match-venue {
     font-size: 11px;
   }
-  .match-picker-row {
-    padding: 12px;
-    gap: 10px;
-  }
   .match-picker-controls {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3602,9 +3568,6 @@ td {
   .match-picker-controls input,
   .match-picker-controls select {
     min-height: 48px;
-  }
-  .match-picker-row strong {
-    font-size: 14px;
   }
   .mobile-stats-toggle {
     display: inline-flex;
@@ -4098,33 +4061,4 @@ td {
   padding: 6px 0;
   font-size: 12px;
   color: #536759;
-}
-
-.match-picker-teams {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.match-picker-team {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-.match-picker-team > span:last-child {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.match-picker-match small {
-  padding-left: 31px;
-}
-@media (max-width: 720px) {
-  .match-picker-teams {
-    display: grid;
-    gap: 6px;
-  }
-  .match-picker-separator {
-    display: none;
-  }
 }

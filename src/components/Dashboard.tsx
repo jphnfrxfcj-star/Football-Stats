@@ -1,5 +1,6 @@
 import DataNotice from './DataNotice';
 import TeamFilter from './TeamFilter';
+import FixtureRow from './FixtureRow';
 import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
@@ -20,7 +21,6 @@ import {
   ChevronRight,
   SlidersHorizontal,
   Info,
-  MapPin,
   TrendingUp,
   Database,
   Check,
@@ -28,7 +28,7 @@ import {
 import { api, isDemo } from '../api';
 import type { Fixture, League } from '../domain/models';
 import { today } from '../demo/data';
-import { Badge, SectionTitle, Loading, ErrorBox, time, dateLabel } from './ui';
+import { SectionTitle, Loading, ErrorBox, dateLabel } from './ui';
 export default function Dashboard({ navigate }: { navigate: (s: string) => void }) {
   const archive = useComboHistory();
   const [date, setDate] = useState(today()),
@@ -389,44 +389,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
             const showOdds = isUpcoming(f, now);
             const prices = programPrices(f, odds?.date === date ? odds.report : null, now);
             return (
-              <button
-                className={`fixture-row${showOdds ? ' has-odds' : ''}`}
-                key={f.id}
-                onClick={() => navigate(`/match/${f.id}`)}
-              >
-                <div className="fixture-time">
-                  <strong>{t(f.kickoffKnown === false ? 'Tijd volgt' : time(f.kickoff))}</strong>
-                  <span>
-                    {t(
-                      f.status === 'finished'
-                        ? 'Afgelopen'
-                        : f.status === 'live'
-                          ? 'Bezig'
-                          : f.status === 'postponed'
-                            ? 'Uitgesteld'
-                            : f.status === 'cancelled'
-                              ? 'Geannuleerd'
-                              : Date.parse(f.kickoff) < now
-                                ? 'Uitslag volgt'
-                                : 'Gepland',
-                    )}
-                  </span>
-                </div>
-                <div className="fixture-team home">
-                  <span>{t(f.home.name)}</span>
-                  <Badge team={f.home} />
-                </div>
-                <span className="fixture-vs">
-                  {t(
-                    f.homeGoals !== null && f.awayGoals !== null
-                      ? `${f.homeGoals} – ${f.awayGoals}`
-                      : 'vs',
-                  )}
-                </span>
-                <div className="fixture-team away">
-                  <Badge team={f.away} />
-                  <span>{t(f.away.name)}</span>
-                </div>
+              <FixtureRow key={f.id} fixture={f} navigate={navigate} now={now}>
                 {showOdds && (
                   <span className="fixture-odds" aria-label={t('Wedstrijdodds')}>
                     {(['home', 'draw', 'away'] as const).map((market, i) => (
@@ -451,14 +414,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
                     </span>
                   </span>
                 )}
-                <span className="fixture-venue">
-                  <MapPin size={14} />
-                  {t(f.league.name)}
-                </span>
-                <span className="analyze-link">
-                  {t(f.status === 'finished' ? 'Recap' : 'Analyse')} <ArrowRight size={16} />
-                </span>
-              </button>
+              </FixtureRow>
             );
           })}
         </div>

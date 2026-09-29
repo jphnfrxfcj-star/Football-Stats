@@ -46,6 +46,9 @@ competitie. ‘Alle ploegen’ wist de ploegkeuze. Datum- en competitiewijziging
 wissen afhankelijke filters ook hier. Op mobiel klapt de kiezer in de pagina open;
 op desktop onder de knop. Escape, buiten klikken en toetsenbordnavigatie werken.
 Dit filter gebruikt al geladen fixtures en doet geen extra API-aanvraag.
+De wedstrijdlijst op `/analyse` deelt `FixtureRow` en de rijopmaak met het dashboard:
+aftraptijd/status, thuisploeg, score/vs, uitploeg, beide logo’s en analyselink.
+De analysekiezer vraagt hiervoor geen extra programmaodds op.
 De lege programmastaat toont één knop ‘Volgende dag’ met ernaast alleen een
 relevante tekstactie: ‘Filters wissen’ behoudt de gekozen datum; zonder actieve
 filters verschijnt ‘Terug naar vandaag’ uitsluitend bij een andere datum.
