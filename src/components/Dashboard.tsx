@@ -19,7 +19,6 @@ import {
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
-  Search,
   Info,
   MapPin,
   TrendingUp,
@@ -342,25 +341,33 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       ) : error ? (
         <ErrorBox message={error} retry={() => setRetry(retry + 1)} />
       ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          <Search size={30} />
+        <div className="empty-state program-empty">
+          <span className="program-empty-icon" aria-hidden="true">
+            <CalendarDays size={24} />
+          </span>
           <h3>{t('Geen wedstrijden gevonden')}</h3>
           <p>{t('Kies een andere datum, competitie of ploeg.')}</p>
-          {!team && (
+          <div className="program-empty-actions">
             <button className="secondary-button" onClick={() => shift(1)}>
-              {t('Volgende dag bekijken')}
+              {t('Volgende dag')}
+              <ChevronRight size={16} aria-hidden="true" />
             </button>
-          )}
-          <button
-            className="secondary-button"
-            onClick={() => {
-              setTeam('');
-              setLeague('all');
-              changeDate(today());
-            }}
-          >
-            {t('Filters herstellen')}
-          </button>
+            {team || league !== 'all' ? (
+              <button
+                className="text-button"
+                onClick={() => {
+                  setTeam('');
+                  setLeague('all');
+                }}
+              >
+                {t('Filters wissen')}
+              </button>
+            ) : date !== today() ? (
+              <button className="text-button" onClick={() => changeDate(today())}>
+                {t('Terug naar vandaag')}
+              </button>
+            ) : null}
+          </div>
         </div>
       ) : (
         <div className="fixture-group">

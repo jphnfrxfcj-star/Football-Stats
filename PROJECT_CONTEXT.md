@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 24 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 29 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -46,6 +46,9 @@ competitie. ‘Alle ploegen’ wist de ploegkeuze. Datum- en competitiewijziging
 wissen afhankelijke filters ook hier. Op mobiel klapt de kiezer in de pagina open;
 op desktop onder de knop. Escape, buiten klikken en toetsenbordnavigatie werken.
 Dit filter gebruikt al geladen fixtures en doet geen extra API-aanvraag.
+De lege programmastaat toont één knop ‘Volgende dag’ met ernaast alleen een
+relevante tekstactie: ‘Filters wissen’ behoudt de gekozen datum; zonder actieve
+filters verschijnt ‘Terug naar vandaag’ uitsluitend bij een andere datum.
 Op de oddsvergelijking zijn impliciete kans en modelverschil mobiel optioneel via
 ‘Toon impliciete kans en modelverschil’. Odds, model en historie blijven direct
 beschikbaar. Desktop behoudt de uitgebreidere weergave.
