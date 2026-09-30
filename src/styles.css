@@ -3263,29 +3263,6 @@ td {
   }
 }
 
-.match-picker-controls {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  align-items: end;
-}
-.match-picker-controls label {
-  min-width: 0;
-  display: grid;
-  gap: 6px;
-}
-.match-picker-controls input,
-.match-picker-controls select {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  padding: 10px;
-  border: 1px solid #dce3df;
-  border-radius: 8px;
-  background: white;
-  color: #173b2e;
-  font: inherit;
-}
 .language-control select {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -3557,17 +3534,6 @@ td {
   }
   .match-venue {
     font-size: 11px;
-  }
-  .match-picker-controls {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .match-picker-controls label,
-  .match-picker-controls input {
-    width: 100%;
-  }
-  .match-picker-controls input,
-  .match-picker-controls select {
-    min-height: 48px;
   }
   .mobile-stats-toggle {
     display: inline-flex;
@@ -3941,26 +3907,8 @@ td {
   }
 }
 
-.match-picker-team-control {
-  display: grid;
-  min-width: 0;
-  gap: 6px;
-  font-size: 13px;
-  line-height: 1.4;
-}
-.match-picker-team-control .team-filter {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-.match-picker-team-control .team-filter-trigger {
-  min-height: 48px;
-  border-radius: 8px;
-}
-
 /* Keep the three fixture filters aligned on both entry pages. */
-.filters,
-.match-picker-controls {
+.filters {
   --fixture-control-height: 44px;
   --fixture-control-font-size: 13px;
   display: grid;
@@ -3973,10 +3921,7 @@ td {
 }
 .filters > .date-switch,
 .filters > .select-wrap,
-.filters .team-filter-trigger,
-.match-picker-controls input,
-.match-picker-controls select,
-.match-picker-controls .team-filter-trigger {
+.filters .team-filter-trigger {
   width: 100%;
   max-width: none;
   min-width: 0;
@@ -4001,12 +3946,8 @@ td {
   height: 100%;
   font-size: var(--fixture-control-font-size);
 }
-.match-picker-controls label {
-  line-height: 1.4;
-}
 @media (max-width: 720px) {
-  .filters,
-  .match-picker-controls {
+  .filters {
     --fixture-control-height: 48px;
     --fixture-control-font-size: 16px;
     grid-template-columns: minmax(0, 1fr);

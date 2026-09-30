@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 29 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 30 september 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -37,7 +37,9 @@ openen; op een matchpagina brengt die navigatie je naar boven in de huidige anal
 Mobiel (tot 720 px): vaste ondernavigatie met labels en safe-area-ruimte, compacte
 header met taalkeuze, geen grote promotionele hero/overzichtskaarten, horizontaal
 scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
-Op `/analyse` staan datum, competitie en ploeg mobiel onder elkaar. Keuzelijsten
+Het dashboard en `/analyse` delen `FixtureFilters`: dezelfde datumkiezer met
+pijltjes voor vorige/volgende dag, competitie- en ploegkeuze. Op mobiel staan
+ze onder elkaar. Keuzelijsten
 worden gevuld met wedstrijden op de gekozen datum; de ploegkeuze volgt de competitie.
 Een andere competitie wist de ploegkeuze; een andere datum wist beide filters.
 Het dashboard en `/analyse` delen dezelfde visuele ploegkiezer: clubs

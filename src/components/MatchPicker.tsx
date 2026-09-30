@@ -1,5 +1,5 @@
 import DataNotice from './DataNotice';
-import TeamFilter from './TeamFilter';
+import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
 import { t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
@@ -45,55 +45,24 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           <p>{t('Kies een wedstrijd om statistieken, odds en onderbouwing te bekijken.')}</p>
         </div>
       </div>
-      <div className="market-controls match-picker-controls">
-        <label>
-          {t('Datum')}{' '}
-          <input
-            aria-label={t('Analysedatum')}
-            type="date"
-            value={date}
-            onChange={(e) => {
-              if (e.target.value) {
-                setDate(e.target.value);
-                setFixtures([]);
-                setLoading(true);
-                setLeague('');
-                setTeam('');
-              }
-            }}
-          />
-        </label>
-        <label>
-          {t('Competitie')}
-          <select
-            aria-label={t('Competitie voor analyse')}
-            value={league}
-            disabled={loading || !!error || !leagues.length}
-            onChange={(e) => {
-              setLeague(e.target.value);
-              setTeam('');
-            }}
-          >
-            <option value="">{t('Alle competities')}</option>
-            {leagues.map((l) => (
-              <option key={l.id} value={l.id}>
-                {t(l.name)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="match-picker-team-control">
-          <span>{t('Ploeg')}</span>
-          <TeamFilter
-            key={`${date}:${league}`}
-            fixtures={leagueFixtures}
-            value={team}
-            onChange={setTeam}
-            disabled={loading || !!error}
-            label={t('Ploeg voor analyse')}
-          />
-        </div>
-      </div>
+      <FixtureFilters
+        analysis
+        date={date}
+        league={league}
+        team={team}
+        leagues={leagues}
+        fixtures={leagueFixtures}
+        disabled={loading || !!error}
+        onDateChange={(next) => {
+          setDate(next);
+          setFixtures([]);
+          setLoading(true);
+          setLeague('');
+          setTeam('');
+        }}
+        onLeagueChange={setLeague}
+        onTeamChange={setTeam}
+      />
       {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
       {loading ? (
         <Loading />

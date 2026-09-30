@@ -1,5 +1,5 @@
 import DataNotice from './DataNotice';
-import TeamFilter from './TeamFilter';
+import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
 import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
@@ -17,9 +17,7 @@ import {
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  ChevronLeft,
   ChevronRight,
-  SlidersHorizontal,
   Info,
   TrendingUp,
   Database,
@@ -262,50 +260,17 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
         aside={<span className="subtle">{t('Alle tijden in jouw tijdzone')}</span>}
       />
-      <div className="filters">
-        <div className="date-switch">
-          <button className="icon-button" onClick={() => shift(-1)} aria-label={t('Vorige dag')}>
-            <ChevronLeft size={17} />
-          </button>
-          <label>
-            <CalendarDays size={16} />
-            <input
-              aria-label={t('Wedstrijddatum')}
-              type="date"
-              value={date}
-              onChange={(e) => changeDate(e.target.value)}
-            />
-          </label>
-          <button className="icon-button" onClick={() => shift(1)} aria-label={t('Volgende dag')}>
-            <ChevronRight size={17} />
-          </button>
-        </div>
-        <div className="select-wrap">
-          <SlidersHorizontal size={16} />
-          <select
-            aria-label={t('Filter op competitie')}
-            value={league}
-            onChange={(e) => {
-              setLeague(e.target.value);
-              setTeam('');
-            }}
-          >
-            <option value="all">{t('Alle competities')}</option>
-            {leagues.map((l) => (
-              <option key={l.id} value={l.id}>
-                {t(l.name)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <TeamFilter
-          key={`${date}:${league}`}
-          fixtures={leagueFixtures}
-          value={team}
-          onChange={setTeam}
-          disabled={loading || !!error}
-        />
-      </div>
+      <FixtureFilters
+        date={date}
+        league={league}
+        team={team}
+        leagues={leagues}
+        fixtures={leagueFixtures}
+        disabled={loading || !!error}
+        onDateChange={changeDate}
+        onLeagueChange={setLeague}
+        onTeamChange={setTeam}
+      />
       {hasUpcoming && (
         <p className="program-odds-note">
           {t('Thuis · Gelijk · Uit. Voorkeur voor Unibet; de bookmaker staat bij elke wedstrijd.')}
