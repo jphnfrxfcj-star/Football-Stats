@@ -51,7 +51,8 @@ Dit filter gebruikt al geladen fixtures en doet geen extra API-aanvraag.
 De wedstrijdlijst op `/analyse` deelt `FixtureRow` en de rijopmaak met het dashboard:
 aftraptijd/status, thuisploeg, score/vs, uitploeg, beide logo’s en analyselink.
 De analysekiezer vraagt hiervoor geen extra programmaodds op.
-De lege programmastaat toont één knop ‘Volgende dag’ met ernaast alleen een
+Het dashboard en `/analyse` delen ook `EmptyFixtures`: dezelfde lege melding,
+hetzelfde kalendericoon en dezelfde acties. Deze toestand toont één knop ‘Volgende dag’ met ernaast alleen een
 relevante tekstactie: ‘Filters wissen’ behoudt de gekozen datum; zonder actieve
 filters verschijnt ‘Terug naar vandaag’ uitsluitend bij een andere datum.
 Op de oddsvergelijking zijn impliciete kans en modelverschil mobiel optioneel via

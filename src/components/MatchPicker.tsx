@@ -1,6 +1,7 @@
 import DataNotice from './DataNotice';
 import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
+import EmptyFixtures from './EmptyFixtures';
 import { t, locale } from '../i18n';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
@@ -37,6 +38,14 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
   );
   const leagueFixtures = fixtures.filter((f) => !league || f.league.id === league);
   const filtered = leagueFixtures.filter((f) => !team || f.home.id === team || f.away.id === team);
+  const changeDate = (next: string) => {
+    if (!next || next === date) return;
+    setDate(next);
+    setFixtures([]);
+    setLoading(true);
+    setLeague('');
+    setTeam('');
+  };
   return (
     <section aria-label={t('Wedstrijd kiezen voor analyse')}>
       <div className="page-heading">
@@ -53,13 +62,7 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
         leagues={leagues}
         fixtures={leagueFixtures}
         disabled={loading || !!error}
-        onDateChange={(next) => {
-          setDate(next);
-          setFixtures([]);
-          setLoading(true);
-          setLeague('');
-          setTeam('');
-        }}
+        onDateChange={changeDate}
         onLeagueChange={setLeague}
         onTeamChange={setTeam}
       />
@@ -80,7 +83,15 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
               <FixtureRow key={f.id} fixture={f} navigate={navigate} className="match-picker-row" />
             ))
           ) : (
-            <p>{t('Geen wedstrijden gevonden voor deze datum en filters.')}</p>
+            <EmptyFixtures
+              date={date}
+              hasFilters={!!team || !!league}
+              onDateChange={changeDate}
+              onClearFilters={() => {
+                setTeam('');
+                setLeague('');
+              }}
+            />
           )}
         </div>
       )}

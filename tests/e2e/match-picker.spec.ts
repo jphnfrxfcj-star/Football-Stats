@@ -48,9 +48,7 @@ test('competition filters populate teams and reset dependent selections', async 
   await expect(league).toHaveValue('');
   await expect(team).toContainText('Alle ploegen');
   await expect(team).toBeDisabled();
-  await expect(
-    page.getByText('Geen wedstrijden gevonden voor deze datum en filters.'),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Geen wedstrijden gevonden' })).toBeVisible();
 });
 
 test('analysis team picker opens on desktop and narrow phones and clears the selection', async ({

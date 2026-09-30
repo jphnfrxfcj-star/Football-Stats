@@ -46,9 +46,30 @@ test('empty program keeps actions beside each other and clears filters without c
       await page.screenshot({ path: `/tmp/empty-program-${width}-${language}.png` });
     }
   }
+  const emptyMessage = await empty.innerText();
   await empty.getByRole('button', { name: 'Next day', exact: true }).click();
   await expect(page.getByLabel('Match date')).toHaveValue('2026-09-14');
   await empty.getByRole('button', { name: 'Back to today' }).click();
   await expect(page.getByLabel('Match date')).toHaveValue('2026-09-12');
   await expect(page.locator('.fixture-row')).toHaveCount(4);
+  await page.getByRole('button', { name: 'Match analysis', exact: true }).click();
+  await page.getByLabel('Analysis date').fill('2026-09-13');
+  await expect(empty).toHaveText(emptyMessage, { useInnerText: true });
+  for (const width of info.project.name === 'mobile' ? [360, 390] : [1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    await empty.scrollIntoViewIfNeeded();
+    const buttons = empty.getByRole('button');
+    const first = (await buttons.nth(0).boundingBox())!;
+    const second = (await buttons.nth(1).boundingBox())!;
+    expect(Math.abs(first.y - second.y)).toBeLessThan(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: `/tmp/empty-analysis-${width}.png` });
+  }
+  await empty.getByRole('button', { name: 'Next day', exact: true }).click();
+  await expect(page.getByLabel('Analysis date')).toHaveValue('2026-09-14');
+  await empty.getByRole('button', { name: 'Back to today' }).click();
+  await expect(page.getByLabel('Analysis date')).toHaveValue('2026-09-12');
+  await expect(page.locator('.match-picker-row')).toHaveCount(4);
 });

@@ -1,6 +1,7 @@
 import DataNotice from './DataNotice';
 import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
+import EmptyFixtures from './EmptyFixtures';
 import { t } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
@@ -17,7 +18,6 @@ import {
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  ChevronRight,
   Info,
   TrendingUp,
   Database,
@@ -112,11 +112,6 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     setLoading(true);
     setLeague('all');
     setTeam('');
-  };
-  const shift = (n: number) => {
-    const d = new Date(`${date}T12:00:00Z`);
-    d.setUTCDate(d.getUTCDate() + n);
-    changeDate(d.toISOString().slice(0, 10));
   };
   return (
     <>
@@ -306,34 +301,15 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       ) : error ? (
         <ErrorBox message={error} retry={() => setRetry(retry + 1)} />
       ) : filtered.length === 0 ? (
-        <div className="empty-state program-empty">
-          <span className="program-empty-icon" aria-hidden="true">
-            <CalendarDays size={24} />
-          </span>
-          <h3>{t('Geen wedstrijden gevonden')}</h3>
-          <p>{t('Kies een andere datum, competitie of ploeg.')}</p>
-          <div className="program-empty-actions">
-            <button className="secondary-button" onClick={() => shift(1)}>
-              {t('Volgende dag')}
-              <ChevronRight size={16} aria-hidden="true" />
-            </button>
-            {team || league !== 'all' ? (
-              <button
-                className="text-button"
-                onClick={() => {
-                  setTeam('');
-                  setLeague('all');
-                }}
-              >
-                {t('Filters wissen')}
-              </button>
-            ) : date !== today() ? (
-              <button className="text-button" onClick={() => changeDate(today())}>
-                {t('Terug naar vandaag')}
-              </button>
-            ) : null}
-          </div>
-        </div>
+        <EmptyFixtures
+          date={date}
+          hasFilters={!!team || league !== 'all'}
+          onDateChange={changeDate}
+          onClearFilters={() => {
+            setTeam('');
+            setLeague('all');
+          }}
+        />
       ) : (
         <div className="fixture-group">
           <div className="league-heading">
