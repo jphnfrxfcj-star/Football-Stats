@@ -7,6 +7,7 @@ import {
   ArrowDownRight,
   ArrowRight,
   BarChart3,
+  Brain,
   ChevronRight,
   CircleHelp,
   Info,
@@ -155,7 +156,7 @@ export default function App() {
             aria-haspopup="dialog"
             onClick={() => setMethod(true)}
           >
-            <Layers3 size={19} />
+            <Brain size={19} aria-hidden="true" />
             <span className="nav-label">{t('Ons model')}</span>
             <span className="nav-mobile-label">{t('Model')}</span>
             <ArrowDownRight size={15} className="nav-end" />
