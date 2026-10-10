@@ -1,3 +1,4 @@
+import RefreshButton from './RefreshButton';
 import DataNotice from './DataNotice';
 import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
@@ -53,14 +54,12 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           <h1>{t('Matchanalyse')}</h1>
           <p>{t('Kies een wedstrijd om statistieken, odds en onderbouwing te bekijken.')}</p>
         </div>
+        <RefreshButton
+          label="Programma bijwerken"
+          loading={loading}
+          onClick={() => setRetry((n) => n + 1)}
+        />
       </div>
-      <button
-        className="secondary-button"
-        disabled={loading}
-        onClick={() => setRetry((n) => n + 1)}
-      >
-        {t(loading ? 'Bijwerken…' : 'Programma bijwerken')}
-      </button>
       <FixtureFilters
         analysis
         date={date}

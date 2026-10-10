@@ -1,3 +1,4 @@
+import RefreshButton from './RefreshButton';
 import DataNotice from './DataNotice';
 import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
@@ -265,15 +266,17 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       <div id="program" />
       <SectionTitle
         title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
-        aside={<span className="subtle">{t('Alle tijden in jouw tijdzone')}</span>}
+        aside={
+          <div className="section-actions">
+            <span className="subtle program-timezone">{t('Alle tijden in jouw tijdzone')}</span>
+            <RefreshButton
+              label="Programma bijwerken"
+              loading={refreshing}
+              onClick={() => setRetry((n) => n + 1)}
+            />
+          </div>
+        }
       />
-      <button
-        className="secondary-button"
-        disabled={refreshing}
-        onClick={() => setRetry((n) => n + 1)}
-      >
-        {t(refreshing ? 'Bijwerken…' : 'Programma bijwerken')}
-      </button>
       {error && loadedDate.current === date && (
         <p role="alert">
           {t(error)} {t('De eerder geladen gegevens blijven zichtbaar.')}

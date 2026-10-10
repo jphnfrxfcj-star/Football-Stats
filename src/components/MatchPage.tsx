@@ -1,3 +1,4 @@
+import RefreshButton from './RefreshButton';
 import DataNotice from './DataNotice';
 import { tr, t, locale } from '../i18n';
 import { MatchRecap } from './Recap';
@@ -116,15 +117,13 @@ export default function MatchPage({
           <span className="green-dot" />
           {t(data.source === 'demo' ? 'Voorbeeldanalyse' : 'Analyse bijgewerkt')}
           {' ·'} {t(time(data.updatedAt))}
+          <RefreshButton
+            label="Analyse bijwerken"
+            loading={loading}
+            onClick={() => setRetry((n) => n + 1)}
+          />
         </span>
       </div>
-      <button
-        className="secondary-button"
-        disabled={loading}
-        onClick={() => setRetry((n) => n + 1)}
-      >
-        {t(loading ? 'Bijwerken…' : 'Analyse bijwerken')}
-      </button>
       {error && (
         <p role="alert">
           {t(error)} {t('De eerder geladen gegevens blijven zichtbaar.')}
