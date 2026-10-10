@@ -52,7 +52,9 @@ test('back restores filters, details and scroll; revisiting analysis reuses data
   await row.scrollIntoViewIfNeeded();
   const previousScroll = await page.evaluate(() => scrollY);
   await row.click();
-  await expect(page.getByRole('button', { name: 'Analyse en odds bijwerken', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Analyse en odds bijwerken', exact: true }),
+  ).toBeVisible();
   const reads = await page.evaluate(() => (window as any).analysisReads);
   await page.getByRole('link', { name: 'Recente vorm', exact: true }).click();
   await page.getByRole('button', { name: 'Terug naar overzicht' }).click();
@@ -60,7 +62,9 @@ test('back restores filters, details and scroll; revisiting analysis reuses data
   await expect(row).toHaveCount(1);
   expect(await page.evaluate(() => scrollY)).toBe(previousScroll);
   await row.click();
-  await expect(page.getByRole('button', { name: 'Analyse en odds bijwerken', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Analyse en odds bijwerken', exact: true }),
+  ).toBeVisible();
   expect(await page.evaluate(() => (window as any).analysisReads)).toBe(reads);
   await page.getByRole('button', { name: 'Analyse en odds bijwerken', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).analysisReads)).toBe(reads + 1);
