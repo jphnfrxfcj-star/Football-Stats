@@ -21,7 +21,7 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
     setLoading(true);
     setError('');
     api
-      .fixtures(date, c.signal)
+      .fixtures(date, c.signal, retry > 0)
       .then((rows) => {
         if (!c.signal.aborted) setFixtures(rows);
       })
@@ -54,6 +54,13 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
           <p>{t('Kies een wedstrijd om statistieken, odds en onderbouwing te bekijken.')}</p>
         </div>
       </div>
+      <button
+        className="secondary-button"
+        disabled={loading}
+        onClick={() => setRetry((n) => n + 1)}
+      >
+        {t(loading ? 'Bijwerken…' : 'Programma bijwerken')}
+      </button>
       <FixtureFilters
         analysis
         date={date}
@@ -66,10 +73,15 @@ export default function MatchPicker({ navigate }: { navigate: (path: string) => 
         onLeagueChange={setLeague}
         onTeamChange={setTeam}
       />
+      {error && fixtures.length > 0 && (
+        <p role="alert">
+          {t(error)} {t('De eerder geladen gegevens blijven zichtbaar.')}
+        </p>
+      )}
       {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
-      {loading ? (
+      {loading && !fixtures.length ? (
         <Loading />
-      ) : error ? (
+      ) : error && !fixtures.length ? (
         <p role="alert">
           {t(error)}{' '}
           <button className="text-button" onClick={() => setRetry((n) => n + 1)}>

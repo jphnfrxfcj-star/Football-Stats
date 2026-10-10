@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { isDemo } from '../api';
 import { readHistory, type SavedCombo } from '../domain/combo-history';
 const key = `matchday:combo-history:v1${isDemo ? ':demo' : ''}`;
@@ -15,6 +15,21 @@ export function useComboHistory() {
     }
   });
   const [storageError, setStorageError] = useState('');
+  useEffect(() => {
+    const sync = () => {
+      try {
+        setState({ combos: readHistory(localStorage.getItem(key)), error: '' });
+      } catch {
+        setStorageError('De historiek kon niet worden gelezen.');
+      }
+    };
+    window.addEventListener('matchday:history-change', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('matchday:history-change', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
   const add = useCallback((proposals: SavedCombo[]) => {
     if (!proposals.length) return;
     try {
@@ -36,6 +51,7 @@ export function useComboHistory() {
       localStorage.setItem(key, JSON.stringify({ version: 1, combos }));
       setState({ combos, error: '' });
       setStorageError('');
+      window.dispatchEvent(new Event('matchday:history-change'));
     } catch {
       setStorageError('Bewaren is niet gelukt. Controleer of browseropslag beschikbaar is.');
     }
@@ -46,6 +62,7 @@ export function useComboHistory() {
       localStorage.setItem(key, JSON.stringify({ version: 1, combos }));
       setState({ combos, error: '' });
       setStorageError('');
+      window.dispatchEvent(new Event('matchday:history-change'));
     } catch {
       setStorageError('Verwijderen is niet gelukt.');
     }

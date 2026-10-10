@@ -1,3 +1,5 @@
+import RetainedPage from './components/RetainedPage';
+import { usePageNavigation } from './components/usePageNavigation';
 import { tr, t, useLanguage, setLanguage } from './i18n';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import {
@@ -85,13 +87,8 @@ export default function App() {
           : 'Matchday — transparante voetbalanalyse op basis van historische wedstrijddata.',
       );
   }, [language]);
-  const [route, setRoute] = useState(window.location.pathname);
+  const { route, pages, navigate, back } = usePageNavigation();
   const [method, setMethod] = useState(false);
-  useEffect(() => {
-    const listener = () => setRoute(window.location.pathname);
-    window.addEventListener('popstate', listener);
-    return () => window.removeEventListener('popstate', listener);
-  }, []);
   useEffect(() => {
     if (!method) return;
     const listener = (e: KeyboardEvent) => {
@@ -100,11 +97,6 @@ export default function App() {
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
   }, [method]);
-  const navigate = (path: string) => {
-    window.history.pushState({}, '', path);
-    setRoute(path);
-    window.scrollTo(0, 0);
-  };
   const matchId = route.startsWith('/match/') ? decodeURIComponent(route.slice(7)) : null;
   return (
     <div className="app-shell">
@@ -249,21 +241,26 @@ export default function App() {
           </div>
         </header>
         <main>
-          {matchId ? (
-            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
-              <MatchPage id={matchId} navigate={navigate} showModel={() => setMethod(true)} />
-            </Suspense>
-          ) : route === '/analyse' ? (
-            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
-              <MatchPicker navigate={navigate} />
-            </Suspense>
-          ) : route === '/combis' ? (
-            <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
-              <CombinationsPage navigate={navigate} />
-            </Suspense>
-          ) : (
-            <Dashboard navigate={navigate} />
-          )}
+          {pages.map((path) => (
+            <RetainedPage key={path} active={path === route}>
+              <Suspense fallback={<p role="status">{t('Pagina laden…')}</p>}>
+                {path.startsWith('/match/') ? (
+                  <MatchPage
+                    id={decodeURIComponent(path.slice(7))}
+                    navigate={navigate}
+                    back={back}
+                    showModel={() => setMethod(true)}
+                  />
+                ) : path === '/analyse' ? (
+                  <MatchPicker navigate={navigate} />
+                ) : path === '/combis' ? (
+                  <CombinationsPage navigate={navigate} />
+                ) : (
+                  <Dashboard navigate={navigate} />
+                )}
+              </Suspense>
+            </RetainedPage>
+          ))}
         </main>
         <footer>
           <span>

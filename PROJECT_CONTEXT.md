@@ -244,6 +244,7 @@ prijzen bij dezelfde bookmaker:
   al geldige combinaties binnen de doelodds, tot de bestaande limieten.
 - Het zoeken is begrensd op 50.000 bezochte combinatiestappen. Geen resultaat is
   geen wiskundig bewijs dat geen enkele combinatie mogelijk is.
+- Voorstellen en beoordelingen blijven een expliciet gedateerde momentopname tijdens het lezen; geen automatische herberekening elke 30 seconden. ‘Combi zoeken / verversen’ haalt opnieuw data op en vernieuwt het beoordelingsmoment. Opslaan blijft de echte aftraptijd controleren.
 - Data laden start pas na ‘Doe een voorstel’. Doelodds/rangschikking aanpassen
   gebruikt bestaande data; de historische drempel of het venster wijzigen kan
   een nieuwe API-aanvraag doen. Geen extra providerfetch per weergegeven voorstel.
@@ -286,6 +287,9 @@ per-90-statistieken. Shots, shots on target, fouls, assists/kaarten zijn afhanke
 van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 
 ## Opslag, performance en updates
+
+- Navigatie bewaart de drie bezochte overzichtsschermen en maximaal vijf recent geopende matchanalyses in het tabblad, inclusief filters, voorstellen en open details. Browser terug/vooruit herstelt de scrollpositie per geschiedenisitem; ‘Terug naar overzicht’ gebruikt de herkomst en valt bij een directe matchlink terug op `/analyse`. Een volledige browserrefresh wist deze paginastatus.
+- Programma en analyse delen een begrensde browsergeheugencache (32 antwoorden, vijf minuten) met samenvoeging van gelijktijdige aanvragen. Fouten worden niet gecachet. ‘Programma bijwerken’ en ‘Analyse bijwerken’ omzeilen deze geheugencache; bestaande gegevens blijven bij mislukking zichtbaar. Bewaarde schermen verversen niet automatisch door navigatie. Odds en hun oorspronkelijke observatietijd blijven onder de bestaande actualiteitsregels vallen.
 
 - Supabase-migratie: `supabase/migrations/001_initial.sql`. De fixture bevat een
   `data` JSON-kolom met scores/statistieken; scores zijn niet losse SQL-scorekolommen.

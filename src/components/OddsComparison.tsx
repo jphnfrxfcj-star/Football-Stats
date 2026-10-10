@@ -27,7 +27,6 @@ export default function OddsComparison({
   useEffect(() => {
     const c = new AbortController();
     setLoading(true);
-    setReport(null);
     setError('');
     api
       .odds(id, c.signal)

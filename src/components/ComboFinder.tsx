@@ -54,10 +54,6 @@ export default function ComboFinder({
     [attempt, setAttempt] = useState(0),
     [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 30000);
-    return () => clearInterval(t);
-  }, []);
-  useEffect(() => {
     if (!started) return;
     const c = new AbortController();
     setReport(null);
@@ -65,7 +61,10 @@ export default function ComboFinder({
     api
       .markets(date, window, c.signal, 8, minimumRate)
       .then((r) => {
-        if (!c.signal.aborted) setReport(r);
+        if (!c.signal.aborted) {
+          setNow(Date.now());
+          setReport(r);
+        }
       })
       .catch((e) => {
         if (!c.signal.aborted) setError(e.message);
@@ -323,6 +322,12 @@ export default function ComboFinder({
         <Loading />
       ) : (
         <>
+          <p className="spotlight-note">
+            {tr(
+              'Momentopname van {0}. Voorstellen en beoordelingen worden niet automatisch bijgewerkt. Gebruik ‘Combi zoeken / verversen’ voor een nieuwe controle.',
+              [new Date(now).toLocaleString(locale())],
+            )}
+          </p>
           <DataNotice items={report.availability ?? []} />
           {report.odds.message && (
             <p className="spotlight-note" role="status">

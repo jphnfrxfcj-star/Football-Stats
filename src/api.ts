@@ -1,3 +1,4 @@
+import { cachedRead } from './lib/read-cache';
 import type { ComboResult } from './domain/combo-history';
 import { buildMarkets, type MarketsReport } from './analysis/combinations';
 import { getJson as get } from './lib/http';
@@ -116,12 +117,14 @@ export const api = {
       ),
     );
   },
-  fixtures: (date: string, signal?: AbortSignal): Promise<Fixture[]> =>
-    isDemo ? Promise.resolve(demoFixtures(date)) : get(`fixtures?date=${date}`, signal),
+  fixtures: (date: string, signal?: AbortSignal, refresh = false): Promise<Fixture[]> =>
+    isDemo
+      ? Promise.resolve(demoFixtures(date))
+      : cachedRead(`fixtures?date=${date}`, signal, refresh),
   leagues: (signal?: AbortSignal): Promise<League[]> =>
     isDemo ? Promise.resolve([demoLeague]) : get('leagues', signal),
-  analysis: (id: string, signal?: AbortSignal): Promise<AnalysisResponse> => {
-    if (!isDemo) return get(`match/${encodeURIComponent(id)}/analysis`, signal);
+  analysis: (id: string, signal?: AbortSignal, refresh = false): Promise<AnalysisResponse> => {
+    if (!isDemo) return cachedRead(`match/${encodeURIComponent(id)}/analysis`, signal, refresh);
     const data = demoMatch(id);
     return data
       ? Promise.resolve({ data, analysis: analyze(data), probabilities: probabilities(data) })

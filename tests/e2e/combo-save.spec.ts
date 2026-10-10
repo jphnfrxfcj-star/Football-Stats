@@ -20,7 +20,9 @@ test('saves proposals only on request and retains saved state across pages', asy
         : [],
     }),
   );
-  await page.clock.setFixedTime(new Date(now));
+  await page.clock.install({ time: new Date(now) });
+  let workers = 0;
+  page.on('worker', () => workers++);
   let apiPath = '';
   page.on('request', (request) => {
     if (/\/src\/api\.ts(?:\?|$)/.test(request.url())) apiPath = request.url();
@@ -80,6 +82,9 @@ test('saves proposals only on request and retains saved state across pages', asy
     async ({ path, report }) => {
       const { api } = await import(path);
       api.markets = async () => report;
+      api.analysis = async () => {
+        throw new Error('Testanalyse niet beschikbaar');
+      };
     },
     { path: apiPath, report },
   );
@@ -109,6 +114,32 @@ test('saves proposals only on request and retains saved state across pages', asy
     finder.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true }),
   ).toHaveCount(1);
   expect(await stored()).toEqual(original);
+  // Reading proposals must survive clock ticks without new searches or collapsed details.
+  const evidence = finder.locator('.combo-card').last().locator('.combo-evidence');
+  await evidence.locator('summary').first().click();
+  await evidence.scrollIntoViewIfNeeded();
+  const scrollBefore = await page.evaluate(() => scrollY);
+  const workersBefore = workers;
+  await page.clock.fastForward(60000);
+  await expect(evidence).toHaveAttribute('open', '');
+  expect(workers).toBe(workersBefore);
+  expect(await page.evaluate(() => scrollY)).toBe(scrollBefore);
+  await expect(finder).toContainText('Momentopname van');
+  // Return from a match to the same expanded proposal, without fetching markets again.
+  const matchLink = evidence.getByRole('button').first();
+  await matchLink.scrollIntoViewIfNeeded();
+  const returnScroll = await page.evaluate(() => scrollY);
+  await matchLink.click();
+  await expect(page).toHaveURL(/\/match\//);
+  await expect(page.getByRole('alert')).toContainText('Testanalyse niet beschikbaar');
+  await page.goBack();
+  await expect(page).toHaveURL(/\/combis$/);
+  await expect(evidence).toHaveAttribute('open', '');
+  expect(await page.evaluate(() => scrollY)).toBe(returnScroll);
+  expect(workers).toBe(workersBefore);
+  await finder.getByRole('button', { name: 'Combi zoeken / verversen' }).click();
+  await expect.poll(() => workers).toBeGreaterThan(workersBefore);
+  await expect(finder.locator('.combo-card')).toHaveCount(3);
   const history = page.locator('.combo-history');
   await history.locator('summary').first().click();
   const favorite = history.getByRole('button', { name: 'Verwijderen uit favorieten', exact: true });

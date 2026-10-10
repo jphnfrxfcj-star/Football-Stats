@@ -1,4 +1,11 @@
 {
+  "De historiek kon niet worden gelezen.": "Could not read saved combinations.",
+  "Programma bijwerken": "Refresh fixtures",
+  "Terug naar overzicht": "Back to overview",
+  "Analyse bijwerken": "Refresh analysis",
+  "Bijwerken…": "Refreshing…",
+  "De eerder geladen gegevens blijven zichtbaar.": "Previously loaded data remains visible.",
+  "Momentopname van {0}. Voorstellen en beoordelingen worden niet automatisch bijgewerkt. Gebruik ‘Combi zoeken / verversen’ voor een nieuwe controle.": "Snapshot from {0}. Proposals and assessments do not update automatically. Use ‘Find / refresh combinations’ for a new check.",
   "Filters wissen": "Clear filters",
   "Terug naar vandaag": "Back to today",
   "Filter op ploeg": "Filter by team",

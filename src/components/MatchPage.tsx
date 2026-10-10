@@ -41,10 +41,12 @@ export default function MatchPage({
   id,
   navigate,
   showModel,
+  back,
 }: {
   id: string;
   navigate: (s: string) => void;
   showModel: () => void;
+  back: () => void;
 }) {
   const [response, setResponse] = useState<AnalysisResponse | null>(null),
     [error, setError] = useState(''),
@@ -64,7 +66,7 @@ export default function MatchPage({
     setError('');
     setDetail(null);
     api
-      .analysis(id, controller.signal)
+      .analysis(id, controller.signal, retry > 0)
       .then((r) => {
         if (!controller.signal.aborted) setResponse(r);
       })
@@ -76,8 +78,8 @@ export default function MatchPage({
       });
     return () => controller.abort();
   }, [id, retry]);
-  if (loading) return <Loading />;
-  if (error || !response)
+  if (loading && !response) return <Loading />;
+  if (!response)
     return (
       <ErrorBox message={error || 'Wedstrijd niet gevonden'} retry={() => setRetry(retry + 1)} />
     );
@@ -106,9 +108,9 @@ export default function MatchPage({
   return (
     <>
       <div className="match-topline">
-        <button className="text-button" onClick={() => navigate('/')}>
+        <button className="text-button" onClick={back}>
           <ArrowLeft size={16} />
-          {t('Alle wedstrijden')}
+          {t('Terug naar overzicht')}
         </button>
         <span className="subtle">
           <span className="green-dot" />
@@ -116,6 +118,18 @@ export default function MatchPage({
           {' ·'} {t(time(data.updatedAt))}
         </span>
       </div>
+      <button
+        className="secondary-button"
+        disabled={loading}
+        onClick={() => setRetry((n) => n + 1)}
+      >
+        {t(loading ? 'Bijwerken…' : 'Analyse bijwerken')}
+      </button>
+      {error && (
+        <p role="alert">
+          {t(error)} {t('De eerder geladen gegevens blijven zichtbaar.')}
+        </p>
+      )}
       <div className="match-hero">
         <div className="match-league">
           <Trophy size={15} />

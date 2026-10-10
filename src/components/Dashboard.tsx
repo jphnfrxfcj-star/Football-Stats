@@ -11,7 +11,7 @@ import ComboFinder from './ComboFinder';
 import { DayRecap } from './Recap';
 import { isUpcoming } from '../analysis/recap';
 import Spotlight from './Spotlight';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CalendarDays,
   Trophy,
@@ -29,6 +29,8 @@ import { today } from '../demo/data';
 import { SectionTitle, Loading, ErrorBox, dateLabel } from './ui';
 export default function Dashboard({ navigate }: { navigate: (s: string) => void }) {
   const archive = useComboHistory();
+  const loadedDate = useRef('');
+  const [refreshing, setRefreshing] = useState(false);
   const [date, setDate] = useState(today()),
     [team, setTeam] = useState(''),
     [league, setLeague] = useState('all');
@@ -44,11 +46,13 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
+    setLoading(loadedDate.current !== date);
+    setRefreshing(true);
     setError('');
-    Promise.all([api.fixtures(date, controller.signal), api.leagues(controller.signal)])
+    Promise.all([api.fixtures(date, controller.signal, retry > 0), api.leagues(controller.signal)])
       .then(([f, l]) => {
         if (!controller.signal.aborted) {
+          loadedDate.current = date;
           setFixtures(f);
           setLeagues(l);
         }
@@ -57,7 +61,10 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         if (!controller.signal.aborted) setError(e.message);
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       });
     return () => controller.abort();
   }, [date, retry]);
@@ -66,7 +73,10 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     [oddsError, setOddsError] = useState(''),
     [oddsRetry, setOddsRetry] = useState(0);
   const hasUpcoming =
-    !loading && !error && date >= today() && fixtures.some((f) => isUpcoming(f, now));
+    !loading &&
+    (!error || loadedDate.current === date) &&
+    date >= today() &&
+    fixtures.some((f) => isUpcoming(f, now));
   useEffect(() => {
     const c = new AbortController();
     setOddsError('');
@@ -246,15 +256,29 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
-      {!loading && !error && filtered.some((f) => isUpcoming(f, now)) && (
-        <Spotlight date={date} league={league} navigate={navigate} />
-      )}
-      {!loading && !error && <DayRecap fixtures={filtered} />}
+      {!loading &&
+        (!error || loadedDate.current === date) &&
+        filtered.some((f) => isUpcoming(f, now)) && (
+          <Spotlight date={date} league={league} navigate={navigate} />
+        )}
+      {!loading && (!error || loadedDate.current === date) && <DayRecap fixtures={filtered} />}
       <div id="program" />
       <SectionTitle
         title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
         aside={<span className="subtle">{t('Alle tijden in jouw tijdzone')}</span>}
       />
+      <button
+        className="secondary-button"
+        disabled={refreshing}
+        onClick={() => setRetry((n) => n + 1)}
+      >
+        {t(refreshing ? 'Bijwerken…' : 'Programma bijwerken')}
+      </button>
+      {error && loadedDate.current === date && (
+        <p role="alert">
+          {t(error)} {t('De eerder geladen gegevens blijven zichtbaar.')}
+        </p>
+      )}
       <FixtureFilters
         date={date}
         league={league}
@@ -285,7 +309,9 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </button>
         </p>
       )}
-      {!loading && !error && <DataNotice items={filtered.map((f) => f.availability)} />}
+      {!loading && (!error || loadedDate.current === date) && (
+        <DataNotice items={filtered.map((f) => f.availability)} />
+      )}
       {isDemo && (
         <div className="demo-note">
           <Info size={15} />
@@ -298,7 +324,7 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       )}
       {loading ? (
         <Loading />
-      ) : error ? (
+      ) : error && loadedDate.current !== date ? (
         <ErrorBox message={error} retry={() => setRetry(retry + 1)} />
       ) : filtered.length === 0 ? (
         <EmptyFixtures
