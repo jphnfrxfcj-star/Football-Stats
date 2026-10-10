@@ -1,3 +1,4 @@
+import ComboMatchLink from './ComboMatchLink';
 import { Star } from 'lucide-react';
 import DataNotice from './DataNotice';
 import ComboAssessment, { comboPriceLabels, comboComparisonLabels } from './ComboAssessment';
@@ -12,6 +13,7 @@ import {
   comboEvidenceOrder,
   comboRates,
   type MarketsReport,
+  type Combination,
 } from '../analysis/combinations';
 import { SectionTitle, Loading } from './ui';
 export default function ComboFinder({
@@ -46,45 +48,44 @@ export default function ComboFinder({
   const [diverse, setDiverse] = useState(compact);
   const Evidence = compact ? 'details' : 'div';
   const [started, setStarted] = useState(false);
-  const [report, setReport] = useState<MarketsReport | null>(null),
-    [error, setError] = useState(''),
+  const [source, setSource] = useState<{ report: MarketsReport; now: number; key: string } | null>(
+    null,
+  );
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState(''),
     [window, setWindow] = useState(5),
     [minimumRate, setMinimumRate] = useState(100),
     [book, setBook] = useState('Unibet België'),
-    [attempt, setAttempt] = useState(0),
-    [now, setNow] = useState(Date.now());
+    [attempt, setAttempt] = useState(0);
+  const dataKey = JSON.stringify([date, window, minimumRate]);
   useEffect(() => {
     if (!started) return;
     const c = new AbortController();
-    setReport(null);
+    setFetching(true);
     setError('');
     api
       .markets(date, window, c.signal, 8, minimumRate)
-      .then((r) => {
-        if (!c.signal.aborted) {
-          setNow(Date.now());
-          setReport(r);
-        }
+      .then((report) => {
+        if (!c.signal.aborted) setSource({ report, now: Date.now(), key: dataKey });
       })
       .catch((e) => {
         if (!c.signal.aborted) setError(e.message);
+      })
+      .finally(() => {
+        if (!c.signal.aborted) setFetching(false);
       });
     return () => c.abort();
-  }, [date, window, attempt, minimumRate, started]);
-  const cutoff = isDemo ? Date.parse(`${date}T00:00:00Z`) : now;
-  const books = [
-    ...new Set([
-      'Unibet België',
-      ...(report?.fixtures.flatMap((f) => f.quotes.map((q) => q.bookmaker)) ?? []),
-    ]),
-  ];
+  }, [date, window, attempt, minimumRate, started, dataKey]);
+  const incoming = source?.key === dataKey ? source : null;
+  const incomingCutoff = isDemo ? Date.parse(`${date}T00:00:00Z`) : (incoming?.now ?? 0);
+  const settingsKey = JSON.stringify([dataKey, book, compact, diverse, minOdd, maxOdd, priceCheck]);
   const searchRequest = useMemo(
     () =>
-      report && validTarget
+      incoming && validTarget
         ? {
-            selections: report.selections,
+            selections: incoming.report.selections,
             bookmaker: book,
-            now: cutoff,
+            now: incomingCutoff,
             maxLegs: 8,
             options: {
               requirePriceCheck: priceCheck,
@@ -96,9 +97,41 @@ export default function ComboFinder({
             },
           }
         : null,
-    [report, validTarget, book, cutoff, compact, diverse, minOdd, maxOdd, priceCheck],
+    [incoming, validTarget, book, incomingCutoff, compact, diverse, minOdd, maxOdd, priceCheck],
   );
-  const { combos, searching, error: searchError } = useCombinationSearch(searchRequest);
+  const search = useCombinationSearch(searchRequest);
+  const [snapshot, setSnapshot] = useState<{
+    key: string;
+    report: MarketsReport;
+    now: number;
+    combos: Combination[];
+  } | null>(null);
+  useEffect(() => {
+    if (incoming && searchRequest && !search.searching && !search.error) {
+      setSnapshot({
+        key: settingsKey,
+        report: incoming.report,
+        now: incoming.now,
+        combos: search.combos,
+      });
+    }
+  }, [incoming, searchRequest, search.searching, search.error, search.combos, settingsKey]);
+  // Publish data, assessment time and worker results together; retain only matching settings.
+  const visible = snapshot?.key === settingsKey && validTarget ? snapshot : null;
+  const report = visible?.report ?? null;
+  const now = visible?.now ?? 0;
+  const cutoff = isDemo ? Date.parse(`${date}T00:00:00Z`) : now;
+  const combos = visible?.combos ?? [];
+  const searchError = search.error;
+  const busy = fetching || search.searching;
+  const books = [
+    ...new Set([
+      'Unibet België',
+      book,
+      ...((incoming?.report ?? report)?.fixtures.flatMap((f) => f.quotes.map((q) => q.bookmaker)) ??
+        []),
+    ]),
+  ];
   const [saveError, setSaveError] = useState('');
   const savedIds = new Set(savedCombos.map((combo) => combo.id));
   const eligible = report?.selections.filter((s) => Date.parse(s.fixture.kickoff) > cutoff) ?? [];
@@ -265,7 +298,6 @@ export default function ComboFinder({
             aria-label={t('Combi historie')}
             value={window}
             onChange={(e) => {
-              setReport(null);
               setWindow(Number(e.target.value));
             }}
           >
@@ -284,7 +316,6 @@ export default function ComboFinder({
             aria-label={t('Combi minimumfrequentie')}
             value={minimumRate}
             onChange={(e) => {
-              setReport(null);
               setMinimumRate(Number(e.target.value));
             }}
           >
@@ -298,7 +329,8 @@ export default function ComboFinder({
         </label>
         <button
           className="secondary-button"
-          disabled={!validTarget}
+          disabled={!validTarget || busy}
+          aria-busy={busy}
           onClick={() => {
             setStarted(true);
             setAttempt(attempt + 1);
@@ -307,19 +339,23 @@ export default function ComboFinder({
           {t(started ? 'Combi zoeken / verversen' : 'Doe een voorstel')}
         </button>
       </div>
+      {started && (error || searchError) && (
+        <p role="alert">
+          {t(error || searchError)} {t('Probeer opnieuw met ‘Combi zoeken / verversen’.')}
+          {report && <> {t('De eerder geladen gegevens blijven zichtbaar.')}</>}
+        </p>
+      )}
+      {report && busy && <p role="status">{t('Bijwerken…')}</p>}
       {!started ? (
         <p className="spotlight-note">
           {t(
             'Kies je voorkeuren en klik op ‘Doe een voorstel’. De combianalyse wordt pas dan geladen.',
           )}
         </p>
-      ) : error || searchError ? (
-        <p role="alert">
-          {t(error || searchError)}
-          {t(' Probeer opnieuw met ‘Combi zoeken / verversen’.')}
-        </p>
-      ) : !report || searching ? (
-        <Loading />
+      ) : !report ? (
+        error || searchError || !validTarget ? null : (
+          <Loading />
+        )
       ) : (
         <>
           <p className="spotlight-note">
@@ -392,12 +428,7 @@ export default function ComboFinder({
               </ul>
               {rejected.slice(0, 6).map(({ selection, quote }) => (
                 <article key={selection.id}>
-                  <button
-                    className="text-button"
-                    onClick={() => navigate(`/match/${selection.fixture.id}`)}
-                  >
-                    {selection.fixture.home.name} – {selection.fixture.away.name}
-                  </button>
+                  <ComboMatchLink fixture={selection.fixture} navigate={navigate} />
                   <p>
                     {t(selection.label)} · {quote.decimal.toFixed(2)}
                   </p>
@@ -495,14 +526,7 @@ export default function ComboFinder({
                     <ul className="compact-combo-legs">
                       {combo.legs.map(({ selection: s, quote: q }) => (
                         <li key={s.id}>
-                          <button
-                            className="text-button"
-                            onClick={() => navigate(`/match/${s.fixture.id}`)}
-                          >
-                            {t(s.fixture.home.name)}
-                            {' – '}
-                            {t(s.fixture.away.name)}
-                          </button>
+                          <ComboMatchLink fixture={s.fixture} navigate={navigate} />
                           <span>
                             {t(s.label)} <b>{t(q.decimal.toFixed(2))}</b>
                           </span>
@@ -516,14 +540,7 @@ export default function ComboFinder({
                     <ol>
                       {combo.legs.map(({ selection: s, quote: q }) => (
                         <li key={s.id} className="finder-leg">
-                          <button
-                            className="text-button"
-                            onClick={() => navigate(`/match/${s.fixture.id}`)}
-                          >
-                            {t(s.fixture.home.name)}
-                            {' – '}
-                            {t(s.fixture.away.name)}
-                          </button>
+                          <ComboMatchLink fixture={s.fixture} navigate={navigate} />
                           <small>
                             {t(new Date(s.fixture.kickoff).toLocaleString(locale()))}
                             {' ·'} {t(s.fixture.league.name)}
@@ -642,7 +659,6 @@ export default function ComboFinder({
                 <button
                   className="secondary-button"
                   onClick={() => {
-                    setReport(null);
                     setMinimumRate(80);
                   }}
                 >
@@ -663,12 +679,7 @@ export default function ComboFinder({
               </p>
               {visibleCandidates.slice(0, 12).map(({ selection, quote }) => (
                 <article key={selection.id}>
-                  <button
-                    className="text-button"
-                    onClick={() => navigate(`/match/${selection.fixture.id}`)}
-                  >
-                    {selection.fixture.home.name} – {selection.fixture.away.name}
-                  </button>
+                  <ComboMatchLink fixture={selection.fixture} navigate={navigate} />
                   <p>
                     {t(selection.label)} · {quote.decimal.toFixed(2)}
                   </p>

@@ -49,6 +49,7 @@ export default function MatchPage({
   showModel: () => void;
   back: () => void;
 }) {
+  const [oddsLoading, setOddsLoading] = useState(false);
   const [response, setResponse] = useState<AnalysisResponse | null>(null),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(true),
@@ -118,8 +119,8 @@ export default function MatchPage({
           {t(data.source === 'demo' ? 'Voorbeeldanalyse' : 'Analyse bijgewerkt')}
           {' ·'} {t(time(data.updatedAt))}
           <RefreshButton
-            label="Analyse bijwerken"
-            loading={loading}
+            label={isUpcoming(f, now) ? 'Analyse en odds bijwerken' : 'Analyse bijwerken'}
+            loading={loading || oddsLoading}
             onClick={() => setRetry((n) => n + 1)}
           />
         </span>
@@ -216,7 +217,15 @@ export default function MatchPage({
           <span>{t(w)}</span>
         </div>
       ))}
-      {isUpcoming(f, now) && <OddsComparison key={`odds-${id}`} id={id} response={response} />}
+      {isUpcoming(f, now) && (
+        <OddsComparison
+          key={`odds-${id}`}
+          id={id}
+          response={response}
+          refreshKey={retry}
+          onLoadingChange={setOddsLoading}
+        />
+      )}
       <MatchRecap fixture={f} />
       <section id="probabilities">
         {f.status === 'finished' && (

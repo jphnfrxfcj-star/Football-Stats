@@ -16,9 +16,13 @@ const markets = [
 export default function OddsComparison({
   id,
   response,
+  refreshKey = 0,
+  onLoadingChange,
 }: {
   id: string;
   response: AnalysisResponse;
+  refreshKey?: number;
+  onLoadingChange?: (loading: boolean) => void;
 }) {
   const [report, setReport] = useState<OddsSnapshot | null>(null),
     [error, setError] = useState(''),
@@ -27,6 +31,7 @@ export default function OddsComparison({
   useEffect(() => {
     const c = new AbortController();
     setLoading(true);
+    onLoadingChange?.(true);
     setError('');
     api
       .odds(id, c.signal)
@@ -37,10 +42,16 @@ export default function OddsComparison({
         if (!c.signal.aborted) setError(e.message);
       })
       .finally(() => {
-        if (!c.signal.aborted) setLoading(false);
+        if (!c.signal.aborted) {
+          setLoading(false);
+          onLoadingChange?.(false);
+        }
       });
-    return () => c.abort();
-  }, [id, attempt]);
+    return () => {
+      c.abort();
+      onLoadingChange?.(false);
+    };
+  }, [id, attempt, refreshKey, onLoadingChange]);
   const books = [...new Set(report?.quotes.map((q) => q.bookmaker) ?? [])];
   return (
     <section className="odds-section" aria-label={t('Bookmakervergelijking')}>
@@ -62,8 +73,12 @@ export default function OddsComparison({
           </button>
         </div>
       )}
-      {loading && <Loading />}
-      {error && <p role="alert">{t(error)}</p>}
+      {loading && (!report ? <Loading /> : <p role="status">{t('Odds laden…')}</p>)}
+      {error && (
+        <p role="alert">
+          {t(error)} {report && t('De eerder geladen gegevens blijven zichtbaar.')}
+        </p>
+      )}
       {report && (
         <>
           <p className="section-intro">{t(report.message)}</p>

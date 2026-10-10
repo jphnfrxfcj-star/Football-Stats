@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 30 september 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 10 oktober 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -17,6 +17,10 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 - Gebruikelijke samenwerking: wijzigingen implementeren, passend testen,
   committen en na autorisatie pushen. De gebruiker heeft dit in de lopende sessie
   herhaaldelijk toegestaan. Meld een push niet als geverifieerde live-deploy.
+- Teamreviews gebruiken de projectrollen in `.codex/agents/` en de werkwijze in
+  `docs/team-review.md`. Drie specialisten onderzoeken en toetsen voorstellen; de
+  gebruiker beslist per voorstel. Review is geen toestemming voor implementatie.
+  De configuratie beperkt parallelle subagents tot drie en erft model/permissies.
 - Communicatie is Nederlands. De interface ondersteunt Nederlands en Engels.
 - Bestaande branding: groen/wit, Matchday-activiteitssymbool, lokale clublogo’s,
   sobere geïntegreerde odds. Geen grote groene prijsblokken op de analysepagina.
@@ -244,6 +248,7 @@ prijzen bij dezelfde bookmaker:
   al geldige combinaties binnen de doelodds, tot de bestaande limieten.
 - Het zoeken is begrensd op 50.000 bezochte combinatiestappen. Geen resultaat is
   geen wiskundig bewijs dat geen enkele combinatie mogelijk is.
+- Bij handmatig verversen met dezelfde combi-instellingen blijft de complete vorige momentopname zichtbaar tot ophalen én berekenen slagen. Bron- of workerfouten behouden kaarten/details en het oorspronkelijke tijdstip. Gewijzigde filters verbergen de vorige set. Analyselinks in combikaarten hebben een icoon, NL/EN-label en minstens 44 px aanraakhoogte op mobiel.
 - Voorstellen en beoordelingen blijven een expliciet gedateerde momentopname tijdens het lezen; geen automatische herberekening elke 30 seconden. ‘Combi zoeken / verversen’ haalt opnieuw data op en vernieuwt het beoordelingsmoment. Opslaan blijft de echte aftraptijd controleren.
 - Data laden start pas na ‘Doe een voorstel’. Doelodds/rangschikking aanpassen
   gebruikt bestaande data; de historische drempel of het venster wijzigen kan
@@ -288,8 +293,10 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 
 ## Opslag, performance en updates
 
-- Navigatie bewaart de drie bezochte overzichtsschermen en maximaal vijf recent geopende matchanalyses in het tabblad, inclusief filters, voorstellen en open details. Browser terug/vooruit herstelt de scrollpositie per geschiedenisitem; ‘Terug naar overzicht’ gebruikt de herkomst en valt bij een directe matchlink terug op `/analyse`. Een volledige browserrefresh wist deze paginastatus.
-- Programma en analyse delen een begrensde browsergeheugencache (32 antwoorden, vijf minuten) met samenvoeging van gelijktijdige aanvragen. Fouten worden niet gecachet. ‘Programma bijwerken’ en ‘Analyse bijwerken’ omzeilen deze geheugencache; bestaande gegevens blijven bij mislukking zichtbaar. Bewaarde schermen verversen niet automatisch door navigatie. Odds en hun oorspronkelijke observatietijd blijven onder de bestaande actualiteitsregels vallen.
+- Navigatie bewaart de drie bezochte overzichtsschermen en maximaal vijf recent geopende matchanalyses in het tabblad, inclusief filters, voorstellen en open details. Browser terug/vooruit herstelt de scrollpositie per geschiedenisitem, ook voor analysesectielinks; ‘Terug naar overzicht’ gebruikt de herkomst en valt bij een directe matchlink terug op `/analyse`. Een volledige browserrefresh wist deze paginastatus.
+- Programma en analyse delen een begrensde browsergeheugencache (32 antwoorden, vijf minuten) met samenvoeging van gelijktijdige aanvragen. Fouten worden niet gecachet. ‘Programma bijwerken’ en de analyse-refresh omzeilen deze geheugencache; bestaande gegevens blijven bij mislukking zichtbaar. Bewaarde schermen verversen niet automatisch door navigatie. Odds en hun oorspronkelijke observatietijd blijven onder de bestaande actualiteitsregels vallen.
+
+- Bij komende wedstrijden vernieuwt het bovenste refresh-icoon ‘Analyse en odds bijwerken’ beide bronnen. De laadstatus blijft actief tot beide klaar zijn. Gedeeltelijke bronuitval behoudt eerdere gegevens met een foutmelding; oorspronkelijke bron-/prijstijden blijven intact. De afzonderlijke oddsrefresh blijft beschikbaar.
 
 - Supabase-migratie: `supabase/migrations/001_initial.sql`. De fixture bevat een
   `data` JSON-kolom met scores/statistieken; scores zijn niet losse SQL-scorekolommen.

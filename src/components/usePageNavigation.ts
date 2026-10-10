@@ -6,7 +6,7 @@ export function usePageNavigation() {
   const [pages, setPages] = useState([route]);
   const positions = useRef(new Map<string, number>());
   const entry = useRef(crypto.randomUUID());
-  const destination = useRef(0);
+  const destination = useRef<number | null>(0);
   const origins = useRef(new Map<string, { path: string; entry: string }>());
   const [visit, setVisit] = useState(0);
 
@@ -27,7 +27,11 @@ export function usePageNavigation() {
     const pop = () => {
       positions.current.set(entry.current, window.scrollY);
       entry.current = window.history.state?.matchdayEntry ?? crypto.randomUUID();
-      destination.current = positions.current.get(entry.current) ?? 0;
+      // Native section links also create entries. Give them a stable identity so
+      // a later Back/Forward visit can restore where the reader left that section.
+      window.history.replaceState({ ...window.history.state, matchdayEntry: entry.current }, '');
+      destination.current =
+        positions.current.get(entry.current) ?? (window.location.hash ? null : 0);
       show(window.location.pathname);
     };
     window.addEventListener('popstate', pop);
@@ -38,7 +42,8 @@ export function usePageNavigation() {
   }, []);
 
   useLayoutEffect(() => {
-    window.scrollTo(0, destination.current);
+    // A new anchor entry has no saved position; let the browser reach its target.
+    if (destination.current !== null) window.scrollTo(0, destination.current);
   }, [visit]);
 
   const navigate = (path: string) => {

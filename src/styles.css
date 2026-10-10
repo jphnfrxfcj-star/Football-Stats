@@ -3237,6 +3237,42 @@ td {
 .compact-combo-legs .text-button {
   text-align: left;
 }
+.combo-match-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  min-height: 32px;
+  max-width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #21653c;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.combo-match-link .combo-match-link-name {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: #b8cbbf;
+  text-underline-offset: 3px;
+}
+.combo-match-link svg {
+  flex-shrink: 0;
+}
+.combo-match-link:hover .combo-match-link-name {
+  text-decoration-color: currentColor;
+}
+.combo-match-link:focus-visible {
+  outline: 2px solid #21653c;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
 .compact-combo-legs span {
   display: flex;
   justify-content: space-between;
@@ -3249,6 +3285,10 @@ td {
   color: #68796e;
 }
 @media (max-width: 700px) {
+  .combo-match-link {
+    min-height: 44px;
+    font-size: 12px;
+  }
   .combo-finder-compact {
     padding: 0;
   }

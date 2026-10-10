@@ -137,6 +137,50 @@ test('saves proposals only on request and retains saved state across pages', asy
   await expect(evidence).toHaveAttribute('open', '');
   expect(await page.evaluate(() => scrollY)).toBe(returnScroll);
   expect(workers).toBe(workersBefore);
+  // A failed fetch and a failed worker both preserve the published snapshot.
+  const snapshot = finder.getByText(/^Momentopname van/);
+  const originalSnapshot = await snapshot.textContent();
+  const evidenceTop = (await evidence.boundingBox())!.y;
+  await page.evaluate(async (path) => {
+    const { api } = await import(path);
+    (window as any).originalMarkets = api.markets;
+    api.markets = () =>
+      new Promise((_resolve, reject) => {
+        (window as any).failRefresh = reject;
+      });
+  }, apiPath);
+  await finder
+    .getByRole('button', { name: 'Combi zoeken / verversen' })
+    .evaluate((button: HTMLButtonElement) => button.click());
+  await expect(finder.getByRole('button', { name: 'Combi zoeken / verversen' })).toBeDisabled();
+  await expect(finder.locator('.combo-card')).toHaveCount(3);
+  await expect(evidence).toHaveAttribute('open', '');
+  await expect(snapshot).toHaveText(originalSnapshot!);
+  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  await expect.poll(async () => (await evidence.boundingBox())!.y).toBeCloseTo(evidenceTop, 0);
+  await page.evaluate(() => (window as any).failRefresh(new Error('Tijdelijke bronuitval')));
+  await expect(finder.getByRole('alert')).toContainText('Tijdelijke bronuitval');
+  await expect.poll(async () => (await evidence.boundingBox())!.y).toBeCloseTo(evidenceTop, 0);
+  await expect(evidence).toHaveAttribute('open', '');
+  await expect(snapshot).toHaveText(originalSnapshot!);
+  await page.evaluate(async (path) => {
+    const { api } = await import(path);
+    api.markets = (window as any).originalMarkets;
+    const NativeWorker = window.Worker;
+    window.Worker = new Proxy(NativeWorker, {
+      construct() {
+        window.Worker = NativeWorker;
+        throw new Error('Test worker failure');
+      },
+    });
+  }, apiPath);
+  await finder
+    .getByRole('button', { name: 'Combi zoeken / verversen' })
+    .evaluate((button: HTMLButtonElement) => button.click());
+  await expect(finder.getByRole('alert')).toContainText('Combivoorstellen berekenen is mislukt');
+  await expect(finder.locator('.combo-card')).toHaveCount(3);
+  await expect(evidence).toHaveAttribute('open', '');
+  await expect(snapshot).toHaveText(originalSnapshot!);
   await finder.getByRole('button', { name: 'Combi zoeken / verversen' }).click();
   await expect.poll(() => workers).toBeGreaterThan(workersBefore);
   await expect(finder.locator('.combo-card')).toHaveCount(3);
