@@ -295,12 +295,12 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                                   : tr('{0} · momentopname, controleer prijs', [quote.bookmaker])
                                 : t('Geen odd beschikbaar')}
                             </small>
-                            {quote && !recent && (
-                              <small className="odds-board-price-caution">
-                                {t('Momentopname')}
-                              </small>
-                            )}
                           </div>
+                          {quote && !recent && (
+                            <small className="odds-board-price-caution">
+                              {tr('{0} · momentopname, controleer prijs', [quote.bookmaker])}
+                            </small>
+                          )}
                           <button
                             className="analyze-link odds-board-open"
                             onClick={() => navigate(`/match/${fixture.id}`)}

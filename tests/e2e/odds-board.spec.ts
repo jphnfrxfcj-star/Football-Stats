@@ -68,14 +68,15 @@ test('odds page groups model chances, filters markets and opens the selected mat
   expect(errors).toEqual([]);
 });
 
-test('available bookmaker prices show only matching markets with their source', async ({
-  page,
-}) => {
-  await page.route('**/src/api.ts*', async (route) => {
-    const response = await route.fetch();
-    await route.fulfill({
-      response,
-      body: `${await response.text()}
+for (const kind of ['feed', 'snapshot'] as const) {
+  test(`available ${kind} prices show matching markets and their source`, async ({
+    page,
+  }, info) => {
+    await page.route('**/src/api.ts*', async (route) => {
+      const response = await route.fetch();
+      await route.fulfill({
+        response,
+        body: `${await response.text()}
 const originalBoard = api.oddsBoard;
 api.oddsBoard = async (...args) => {
   const report = await originalBoard(...args);
@@ -86,18 +87,31 @@ api.oddsBoard = async (...args) => {
     market: 'over15', bookmaker: 'Unibet België', decimal: 1.85,
     observedAt: new Date().toISOString(), updatedAt: new Date().toISOString()
   }];
-  report.odds.kind = 'feed'; report.odds.message = '';
+  report.odds.kind = '${kind}'; report.odds.message = '';
   return report;
 };`,
+      });
     });
+    await page.goto('/odds');
+    await expect(page.locator('.odds-board-row')).toHaveCount(1);
+    await expect(page.locator('.odds-board-price')).toContainText('1.85');
+    await expect(page.getByLabel('Oddsbookmaker')).toHaveValue('Unibet België');
+    if (kind === 'snapshot' && info.project.name === 'mobile') {
+      const notice = page.locator('.odds-board-price-caution');
+      await expect(notice).toBeVisible();
+      await expect(notice).toContainText('momentopname');
+      const noteBox = await notice.boundingBox();
+      const priceBox = await page.locator('.odds-board-price').boundingBox();
+      expect(noteBox && priceBox && noteBox.width > priceBox.width * 3).toBe(true);
+      expect(
+        await page.locator('.odds-board-row').evaluate((el) => el.getBoundingClientRect().height),
+      ).toBeLessThan(125);
+    }
+
+    await page.getByLabel('Toon ook zonder odd').check();
+    await expect(page.locator('.odds-board-row')).toHaveCount(36);
+    await page.locator('.language-control select').selectOption('en');
+    await expect(page.getByRole('heading', { name: 'Odds & probabilities' })).toBeVisible();
+    await expect(page.getByRole('region', { name: '70% and above' })).toBeVisible();
   });
-  await page.goto('/odds');
-  await expect(page.locator('.odds-board-row')).toHaveCount(1);
-  await expect(page.locator('.odds-board-price')).toContainText('1.85');
-  await expect(page.getByLabel('Oddsbookmaker')).toHaveValue('Unibet België');
-  await page.getByLabel('Toon ook zonder odd').check();
-  await expect(page.locator('.odds-board-row')).toHaveCount(36);
-  await page.locator('.language-control select').selectOption('en');
-  await expect(page.getByRole('heading', { name: 'Odds & probabilities' })).toBeVisible();
-  await expect(page.getByRole('region', { name: '70% and above' })).toBeVisible();
-});
+}

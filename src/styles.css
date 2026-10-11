@@ -4337,7 +4337,7 @@ td {
     grid-template-columns: 43px minmax(0, 1fr) 40px minmax(0, 1fr) 32px;
     gap: 7px 6px;
     min-height: 88px;
-    padding: 14px 13px;
+    padding: 11px 13px;
     cursor: pointer;
   }
   .odds-board-row:focus-within {
@@ -4395,7 +4395,7 @@ td {
     align-self: center;
   }
   .odds-board-market {
-    grid-column: 1 / -1;
+    grid-column: 1 / 5;
     grid-row: 1;
     justify-self: start;
     padding: 3px 7px;
@@ -4415,7 +4415,7 @@ td {
   }
   .odds-board-probability {
     grid-column: 5;
-    grid-row: 2;
+    grid-row: 1;
     text-align: right;
   }
   .odds-board-probability strong {
@@ -4427,8 +4427,8 @@ td {
   }
   .odds-board-price {
     grid-column: 5;
-    grid-row: 3;
-    align-self: start;
+    grid-row: 2;
+    align-self: center;
     text-align: right;
   }
   .odds-board-price strong {
@@ -4439,10 +4439,13 @@ td {
   .odds-board-price small:not(.odds-board-price-caution) {
     display: none;
   }
-  .odds-board-price .odds-board-price-caution {
+  .odds-board-price-caution {
     display: block;
-    font-size: 8px;
-    overflow-wrap: anywhere;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    color: #87938a;
+    font-size: 10px;
+    line-height: 1.4;
   }
   .odds-board-open {
     position: absolute;
