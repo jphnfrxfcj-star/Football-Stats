@@ -17,6 +17,21 @@ test('odds page groups model chances, filters markets and opens the selected mat
   await page.getByRole('button', { name: 'Odds & kansen', exact: true }).click();
   await expect(page).toHaveURL(/\/odds$/);
   await expect(page.getByRole('heading', { name: 'Odds & kansen' })).toBeVisible();
+  const controls = await page
+    .locator('.odds-board-controls > label:not(.odds-board-check)')
+    .evaluateAll((labels) =>
+      labels.map((label) => {
+        const rect = label.getBoundingClientRect();
+        return { x: rect.x, y: rect.y, width: rect.width };
+      }),
+    );
+  if (info.project.name === 'mobile') {
+    expect(controls.slice(1).every((control, index) => control.y > controls[index].y)).toBe(true);
+    expect(controls.every((control) => Math.abs(control.width - controls[0].width) < 1)).toBe(true);
+  } else {
+    expect(controls.every((control) => Math.abs(control.y - controls[0].y) < 1)).toBe(true);
+    expect(controls.every((control) => Math.abs(control.width - controls[0].width) < 1)).toBe(true);
+  }
   await expect(page.getByRole('region', { name: '70% en hoger' })).toBeVisible();
   await expect(page.locator('.odds-board-row')).toHaveCount(36);
   await expect(page.locator('.odds-board-price').first()).toContainText('Geen odd beschikbaar');

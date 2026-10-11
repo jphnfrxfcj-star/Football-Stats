@@ -4137,16 +4137,16 @@ td {
   gap: 16px;
 }
 .odds-board-controls {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: end;
-  flex-wrap: wrap;
   gap: 12px;
   margin: 22px 0;
 }
 .odds-board-controls > label:not(.odds-board-check) {
   display: grid;
   gap: 6px;
-  min-width: 135px;
+  min-width: 0;
   color: #647469;
   font-size: 11px;
   font-weight: 650;
@@ -4154,7 +4154,8 @@ td {
 .odds-board-controls input[type='date'],
 .odds-board-controls select {
   width: 100%;
-  min-height: 42px;
+  min-width: 0;
+  height: 44px;
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 8px 10px;
@@ -4164,9 +4165,9 @@ td {
 }
 .odds-board-check {
   display: inline-flex;
+  grid-column: 1 / -1;
   align-items: center;
   gap: 7px;
-  min-height: 42px;
   color: #647469;
   font-size: 11px;
 }
@@ -4276,10 +4277,19 @@ td {
     justify-self: start;
   }
 }
+@media (max-width: 1050px) {
+  .odds-board-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 700px) {
-  .odds-board-controls > label:not(.odds-board-check) {
-    min-width: calc(50% - 6px);
-    flex: 1;
+  .odds-board-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .odds-board-controls input[type='date'],
+  .odds-board-controls select {
+    height: 48px;
+    font-size: 16px;
   }
   .odds-board-row {
     grid-template-columns: minmax(0, 1fr) 70px 72px;
