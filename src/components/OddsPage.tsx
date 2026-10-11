@@ -250,9 +250,6 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                             </div>
                             <span className="fixture-vs odds-board-vs">
                               <span className="odds-board-vs-word">{t('vs')}</span>
-                              <span className="odds-board-vs-dash" aria-hidden="true">
-                                –
-                              </span>
                             </span>
                             <div className="odds-board-team away">
                               <Badge team={fixture.away} size="small" />

@@ -51,7 +51,7 @@ test('odds page groups model chances, filters markets and opens the selected mat
     expect(
       buttonPosition && rowPosition && Math.abs(buttonPosition.width - rowPosition.width) < 1,
     ).toBe(true);
-    await expect(fixture.locator('.odds-board-vs-dash')).toBeVisible();
+    await expect(fixture.locator('.odds-board-vs-word')).toBeVisible();
   }
   await expect(page.locator('.odds-board-price').first()).toContainText('Geen odd beschikbaar');
   await page.getByLabel('Oddsenmarkt').selectOption('over15');

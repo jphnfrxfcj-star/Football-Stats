@@ -66,7 +66,7 @@ De analysekiezer vraagt hiervoor geen extra programmaodds op.
 Het odds-overzicht zet per markt het uur links, gevolgd door thuisploeg – vs –
 uitploeg met logo's; markt, modelkans en bookmakerprijs volgen daarna. Op mobiel
 is dit een compacte, volledig aanklikbare rij: tijd links, ploegen met kleine logo's
-en een streepje in het midden, kans en prijs rechts. Markt en historische treffers
+en een vaste VS-kolom in het midden, kans en prijs rechts. Markt en historische treffers
 blijven onder de ploegnamen zichtbaar; lange namen krijgen ellips. Desktop behoudt
 de uitgebreide grid en VS-badge. De mobiele odds-datumkiezer staat compact naast
 ‘Vanaf’, zoals bij Combi’s; filterwaarden delen dezelfde tekstkleur.
