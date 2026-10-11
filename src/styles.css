@@ -4277,16 +4277,7 @@ td {
   line-height: 1.4;
 }
 .odds-board-open {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 10px;
   background: #fff;
-  color: var(--green);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -4323,7 +4314,7 @@ td {
     grid-row: 1;
   }
   .odds-board-teams {
-    grid-column: 2 / -1;
+    grid-column: 2 / 4;
     grid-row: 1;
     font-size: 10px;
   }
@@ -4352,9 +4343,13 @@ td {
     grid-row: 2;
   }
   .odds-board-open {
-    grid-column: 1 / -1;
-    justify-self: stretch;
-    min-height: 40px;
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: center;
+    align-self: center;
+    min-width: 32px;
+    min-height: 32px;
+    justify-content: center;
   }
   .sidebar .nav-item {
     font-size: 10px;

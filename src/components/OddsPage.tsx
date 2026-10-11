@@ -286,14 +286,14 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                             </small>
                           </div>
                           <button
-                            className="odds-board-open"
+                            className="analyze-link odds-board-open"
                             onClick={() => navigate(`/match/${fixture.id}`)}
                             aria-label={tr('Open analyse van {0} tegen {1}', [
                               fixture.home.name,
                               fixture.away.name,
                             ])}
                           >
-                            {t('Bekijk analyse')} <ArrowRight size={15} />
+                            {t('Analyse')} <ArrowRight size={16} />
                           </button>
                         </article>
                       );

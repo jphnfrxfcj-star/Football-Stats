@@ -39,6 +39,17 @@ test('odds page groups model chances, filters markets and opens the selected mat
   const timePosition = await fixture.locator('.odds-board-time').boundingBox();
   const teamsPosition = await fixture.locator('.odds-board-teams').boundingBox();
   expect(timePosition && teamsPosition && timePosition.x < teamsPosition.x).toBe(true);
+  const analysisButton = fixture.locator('.odds-board-open');
+  await expect(analysisButton).toContainText('Analyse');
+  if (info.project.name === 'mobile') {
+    const buttonPosition = await analysisButton.boundingBox();
+    expect(
+      buttonPosition && teamsPosition && buttonPosition.x >= teamsPosition.x + teamsPosition.width,
+    ).toBe(true);
+    expect(await analysisButton.evaluate((button) => getComputedStyle(button).fontSize)).toBe(
+      '0px',
+    );
+  }
   await expect(page.locator('.odds-board-price').first()).toContainText('Geen odd beschikbaar');
   await page.getByLabel('Oddsenmarkt').selectOption('over15');
   await expect(page.locator('.odds-board-row')).toHaveCount(4);
