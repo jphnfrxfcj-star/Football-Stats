@@ -67,7 +67,7 @@ Het odds-overzicht zet per markt het uur links, gevolgd door thuisploeg – vs �
 uitploeg met logo's; markt, modelkans en bookmakerprijs volgen daarna. Op mobiel
 volgt de volledig aanklikbare rij de Analyse-indeling: tijd met scheidingslijn links,
 logo's boven de ploegnamen en een vaste VS-kolom ertussen. Het kleine percentage
-staat rechts; de odd staat op dezelfde regel als de markt. De markt blijft onder de ploegnamen zichtbaar; historische treffers staan alleen in de analyse.
+staat rechts; de odd staat eronder. De markt staat mobiel als een subtiel label op een eigen bovenregel; historische treffers staan alleen in de analyse.
 Mobiele ploegnamen tonen maximaal tien tekens (zoals Strasbourg), gevolgd door drie puntjes bij langere namen. Desktop behoudt
 de uitgebreide grid en VS-badge. De mobiele odds-datumkiezer staat compact naast
 ‘Vanaf’, zoals bij Combi’s; filterwaarden delen dezelfde tekstkleur.

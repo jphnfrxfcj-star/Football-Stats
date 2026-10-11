@@ -4346,7 +4346,7 @@ td {
   }
   .odds-board-time {
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 2;
     border-right: 1px solid #edf0ed;
     align-self: center;
   }
@@ -4368,11 +4368,11 @@ td {
   }
   .odds-board-team.home {
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 2;
   }
   .odds-board-team.away {
     grid-column: 4;
-    grid-row: 1;
+    grid-row: 2;
   }
   .odds-board-team > span:not(.team-badge) {
     display: block;
@@ -4391,18 +4391,22 @@ td {
   }
   .odds-board-vs {
     grid-column: 3;
-    grid-row: 1;
+    grid-row: 2;
     align-self: center;
   }
   .odds-board-market {
-    grid-column: 2 / 5;
-    grid-row: 2;
-    align-self: start;
-    gap: 3px;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: start;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #f2f5f2;
+    color: #68766c;
   }
   .odds-board-market strong {
-    font-size: 11px;
-    line-height: 16px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
   }
   .odds-board-market small {
     overflow: hidden;
@@ -4411,7 +4415,7 @@ td {
   }
   .odds-board-probability {
     grid-column: 5;
-    grid-row: 1;
+    grid-row: 2;
     text-align: right;
   }
   .odds-board-probability strong {
@@ -4423,7 +4427,7 @@ td {
   }
   .odds-board-price {
     grid-column: 5;
-    grid-row: 2;
+    grid-row: 3;
     align-self: start;
     text-align: right;
   }
