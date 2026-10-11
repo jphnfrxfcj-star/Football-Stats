@@ -34,6 +34,11 @@ test('odds page groups model chances, filters markets and opens the selected mat
   }
   await expect(page.getByRole('region', { name: '70% en hoger' })).toBeVisible();
   await expect(page.locator('.odds-board-row')).toHaveCount(36);
+  const fixture = page.locator('.odds-board-row').first();
+  await expect(fixture.locator('.odds-board-vs')).toHaveText('vs');
+  const timePosition = await fixture.locator('.odds-board-time').boundingBox();
+  const teamsPosition = await fixture.locator('.odds-board-teams').boundingBox();
+  expect(timePosition && teamsPosition && timePosition.x < teamsPosition.x).toBe(true);
   await expect(page.locator('.odds-board-price').first()).toContainText('Geen odd beschikbaar');
   await page.getByLabel('Oddsenmarkt').selectOption('over15');
   await expect(page.locator('.odds-board-row')).toHaveCount(4);

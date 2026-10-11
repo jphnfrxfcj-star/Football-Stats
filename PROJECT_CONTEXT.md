@@ -63,6 +63,9 @@ Dit filter gebruikt al geladen fixtures en doet geen extra API-aanvraag.
 De wedstrijdlijst op `/analyse` deelt `FixtureRow` en de rijopmaak met het dashboard:
 aftraptijd/status, thuisploeg, score/vs, uitploeg, beide logo’s en analyselink.
 De analysekiezer vraagt hiervoor geen extra programmaodds op.
+Het odds-overzicht zet per markt het uur links, gevolgd door thuisploeg – vs –
+uitploeg met logo's; markt, modelkans en bookmakerprijs volgen daarna. Op mobiel
+blijven de ploegen naast elkaar en schuiven de marktgegevens naar een tweede regel.
 Het dashboard en `/analyse` delen ook `EmptyFixtures`: dezelfde lege melding,
 hetzelfde kalendericoon en dezelfde acties. Deze toestand toont één knop ‘Volgende dag’ met ernaast alleen een
 relevante tekstactie: ‘Filters wissen’ behoudt de gekozen datum; zonder actieve

@@ -239,13 +239,20 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                         age <= 900000;
                       return (
                         <article className="odds-board-row" key={`${fixture.id}:${item.key}`}>
-                          <div className="odds-board-match">
-                            <Badge team={fixture.home} size="small" />
-                            <span>
-                              {t(fixture.home.name)} – {t(fixture.away.name)}
-                            </span>
-                            <Badge team={fixture.away} size="small" />
-                            <small>{t(time(fixture.kickoff))}</small>
+                          <div className="odds-board-time">
+                            <strong>{t(time(fixture.kickoff))}</strong>
+                            <small>{t('Gepland')}</small>
+                          </div>
+                          <div className="odds-board-teams">
+                            <div className="odds-board-team home">
+                              <span title={t(fixture.home.name)}>{t(fixture.home.name)}</span>
+                              <Badge team={fixture.home} size="small" />
+                            </div>
+                            <span className="odds-board-vs">{t('vs')}</span>
+                            <div className="odds-board-team away">
+                              <Badge team={fixture.away} size="small" />
+                              <span title={t(fixture.away.name)}>{t(fixture.away.name)}</span>
+                            </div>
                           </div>
                           <div className="odds-board-market">
                             <strong>{t(pricedMarkets[item.key])}</strong>
