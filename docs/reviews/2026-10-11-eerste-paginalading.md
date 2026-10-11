@@ -142,4 +142,8 @@ De gebruiker kiest welke voorstellen uitgevoerd worden.
   Dit bewijst geen productiecapaciteit; er is geen productie-loadtest uitgevoerd.
 - 187 unit/integratietests, 67 volledige browserchecks (3 bewust overgeslagen),
   formattering en productiebuild geslaagd.
-  Een live Netlify-deploy of Supabase/Function-metrieken zijn hier niet geverifieerd.
+  Na push van `4d85158` bevatte de publieke Netlify-bundel
+  `matchday:initial-program` en de nieuwe programma-laadtekst. Een publieke
+  `/api/fixtures`-aanvraag antwoordde met de nieuwe `Server-Timing`-fasen. Daarmee
+  zijn frontend en API-uitrol gecontroleerd; de uitvoering van de vijfminutencron,
+  Netlify-verbruik en werkelijke productiepercentielen nog niet.
