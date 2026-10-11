@@ -2,6 +2,7 @@ import { measurePhase, withServerTiming } from '../../server/timing';
 import { MultiLeagueProvider } from '../../server/providers/multi-league';
 import { ResilientFootballProvider } from '../../server/providers/resilient-football';
 import { buildMarkets, comboRates } from '../../src/analysis/combinations';
+import { buildOddsBoard } from '../../src/analysis/odds-board';
 import { getOdds } from '../../server/providers/odds';
 import { canonicalClubName } from '../../src/domain/club-names';
 import { playerReport } from '../../server/providers/espn-players';
@@ -109,6 +110,30 @@ async function route(request: Request, context: Context) {
     }
     if (path[0] === 'leagues' && path.length === 1)
       return json(demo ? [demoLeague] : await svc!.leagues());
+    if (path[0] === 'odds-board' && path.length === 1) {
+      const date = dateSchema.parse(url.searchParams.get('date') ?? today());
+      const days = z.coerce
+        .number()
+        .refine((n) => [1, 3, 8].includes(n))
+        .parse(url.searchParams.get('days') ?? 1);
+      if (!demo) return json(await svc!.oddsBoard(date, days));
+      const matches = Array.from({ length: days }, (_, i) =>
+        new Date(Date.parse(date) + i * 86400000).toISOString().slice(0, 10),
+      ).flatMap((day) => demoFixtures(day).map((fixture) => demoMatch(fixture.id)!));
+      return json(
+        buildOddsBoard(
+          matches,
+          {
+            source: 'Demo',
+            kind: 'snapshot',
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Fictieve wedstrijdhistorie. De demo bevat geen bookmakerodds.',
+          },
+          Date.parse(`${date}T00:00:00Z`),
+        ),
+      );
+    }
     if (path[0] === 'markets' && path.length === 1) {
       const date = dateSchema.parse(url.searchParams.get('date') ?? today());
       const window = z.coerce

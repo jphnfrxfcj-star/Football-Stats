@@ -1,5 +1,6 @@
 import { measurePhase, countTiming } from './timing';
 import { packMarketHistory, unpackMarketHistory } from './market-history';
+import { buildOddsBoard } from '../src/analysis/odds-board';
 import { isUpcoming } from '../src/analysis/recap';
 import { buildMarkets, fixtureQuotes } from '../src/analysis/combinations';
 import { sleep } from '../src/lib/retry';
@@ -258,7 +259,7 @@ export class FootballService {
         .filter((q) => ['home', 'draw', 'away'].includes(q.market)),
     };
   }
-  async markets(date: string, window: number, days = 1, minimumRate = 100) {
+  private async marketsData(date: string, days: number) {
     const packed = await this.cached(
       `${this.scope()}:markets-data:v5:${date}:${days}`,
       900,
@@ -281,7 +282,10 @@ export class FootballService {
         return packMarketHistory(rows);
       },
     );
-    const matches = unpackMarketHistory(packed);
+    return unpackMarketHistory(packed);
+  }
+  async markets(date: string, window: number, days = 1, minimumRate = 100) {
+    const matches = await this.marketsData(date, days);
     const odds = await (
       matches.some((m) => isUpcoming(m.fixture))
         ? getOdds(
@@ -305,6 +309,28 @@ export class FootballService {
         'Bookmakerodds zijn tijdelijk niet beschikbaar. Historische selecties blijven zichtbaar.',
     }));
     return buildMarkets(matches, odds, window, Date.now(), minimumRate);
+  }
+  async oddsBoard(date: string, days = 1) {
+    const matches = await this.marketsData(date, days);
+    const upcoming = matches.map((match) => match.fixture).filter((fixture) => isUpcoming(fixture));
+    const odds = await (
+      upcoming.length
+        ? getOdds(this, undefined, upcoming)
+        : Promise.resolve({
+            source: 'Geen pre-matchodds nodig',
+            kind: 'snapshot' as const,
+            fetchedAt: new Date().toISOString(),
+            quotes: [],
+            message: 'Geen komende wedstrijden.',
+          })
+    ).catch(() => ({
+      source: 'Geen odds beschikbaar',
+      kind: 'snapshot' as const,
+      fetchedAt: new Date().toISOString(),
+      quotes: [],
+      message: 'Bookmakerodds zijn tijdelijk niet beschikbaar. Modelkansen blijven zichtbaar.',
+    }));
+    return buildOddsBoard(matches, odds);
   }
   async spotlight(date: string) {
     const matches = await this.cached(

@@ -1,6 +1,7 @@
 import { cachedRead } from './lib/read-cache';
 import type { ComboResult } from './domain/combo-history';
 import { buildMarkets, type MarketsReport } from './analysis/combinations';
+import { buildOddsBoard, type OddsBoardReport } from './analysis/odds-board';
 import { getJson as get } from './lib/http';
 import type { PlayerReport } from './domain/players';
 import type { SpotlightReport, OddsSnapshot } from './domain/spotlight';
@@ -17,6 +18,24 @@ export interface AnalysisResponse {
   probabilities: Probability[];
 }
 export const api = {
+  oddsBoard: (date: string, days: number, signal?: AbortSignal): Promise<OddsBoardReport> =>
+    isDemo
+      ? Promise.resolve(
+          buildOddsBoard(
+            Array.from({ length: days }, (_, i) =>
+              new Date(Date.parse(date) + i * 86400000).toISOString().slice(0, 10),
+            ).flatMap((day) => demoFixtures(day).map((fixture) => demoMatch(fixture.id)!)),
+            {
+              source: 'Demo',
+              kind: 'snapshot',
+              fetchedAt: new Date().toISOString(),
+              quotes: [],
+              message: 'Fictieve wedstrijdhistorie. De demo bevat geen bookmakerodds.',
+            },
+            Date.parse(`${date}T00:00:00Z`),
+          ),
+        )
+      : get(`odds-board?date=${date}&days=${days}`, signal),
   results: (
     ids: string[],
     signal?: AbortSignal,

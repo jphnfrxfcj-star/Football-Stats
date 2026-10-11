@@ -31,12 +31,13 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 
 ## Routes en schermen
 
-| Route        | Gedrag                                                                                                                                    |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`          | Dashboard: programma met 1/X/2-odds, spotlight, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.            |
-| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                       |
-| `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
-| `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
+| Route        | Gedrag                                                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`          | Dashboard: programma met 1/X/2-odds, spotlight, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.              |
+| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                         |
+| `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap.   |
+| `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                    |
+| `/odds`      | Apart geladen marktenoverzicht per geschatte modelkans, met historische treffers, beschikbare bookmakerprijzen en een link naar de analyse. |
 
 ‘Ons model’ opent een uitlegvenster. ‘Matchanalyse’ mag niet hetzelfde modelvenster
 openen; op een matchpagina brengt die navigatie je naar boven in de huidige analyse.
@@ -45,8 +46,9 @@ Mobiel (tot 720 px): vaste ondernavigatie met labels en safe-area-ruimte, compac
 header met taalkeuze, geen grote promotionele hero/overzichtskaarten, horizontaal
 scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
 Programmaregels tonen op smalle telefoons beide ploeglogo’s naast elkaar rond de
-score, met de drie 1/X/2-odds op één regel eronder. Lange ploegnamen worden visueel
-tot twee regels beperkt; de volledige naam blijft in de interface beschikbaar.
+score, met de drie 1/X/2-odds op één regel eronder. Lange ploegnamen krijgen
+op mobiel één regel met ellips; de volledige naam blijft toegankelijk en staat
+op de matchpagina.
 Het dashboard en `/analyse` delen `FixtureFilters`: dezelfde datumkiezer met
 pijltjes voor vorige/volgende dag, competitie- en ploegkeuze. Op mobiel staan
 ze onder elkaar. Keuzelijsten
@@ -156,6 +158,15 @@ worden gedeeld tussen deze aanvragen.
 De combizoeker vraagt odds gericht op voor alle nog komende wedstrijden uit de
 gekozen periode, eveneens buiten de algemene limiet van 24 wedstrijden. Hij toont
 de bronmelding bij de resultaten, ook bij gedeeltelijke of volledige bronuitval.
+
+Het odds-overzicht gebruikt dezelfde gecachete wedstrijdhistorie als de combizoeker
+en vraagt prijzen gericht voor de komende wedstrijden op. Het toont negen bestaande
+prijsmarkten per modelkansgroep (70%+, 50–69%, onder 50%, onbekend). Voor markten
+zonder ondersteunde modelkans of voldoende bewijs blijft de kans onbekend. De
+historische thuis-/uitfrequenties zijn waarnemingen, geen modelkans. Onvolledige of
+verouderde historie wordt uitgesloten. Bij bronuitval blijven kansen zichtbaar
+zonder verzonnen prijzen; momentopnames worden als zodanig gelabeld. Dit overzicht
+wijzigt de selectie- en kwalificatieregels van de combizoeker niet.
 
 - Programma toont compacte 1/X/2-prijzen, zonder prijstegels, onder de teams.
 - Gebruik één bookmaker per wedstrijdregel; geen mix van prijzen tussen bookmakers.

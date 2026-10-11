@@ -13,6 +13,7 @@ import {
   Info,
   Layers3,
   LayoutDashboard,
+  ListFilter,
   Trophy,
   X,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ import { analysisWeights as w } from './analysis/config';
 const MatchPage = lazy(() => import('./components/MatchPage'));
 const CombinationsPage = lazy(() => import('./components/CombinationsPage'));
 const MatchPicker = lazy(() => import('./components/MatchPicker'));
+const OddsPage = lazy(() => import('./components/OddsPage'));
 function Modal({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -141,6 +143,16 @@ export default function App() {
             <span className="nav-mobile-label">{t('Analyse')}</span>
           </button>
           <button
+            aria-label={t('Odds & kansen')}
+            aria-current={route === '/odds' ? 'page' : undefined}
+            className={route === '/odds' ? 'nav-item active' : 'nav-item'}
+            onClick={() => navigate('/odds')}
+          >
+            <ListFilter size={19} />
+            <span className="nav-label">{t('Odds & kansen')}</span>
+            <span className="nav-mobile-label">{t('Odds')}</span>
+          </button>
+          <button
             aria-label={t('Combivoorstellen')}
             aria-current={route === '/combis' ? 'page' : undefined}
             className={route === '/combis' ? 'nav-item active' : 'nav-item'}
@@ -211,7 +223,9 @@ export default function App() {
                   ? 'Matchanalyse'
                   : route === '/combis'
                     ? 'Combivoorstellen'
-                    : 'Wedstrijden',
+                    : route === '/odds'
+                      ? 'Odds & kansen'
+                      : 'Wedstrijden',
               )}
             </strong>
           </div>
@@ -256,6 +270,8 @@ export default function App() {
                   <MatchPicker navigate={navigate} />
                 ) : path === '/combis' ? (
                   <CombinationsPage navigate={navigate} />
+                ) : path === '/odds' ? (
+                  <OddsPage navigate={navigate} />
                 ) : (
                   <Dashboard navigate={navigate} />
                 )}
