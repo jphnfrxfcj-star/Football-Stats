@@ -41,7 +41,7 @@ test('odds page groups model chances, filters markets and opens the selected mat
   await expect(fixture.locator('.odds-board-vs-word')).toHaveText('vs');
   await expect(fixture.locator('.odds-board-vs')).toHaveClass(/fixture-vs/);
   const timePosition = await fixture.locator('.odds-board-time').boundingBox();
-  const teamsPosition = await fixture.locator('.odds-board-teams').boundingBox();
+  const teamsPosition = await fixture.locator('.odds-board-team.home').boundingBox();
   expect(timePosition && teamsPosition && timePosition.x < teamsPosition.x).toBe(true);
   const analysisButton = fixture.locator('.odds-board-open');
   await expect(analysisButton).toContainText('Analyse');
