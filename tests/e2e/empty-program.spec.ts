@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { demoFixtures } from '../../src/demo/data';
 
-test('empty program keeps actions beside each other and clears filters without changing the date', async ({
+test('empty program keeps actions beside each other and clears a stale filter without changing the date', async ({
   page,
 }, info) => {
   await page.clock.setFixedTime(new Date('2026-09-12T08:00:00Z'));
@@ -13,22 +13,27 @@ test('empty program keeps actions beside each other and clears filters without c
   await page.evaluate(
     async ({ path, fixtures }) => {
       const { api } = await import(path);
-      api.fixtures = async (date: string) => (date === '2026-09-12' ? fixtures : []);
-      api.leagues = async () => [
-        fixtures[0].league,
-        { ...fixtures[0].league, id: 'empty-league', name: 'La Liga' },
-      ];
+      (window as any).emptyProgram = false;
+      api.fixtures = async (date: string) =>
+        date === '2026-09-12' && !(window as any).emptyProgram ? fixtures : [];
     },
     { path: apiPath, fixtures: demoFixtures('2026-09-12') },
   );
   await page.getByRole('button', { name: 'Wedstrijden', exact: true }).click();
-  await page.getByLabel('Wedstrijddatum').fill('2026-09-13');
-  await page.getByLabel('Filter op competitie').selectOption('empty-league');
+  await page
+    .getByLabel('Filter op competitie')
+    .selectOption(demoFixtures('2026-09-12')[0].league.id);
+  await page.evaluate(() => {
+    (window as any).emptyProgram = true;
+  });
+  await page.getByRole('button', { name: 'Programma bijwerken' }).click();
   const empty = page.locator('.program-empty');
+  await expect(empty).toBeVisible();
   await empty.getByRole('button', { name: 'Filters wissen' }).click();
-  await expect(page.getByLabel('Wedstrijddatum')).toHaveValue('2026-09-13');
+  await expect(page.getByLabel('Wedstrijddatum')).toHaveValue('2026-09-12');
   await expect(page.getByLabel('Filter op competitie')).toHaveValue('all');
   await expect(empty.getByRole('button', { name: 'Filters wissen' })).toHaveCount(0);
+  await page.getByLabel('Wedstrijddatum').fill('2026-09-13');
   for (const width of info.project.name === 'mobile' ? [360, 390] : [1280]) {
     await page.setViewportSize({ width, height: 800 });
     for (const language of ['nl', 'en']) {
@@ -49,6 +54,9 @@ test('empty program keeps actions beside each other and clears filters without c
   const emptyMessage = await empty.innerText();
   await empty.getByRole('button', { name: 'Next day', exact: true }).click();
   await expect(page.getByLabel('Match date')).toHaveValue('2026-09-14');
+  await page.evaluate(() => {
+    (window as any).emptyProgram = false;
+  });
   await empty.getByRole('button', { name: 'Back to today' }).click();
   await expect(page.getByLabel('Match date')).toHaveValue('2026-09-12');
   await expect(page.locator('.fixture-row')).toHaveCount(4);

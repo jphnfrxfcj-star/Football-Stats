@@ -485,7 +485,7 @@ export class FreeFootballProvider implements FootballDataProvider {
       this.division,
     );
   }
-  async seasonFixtures() {
+  async seasonFixtures(date?: string) {
     this.recentResultChecksFailed = 0;
     const url = `https://raw.githubusercontent.com/openfootball/football.json/master/${this.year}-${String(this.year + 1).slice(-2)}/${competitions[this.division].file}.1.json`;
     const fixtureUrl = 'https://www.football-data.co.uk/fixtures.csv';
@@ -497,6 +497,8 @@ export class FreeFootballProvider implements FootballDataProvider {
       ),
     ]);
     let rows = mergeFixtures(schedule, results, upcoming);
+    // A program request needs only its day; historical repair remains in full-season callers.
+    if (date) rows = rows.filter((f) => f.sourceDate === date);
     // Recent final scores may reach ESPN before the periodic CSV. Never query bookmaker odds here.
     const now = Date.now();
     const dates = [
@@ -564,7 +566,7 @@ export class FreeFootballProvider implements FootballDataProvider {
     return [competitionLeague(this.division)];
   }
   async fixtures(date: string) {
-    return (await this.seasonFixtures()).filter((f) => f.sourceDate === date);
+    return this.seasonFixtures(date);
   }
   async fixture(id: string) {
     return (await this.seasonFixtures()).find((f) => f.refs[0].externalId === id) ?? null;

@@ -18,8 +18,11 @@ voor installatie-instructies en de code als bron bij afwijkingen.
 
 ## Teamreviews en beslissingen
 
-- Bij een expliciete teamreview: delegeer aan `webdesigner`, `functioneel-analist`
-  en `developer`, met één hoofdagent als coördinator. Zie
+- Bij een expliciete teamreview: kies passende rollen uit `webdesigner`,
+  `functioneel-analist`, `developer`, `infra` en `architect`, met één hoofdagent
+  als coördinator. Bij schaalbaarheid, initiële laadtijd of data-inladen betrek je
+  infra en architect; bij ervaren wachttijd ook de webdesigner. Maximaal drie
+  subagents tegelijk; voer aanvullende reviews in een volgende ronde uit. Zie
   [docs/team-review.md](docs/team-review.md) en `.codex/agents/`.
 - De gebruiker heeft de eindbeslissing over ieder verbeteringsvoorstel.
   Review betekent onderzoeken en adviseren; geen applicatiewijzigingen.

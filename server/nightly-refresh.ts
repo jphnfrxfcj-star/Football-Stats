@@ -94,12 +94,15 @@ export async function runNightlyRefresh() {
         await repo.log(`nightly:${division}`, 'error', 'free-football');
       }
     }
-    // Invalidate derived data, never the refreshed source documents or bookmaker snapshots.
+    // Keep the prepared program until its existing 300-second expiry. Never extend it
+    // or erase a valid day while an unrelated season is being refreshed.
+    // Invalidate other derived data, never source documents or bookmaker snapshots.
     for (const table of ['provider_cache', 'analysis_results', 'h2h_cache']) {
       const { error } = await repo.db
         .from(table)
         .delete()
-        .like('cache_key', `free-football:multi:v4:${config.season}:%`);
+        .like('cache_key', `free-football:multi:v4:${config.season}:%`)
+        .not('cache_key', 'like', `free-football:multi:v4:${config.season}:fixtures:%`);
       if (error) throw new Error('Derived cache invalidation failed');
     }
     const report = { updatedAt: new Date().toISOString(), results, failed };

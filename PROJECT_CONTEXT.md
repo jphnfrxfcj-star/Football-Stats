@@ -1,6 +1,6 @@
 # Matchday — projectcontext en AI-overdracht
 
-Laatst inhoudelijk bijgewerkt: 10 oktober 2026. Dit document beschrijft de
+Laatst inhoudelijk bijgewerkt: 11 oktober 2026. Dit document beschrijft de
 huidige app en de afspraken achter de implementatie. Lees dit eerst in een nieuwe
 AI-sessie; inspecteer daarna alleen de relevante code. Oude chatberichten en de
 chronologische toevoegingen in README.md kunnen verouderde tussenstappen bevatten.
@@ -18,9 +18,12 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
   committen en na autorisatie pushen. De gebruiker heeft dit in de lopende sessie
   herhaaldelijk toegestaan. Meld een push niet als geverifieerde live-deploy.
 - Teamreviews gebruiken de projectrollen in `.codex/agents/` en de werkwijze in
-  `docs/team-review.md`. Drie specialisten onderzoeken en toetsen voorstellen; de
+  `docs/team-review.md`. Vijf specialisten (webdesigner, functioneel analist,
+  developer, infra en architect) onderzoeken en toetsen voorstellen; de
   gebruiker beslist per voorstel. Review is geen toestemming voor implementatie.
   De configuratie beperkt parallelle subagents tot drie en erft model/permissies.
+  Bij data-inladen/schaalbaarheid worden infra en architect betrokken; bij ervaren
+  wachttijd ook de webdesigner. Extra rollen komen zo nodig in een volgende ronde.
 - Communicatie is Nederlands. De interface ondersteunt Nederlands en Engels.
 - Bestaande branding: groen/wit, Matchday-activiteitssymbool, lokale clublogo’s,
   sobere geïntegreerde odds. Geen grote groene prijsblokken op de analysepagina.
@@ -30,7 +33,7 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 
 | Route        | Gedrag                                                                                                                                    |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`          | Dashboard: spotlight, programma met 1/X/2-odds, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.            |
+| `/`          | Dashboard: programma met 1/X/2-odds, spotlight, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.            |
 | `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                       |
 | `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
 | `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
@@ -293,6 +296,10 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 
 ## Opslag, performance en updates
 
+- Eerste dashboardlading vraagt alleen dagfixtures. Competitiefilters volgen uit die fixtures; programma verschijnt vóór Spotlight, dat later geen wedstrijden omlaag schuift. Tijdens het ophalen staat een vaste programma-laadstructuur. De browser registreert één lokale `matchday:initial-program` User Timing-measure voor een document dat op `/` start; dit is tijd tot React-commit, geen paintmeting.
+- Het dagprogramma gebruikt een selectief providerpad: OpenFootball/CSV voor de gevraagde dag en ESPN-herstel alleen voor die dag. Volledige zeven dagen-herstel blijft beschikbaar bij seizoen-/historieaanvragen. De vijfminutenfixturescache en oorspronkelijke bronwaarnemingstijden blijven gelden.
+- In live gratis-bronmodus bereidt een Netlify scheduled function iedere vijf minuten de huidige Brusselse dag voor via een background function. `PROGRAM_PREWARM_ENABLED=false` schakelt dit uit; bezoekers kunnen nog steeds zelf de cache vullen. Een aparte voorbereidingslock voorkomt dat trage achtergrondtaken bezoekers blokkeren; bij een volledig koude start kunnen achtergrondtaak en bezoekersgroep tegelijk vullen. Een gemiste run/lege cache kan nog traag zijn. Deze taak veroorzaakt extra Function-invocations en bronwerk; controleer het verbruik na deploy.
+- De API geeft op origin-antwoorden `Server-Timing` met begrensde fasen/cachetellers. `SERVER_TIMING_ENABLED=false` schakelt dit uit. `database` omvat Supabase transport tot headers, `source` het primaire downloadpad, `cache_load` is inclusief geneste fasen. Fasen mogen niet worden opgeteld; CDN-hits kunnen oude headers herhalen. Geen persoonsgegevens, cachekeys of bron-URL’s in deze headers.
 - Navigatie bewaart de drie bezochte overzichtsschermen en maximaal vijf recent geopende matchanalyses in het tabblad, inclusief filters, voorstellen en open details. Browser terug/vooruit herstelt de scrollpositie per geschiedenisitem, ook voor analysesectielinks; ‘Terug naar overzicht’ gebruikt de herkomst en valt bij een directe matchlink terug op `/analyse`. Een volledige browserrefresh wist deze paginastatus.
 - Programma en analyse delen een begrensde browsergeheugencache (32 antwoorden, vijf minuten) met samenvoeging van gelijktijdige aanvragen. Fouten worden niet gecachet. ‘Programma bijwerken’ en de analyse-refresh omzeilen deze geheugencache; bestaande gegevens blijven bij mislukking zichtbaar. Bewaarde schermen verversen niet automatisch door navigatie. Odds en hun oorspronkelijke observatietijd blijven onder de bestaande actualiteitsregels vallen.
 
@@ -329,18 +336,20 @@ van daadwerkelijke brondekking. Benoem ontbrekende wedstrijden en dekking.
 Zie `.env.example` en `server/config.ts`. Zet productievariabelen in de juiste
 Netlify-context en scope, en redeploy na wijzigingen.
 
-| Variabele                                           | Gebruik                                                   |
-| --------------------------------------------------- | --------------------------------------------------------- |
-| `VITE_DEMO_MODE`                                    | Build/frontend; `false` voor echte data.                  |
-| `DEMO_MODE`                                         | Functions; `false` voor echte data.                       |
-| `FOOTBALL_PROVIDER`                                 | Standaard `free-football`; optioneel `api-football`.      |
-| `FOOTBALL_SEASON`                                   | Seizoenstartjaar; momenteel 2026 betekent 2026/27.        |
-| `SUPABASE_URL`                                      | Supabase-project-URL.                                     |
-| `SUPABASE_SERVICE_ROLE_KEY`                         | Alleen serveromgeving, nooit in browser of repository.    |
-| `SYNC_SECRET`                                       | Serversecret voor beschermde synchronisatie/updates.      |
-| `FOOTBALL_DATA_ORG_KEY`                             | Optionele terugvalbron; uitsluitend Production Functions. |
-| `API_FOOTBALL_KEY`                                  | Alleen nodig bij de optionele betaalde legacy-provider.   |
-| `ODDS_API_KEY`, `ODDS_REGION`, `ODDS_CACHE_SECONDS` | Optionele oddsvergelijkingsfeed.                          |
+| Variabele                                           | Gebruik                                                    |
+| --------------------------------------------------- | ---------------------------------------------------------- |
+| `PROGRAM_PREWARM_ENABLED`                           | Functions; `false` schakelt geplande dagvoorbereiding uit. |
+| `SERVER_TIMING_ENABLED`                             | Functions; `false` schakelt `Server-Timing` uit.           |
+| `VITE_DEMO_MODE`                                    | Build/frontend; `false` voor echte data.                   |
+| `DEMO_MODE`                                         | Functions; `false` voor echte data.                        |
+| `FOOTBALL_PROVIDER`                                 | Standaard `free-football`; optioneel `api-football`.       |
+| `FOOTBALL_SEASON`                                   | Seizoenstartjaar; momenteel 2026 betekent 2026/27.         |
+| `SUPABASE_URL`                                      | Supabase-project-URL.                                      |
+| `SUPABASE_SERVICE_ROLE_KEY`                         | Alleen serveromgeving, nooit in browser of repository.     |
+| `SYNC_SECRET`                                       | Serversecret voor beschermde synchronisatie/updates.       |
+| `FOOTBALL_DATA_ORG_KEY`                             | Optionele terugvalbron; uitsluitend Production Functions.  |
+| `API_FOOTBALL_KEY`                                  | Alleen nodig bij de optionele betaalde legacy-provider.    |
+| `ODDS_API_KEY`, `ODDS_REGION`, `ODDS_CACHE_SECONDS` | Optionele oddsvergelijkingsfeed.                           |
 
 Geen echte sleutels in dit document, screenshots, logs, commits of browserconsole.
 Gebruik nooit `VITE_` voor een secret. RLS en API-validatie niet uitschakelen om een

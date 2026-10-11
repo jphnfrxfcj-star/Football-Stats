@@ -3,7 +3,7 @@ import DataNotice from './DataNotice';
 import FixtureFilters from './FixtureFilters';
 import FixtureRow from './FixtureRow';
 import EmptyFixtures from './EmptyFixtures';
-import { t } from '../i18n';
+import { t, locale } from '../i18n';
 import ComboHistory from './ComboHistory';
 import { useComboHistory } from './useComboHistory';
 import { programPrices } from '../analysis/program-prices';
@@ -25,9 +25,9 @@ import {
   Check,
 } from 'lucide-react';
 import { api, isDemo } from '../api';
-import type { Fixture, League } from '../domain/models';
+import type { Fixture } from '../domain/models';
 import { today } from '../demo/data';
-import { SectionTitle, Loading, ErrorBox, dateLabel } from './ui';
+import { SectionTitle, ErrorBox, dateLabel } from './ui';
 export default function Dashboard({ navigate }: { navigate: (s: string) => void }) {
   const archive = useComboHistory();
   const loadedDate = useRef('');
@@ -36,7 +36,6 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     [team, setTeam] = useState(''),
     [league, setLeague] = useState('all');
   const [fixtures, setFixtures] = useState<Fixture[]>([]),
-    [leagues, setLeagues] = useState<League[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(''),
     [retry, setRetry] = useState(0),
@@ -50,12 +49,12 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
     setLoading(loadedDate.current !== date);
     setRefreshing(true);
     setError('');
-    Promise.all([api.fixtures(date, controller.signal, retry > 0), api.leagues(controller.signal)])
-      .then(([f, l]) => {
+    api
+      .fixtures(date, controller.signal, retry > 0)
+      .then((f) => {
         if (!controller.signal.aborted) {
           loadedDate.current = date;
           setFixtures(f);
-          setLeagues(l);
         }
       })
       .catch((e) => {
@@ -69,6 +68,29 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
       });
     return () => controller.abort();
   }, [date, retry]);
+  const measuredProgram = useRef(false);
+  useEffect(() => {
+    if (loading || loadedDate.current !== date || measuredProgram.current) return;
+    measuredProgram.current = true;
+    // One local navigation-to-commit measure, only for documents opened on home.
+    // A later visit from another route must not count time spent reading that page.
+    // Instrumentation must never prevent the program from being usable.
+    try {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (
+        navigation &&
+        new URL(navigation.name).pathname === '/' &&
+        !performance.getEntriesByName('matchday:initial-program', 'measure').length
+      ) {
+        performance.measure('matchday:initial-program', { start: 0, end: performance.now() });
+      }
+    } catch {
+      // User Timing is optional on older browsers.
+    }
+  }, [loading, date, fixtures]);
+  const leagues = [...new Map(fixtures.map((f) => [f.league.id, f.league])).values()].sort((a, b) =>
+    a.name.localeCompare(b.name, locale()),
+  );
   const [odds, setOdds] = useState<{ date: string; report: OddsSnapshot } | null>(null),
     [oddsLoading, setOddsLoading] = useState(false),
     [oddsError, setOddsError] = useState(''),
@@ -257,12 +279,6 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           </div>
         </div>
       </div>
-      {!loading &&
-        (!error || loadedDate.current === date) &&
-        filtered.some((f) => isUpcoming(f, now)) && (
-          <Spotlight date={date} league={league} navigate={navigate} />
-        )}
-      {!loading && (!error || loadedDate.current === date) && <DayRecap fixtures={filtered} />}
       <div id="program" />
       <SectionTitle
         title={t(date < today() ? 'Uitslagen & terugblik' : 'Op het programma')}
@@ -326,7 +342,23 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
         </div>
       )}
       {loading ? (
-        <Loading />
+        <div
+          className="program-skeleton fixture-group"
+          role="status"
+          aria-label={t('Programma laden…')}
+        >
+          <div className="league-heading">{t('Programma laden…')}</div>
+          <div aria-hidden="true">
+            {[0, 1, 2].map((row) => (
+              <div className="program-skeleton-row" key={row}>
+                <span className="skeleton-time" />
+                <span className="skeleton-team" />
+                <span className="skeleton-score" />
+                <span className="skeleton-team" />
+              </div>
+            ))}
+          </div>
+        </div>
       ) : error && loadedDate.current !== date ? (
         <ErrorBox message={error} retry={() => setRetry(retry + 1)} />
       ) : filtered.length === 0 ? (
@@ -389,6 +421,12 @@ export default function Dashboard({ navigate }: { navigate: (s: string) => void 
           })}
         </div>
       )}
+      {!loading &&
+        (!error || loadedDate.current === date) &&
+        filtered.some((f) => isUpcoming(f, now)) && (
+          <Spotlight date={date} league={league} navigate={navigate} />
+        )}
+      {!loading && (!error || loadedDate.current === date) && <DayRecap fixtures={filtered} />}
       {date >= today() && (
         <ComboFinder
           key={date}

@@ -1,3 +1,4 @@
+import { measurePhase, countTiming } from './timing';
 import { packMarketHistory, unpackMarketHistory } from './market-history';
 import { isUpcoming } from '../src/analysis/recap';
 import { buildMarkets, fixtureQuotes } from '../src/analysis/combinations';
@@ -37,15 +38,22 @@ export class FootballService {
   ): Promise<T> {
     const flightKey = `${table}:${key}`;
     const pending = this.inFlight.get(flightKey);
-    if (pending) return pending as Promise<T>;
+    if (pending) {
+      countTiming('cache_join');
+      return pending as Promise<T>;
+    }
     const job = (async () => {
-      const cached = await this.repo.cached<T>(key, table);
-      if (cached !== null) return cached;
-      if (!(await this.repo.lock(key))) {
+      const cached = await measurePhase('cache_read', () => this.repo.cached<T>(key, table));
+      if (cached !== null) {
+        countTiming('cache_hit');
+        return cached;
+      }
+      countTiming('cache_miss');
+      if (!(await measurePhase('cache_lock', () => this.repo.lock(key)))) {
         // Another instance owns the work. Wait for its result; never steal or release its lock.
         for (const delay of [200, 400, 800]) {
-          await sleep(delay);
-          const ready = await this.repo.cached<T>(key, table);
+          await measurePhase('cache_wait', () => sleep(delay));
+          const ready = await measurePhase('cache_read', () => this.repo.cached<T>(key, table));
           if (ready !== null) return ready;
         }
         throw new BusyError(
@@ -53,10 +61,10 @@ export class FootballService {
         );
       }
       try {
-        const again = await this.repo.cached<T>(key, table);
+        const again = await measurePhase('cache_read', () => this.repo.cached<T>(key, table));
         if (again !== null) return again;
-        const data = await loader();
-        await this.repo.cache(key, data, ttl, table);
+        const data = await measurePhase('cache_load', loader);
+        await measurePhase('cache_write', () => this.repo.cache(key, data, ttl, table));
         await this.maintenance('log', () => this.repo.log(key, 'success', this.provider.name));
         return data;
       } catch (error) {
@@ -91,6 +99,22 @@ export class FootballService {
     return this.cached(`${this.scope()}:fixtures:${date}`, 300, async () => {
       return this.repo.saveFixtures(await this.provider.fixtures(date));
     });
+  }
+  /** Keep preparation separate from visitor locks so a slow background run cannot block a visit. */
+  async prepareProgram(date: string) {
+    const key = `${this.scope()}:fixtures:${date}`;
+    const preparationKey = `program-prewarm:${key}`;
+    if (!(await this.repo.lock(preparationKey))) return { skipped: true };
+    try {
+      // The Netlify background task can outlive the default 90-second DB lease.
+      // A long/crashed run then blocks only another preparation, never visitors.
+      await this.repo.extendLock(preparationKey, 16 * 60);
+      const rows = await this.repo.saveFixtures(await this.provider.fixtures(date));
+      await this.repo.cache(key, rows, 300);
+      return { skipped: false, fixtures: rows.length };
+    } finally {
+      await this.maintenance('unlock', () => this.repo.unlock(preparationKey));
+    }
   }
   async fixture(id: string) {
     const saved = await this.repo.fixture(id);

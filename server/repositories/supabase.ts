@@ -76,6 +76,13 @@ export class Repository {
     this.assert(error);
     return data === true;
   }
+  async extendLock(key: string, seconds: number) {
+    const { error } = await this.db
+      .from('sync_locks')
+      .update({ expires_at: new Date(Date.now() + seconds * 1000).toISOString() })
+      .eq('cache_key', key);
+    this.assert(error);
+  }
   async unlock(key: string) {
     const { error } = await this.db.from('sync_locks').delete().eq('cache_key', key);
     this.assert(error);

@@ -1,3 +1,4 @@
+import { measurePhase, withServerTiming } from '../../server/timing';
 import { MultiLeagueProvider } from '../../server/providers/multi-league';
 import { ResilientFootballProvider } from '../../server/providers/resilient-football';
 import { buildMarkets, comboRates } from '../../src/analysis/combinations';
@@ -49,11 +50,15 @@ function getService() {
       ? new ResilientFootballProvider(
           config.season,
           new MultiLeagueProvider(config.season, (url, ttl) =>
-            service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+            service!.cached(`free-football:source:v1:${url}`, ttl, () =>
+              measurePhase('source', () => downloadSource(url)),
+            ),
           ),
           repository,
           (url, ttl) =>
-            service!.cached(`free-football:source:v1:${url}`, ttl, () => downloadSource(url)),
+            service!.cached(`free-football:source:v1:${url}`, ttl, () =>
+              measurePhase('source', () => downloadSource(url)),
+            ),
           (key, ttl, loader) => service!.cached(key, ttl, loader),
           process.env.FOOTBALL_DATA_ORG_KEY?.trim(),
         )
@@ -93,10 +98,12 @@ async function route(request: Request, context: Context) {
     if (svc) {
       const ip = context.ip ?? 'unknown';
       const bucket = createHash('sha256').update(ip).digest('hex');
-      const allowed = await Promise.all([
-        svc.repo.rateLimit(`${isSync ? 'sync' : 'read'}:${bucket}`, isSync ? 5 : 60, 60),
-        svc.repo.rateLimit('global:api', 300, 60),
-      ]);
+      const allowed = await measurePhase('rate_limit', () =>
+        Promise.all([
+          svc.repo.rateLimit(`${isSync ? 'sync' : 'read'}:${bucket}`, isSync ? 5 : 60, 60),
+          svc.repo.rateLimit('global:api', 300, 60),
+        ]),
+      );
       if (allowed.some((value) => !value))
         return json({ error: 'Te veel verzoeken. Probeer later opnieuw.' }, 429);
     }
@@ -313,15 +320,17 @@ async function route(request: Request, context: Context) {
 
 // Only successful public reads are shared. Errors and authenticated writes remain no-store.
 export default async function handler(request: Request, context: Context) {
-  const response = await route(request, context);
-  if (
-    request.method === 'GET' &&
-    response.status === 200 &&
-    !request.headers.has('authorization')
-  ) {
-    response.headers.set('Cache-Control', 'public, max-age=30');
-    response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60');
-    response.headers.set('Netlify-Vary', 'query');
-  }
-  return response;
+  return withServerTiming(async () => {
+    const response = await route(request, context);
+    if (
+      request.method === 'GET' &&
+      response.status === 200 &&
+      !request.headers.has('authorization')
+    ) {
+      response.headers.set('Cache-Control', 'public, max-age=30');
+      response.headers.set('Netlify-CDN-Cache-Control', 'public, durable, s-maxage=60');
+      response.headers.set('Netlify-Vary', 'query');
+    }
+    return response;
+  });
 }

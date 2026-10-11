@@ -1,3 +1,4 @@
+import { measurePhase } from '../timing';
 import { sleep, retryDelay } from '../../src/lib/retry';
 const primaryKeys: Record<string, string[]> = {
   leagues: ['id'],
@@ -80,10 +81,12 @@ export function databaseFetch(
       let response: Response;
       try {
         const timeout = AbortSignal.timeout(8000);
-        response = await fetchImpl(input, {
-          ...request,
-          signal: request.signal ? AbortSignal.any([request.signal, timeout]) : timeout,
-        });
+        response = await measurePhase('database', () =>
+          fetchImpl(input, {
+            ...request,
+            signal: request.signal ? AbortSignal.any([request.signal, timeout]) : timeout,
+          }),
+        );
       } catch (error) {
         if (request.signal?.aborted) throw error;
         console.warn('Database transport interrupted', { resource: safeResource, method, attempt });

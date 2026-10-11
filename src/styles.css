@@ -4069,3 +4069,34 @@ td {
     animation: none;
   }
 }
+
+/* Keep the initial program recognisable without implying a fixture count. */
+.program-skeleton-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 108px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.program-skeleton-row:last-child {
+  border-bottom: 0;
+}
+.program-skeleton-row > span {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: #eaf0eb;
+}
+.program-skeleton-row .skeleton-team {
+  max-width: 180px;
+}
+@media (max-width: 720px) {
+  .program-skeleton-row {
+    grid-template-columns: 24px minmax(0, 1fr) 20px minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px;
+    min-height: 136px;
+  }
+}
