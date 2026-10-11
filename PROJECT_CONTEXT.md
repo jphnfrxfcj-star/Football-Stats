@@ -65,9 +65,11 @@ aftraptijd/status, thuisploeg, score/vs, uitploeg, beide logo’s en analyselink
 De analysekiezer vraagt hiervoor geen extra programmaodds op.
 Het odds-overzicht zet per markt het uur links, gevolgd door thuisploeg – vs –
 uitploeg met logo's; markt, modelkans en bookmakerprijs volgen daarna. Op mobiel
-blijven de ploegen naast elkaar en schuiven de marktgegevens naar een tweede regel.
-De VS-badge deelt de stijl met Analyse. De mobiele odds-datumkiezer is compact en
-staat naast ‘Vanaf’, zoals bij Combi’s; filterwaarden gebruiken dezelfde tekstkleur.
+is dit een compacte, volledig aanklikbare rij: tijd links, ploegen met kleine logo's
+en een streepje in het midden, kans en prijs rechts. Markt en historische treffers
+blijven onder de ploegnamen zichtbaar; lange namen krijgen ellips. Desktop behoudt
+de uitgebreide grid en VS-badge. De mobiele odds-datumkiezer staat compact naast
+‘Vanaf’, zoals bij Combi’s; filterwaarden delen dezelfde tekstkleur.
 Het dashboard en `/analyse` delen ook `EmptyFixtures`: dezelfde lege melding,
 hetzelfde kalendericoon en dezelfde acties. Deze toestand toont één knop ‘Volgende dag’ met ernaast alleen een
 relevante tekstactie: ‘Filters wissen’ behoudt de gekozen datum; zonder actieve

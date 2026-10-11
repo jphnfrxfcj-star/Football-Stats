@@ -248,7 +248,12 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                               <span title={t(fixture.home.name)}>{t(fixture.home.name)}</span>
                               <Badge team={fixture.home} size="small" />
                             </div>
-                            <span className="fixture-vs odds-board-vs">{t('vs')}</span>
+                            <span className="fixture-vs odds-board-vs">
+                              <span className="odds-board-vs-word">{t('vs')}</span>
+                              <span className="odds-board-vs-dash" aria-hidden="true">
+                                –
+                              </span>
+                            </span>
                             <div className="odds-board-team away">
                               <Badge team={fixture.away} size="small" />
                               <span title={t(fixture.away.name)}>{t(fixture.away.name)}</span>
@@ -284,13 +289,19 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                                   : tr('{0} · momentopname, controleer prijs', [quote.bookmaker])
                                 : t('Geen odd beschikbaar')}
                             </small>
+                            {quote && !recent && (
+                              <small className="odds-board-price-caution">
+                                {t('Momentopname')}
+                              </small>
+                            )}
                           </div>
                           <button
                             className="analyze-link odds-board-open"
                             onClick={() => navigate(`/match/${fixture.id}`)}
-                            aria-label={tr('Open analyse van {0} tegen {1}', [
+                            aria-label={tr('Open analyse van {0} tegen {1} voor {2}', [
                               fixture.home.name,
                               fixture.away.name,
+                              t(pricedMarkets[item.key]),
                             ])}
                           >
                             {t('Analyse')} <ArrowRight size={16} />

@@ -38,7 +38,7 @@ test('odds page groups model chances, filters markets and opens the selected mat
   await expect(page.getByRole('region', { name: '70% en hoger' })).toBeVisible();
   await expect(page.locator('.odds-board-row')).toHaveCount(36);
   const fixture = page.locator('.odds-board-row').first();
-  await expect(fixture.locator('.odds-board-vs')).toHaveText('vs');
+  await expect(fixture.locator('.odds-board-vs-word')).toHaveText('vs');
   await expect(fixture.locator('.odds-board-vs')).toHaveClass(/fixture-vs/);
   const timePosition = await fixture.locator('.odds-board-time').boundingBox();
   const teamsPosition = await fixture.locator('.odds-board-teams').boundingBox();
@@ -47,12 +47,11 @@ test('odds page groups model chances, filters markets and opens the selected mat
   await expect(analysisButton).toContainText('Analyse');
   if (info.project.name === 'mobile') {
     const buttonPosition = await analysisButton.boundingBox();
+    const rowPosition = await fixture.boundingBox();
     expect(
-      buttonPosition && teamsPosition && buttonPosition.x >= teamsPosition.x + teamsPosition.width,
+      buttonPosition && rowPosition && Math.abs(buttonPosition.width - rowPosition.width) < 1,
     ).toBe(true);
-    expect(await analysisButton.evaluate((button) => getComputedStyle(button).fontSize)).toBe(
-      '0px',
-    );
+    await expect(fixture.locator('.odds-board-vs-dash')).toBeVisible();
   }
   await expect(page.locator('.odds-board-price').first()).toContainText('Geen odd beschikbaar');
   await page.getByLabel('Oddsenmarkt').selectOption('over15');

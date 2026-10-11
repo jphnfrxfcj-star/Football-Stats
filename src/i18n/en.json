@@ -620,5 +620,7 @@
   "Over 2.5 goals": "Over 2.5 goals",
   "Over 3.5 goals": "Over 3.5 goals",
   "Under 2.5 goals": "Under 2.5 goals",
-  "{0} · momentopname, controleer prijs": "{0} · snapshot, verify price"
+  "{0} · momentopname, controleer prijs": "{0} · snapshot, verify price",
+  "Momentopname": "Snapshot",
+  "Open analyse van {0} tegen {1} voor {2}": "Open analysis of {0} versus {1} for {2}"
 }
