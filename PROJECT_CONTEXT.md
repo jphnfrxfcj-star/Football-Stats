@@ -44,6 +44,9 @@ openen; op een matchpagina brengt die navigatie je naar boven in de huidige anal
 Mobiel (tot 720 px): vaste ondernavigatie met labels en safe-area-ruimte, compacte
 header met taalkeuze, geen grote promotionele hero/overzichtskaarten, horizontaal
 scrollbare spotlightkaarten, aanraakbare filters, uitklapbare combi-uitleg.
+Programmaregels tonen op smalle telefoons beide ploeglogo’s naast elkaar rond de
+score, met de drie 1/X/2-odds op één regel eronder. Lange ploegnamen worden visueel
+tot twee regels beperkt; de volledige naam blijft in de interface beschikbaar.
 Het dashboard en `/analyse` delen `FixtureFilters`: dezelfde datumkiezer met
 pijltjes voor vorige/volgende dag, competitie- en ploegkeuze. Op mobiel staan
 ze onder elkaar. Keuzelijsten

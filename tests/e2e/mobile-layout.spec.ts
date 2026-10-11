@@ -11,6 +11,30 @@ for (const width of [360, 390])
     await expect(nav).toHaveCSS('position', 'fixed');
     await expect(page.locator('.feature-banner')).not.toBeVisible();
     await expect(page.locator('.spotlight-card').first()).toBeVisible();
+    const programRow = page.locator('.fixture-row').first();
+    const programLayout = await programRow.evaluate((row) => {
+      const box = (selector: string) => row.querySelector(selector)!.getBoundingClientRect();
+      const home = box('.fixture-team.home .team-badge');
+      const away = box('.fixture-team.away .team-badge');
+      const score = box('.fixture-vs');
+      const odds = [...row.querySelectorAll('.fixture-odd')].map((cell) =>
+        cell.getBoundingClientRect(),
+      );
+      return {
+        badgeTopDifference: Math.abs(home.top - away.top),
+        teamsAroundScore: home.right < score.left && score.right < away.left,
+        oddsBelowTeams: odds.every((cell) => cell.top > home.bottom && cell.top > away.bottom),
+        oddsSameLine: odds.every((cell) => Math.abs(cell.top - odds[0].top) < 1),
+        oddsOrdered: odds[0].right < odds[1].left && odds[1].right < odds[2].left,
+      };
+    });
+    expect(programLayout).toMatchObject({
+      teamsAroundScore: true,
+      oddsBelowTeams: true,
+      oddsSameLine: true,
+      oddsOrdered: true,
+    });
+    expect(programLayout.badgeTopDifference).toBeLessThan(1);
     const box = await nav.boundingBox();
     expect(box!.y + box!.height).toBeLessThanOrEqual(801);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(

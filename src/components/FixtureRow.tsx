@@ -41,7 +41,7 @@ export default function FixtureRow({
         </span>
       </div>
       <div className="fixture-team home">
-        <span>{t(f.home.name)}</span>
+        <span title={t(f.home.name)}>{t(f.home.name)}</span>
         <Badge team={f.home} />
       </div>
       <span className="fixture-vs">
@@ -49,7 +49,7 @@ export default function FixtureRow({
       </span>
       <div className="fixture-team away">
         <Badge team={f.away} />
-        <span>{t(f.away.name)}</span>
+        <span title={t(f.away.name)}>{t(f.away.name)}</span>
       </div>
       {children}
       <span className="fixture-venue">
