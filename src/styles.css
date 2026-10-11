@@ -4237,6 +4237,9 @@ td {
   font-size: 12px;
   font-weight: 550;
 }
+.odds-team-name-mobile {
+  display: none;
+}
 .odds-board-team {
   display: flex;
   align-items: center;
@@ -4323,6 +4326,12 @@ td {
   .odds-board-controls select {
     height: 48px;
     font-size: 16px;
+  }
+  .odds-team-name-desktop {
+    display: none;
+  }
+  .odds-team-name-mobile {
+    display: inline;
   }
   .odds-board-row {
     grid-template-columns: 43px minmax(0, 1fr) 40px minmax(0, 1fr) 32px;

@@ -31,13 +31,13 @@ met voorkeur voor Unibet België en geen dure verplichte voetbal-API-licentie.
 
 ## Routes en schermen
 
-| Route        | Gedrag                                                                                                                                      |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`          | Dashboard: programma met 1/X/2-odds, spotlight, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.              |
-| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                         |
-| `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap.   |
-| `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                    |
-| `/odds`      | Apart geladen marktenoverzicht per geschatte modelkans, met historische treffers, beschikbare bookmakerprijzen en een link naar de analyse. |
+| Route        | Gedrag                                                                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`          | Dashboard: programma met 1/X/2-odds, spotlight, combizoeker, combihistoriek. Datum-, competitie- en ploegkeuze met clublogo’s.            |
+| `/analyse`   | Wedstrijdkiezer met datum, competitie- en ploegkeuze; opent een echte matchanalyse.                                                       |
+| `/match/:id` | Matchanalyse, odds versus statistiek, concept-betbuilder, modelkansen, vorm, goalmarkten, wedstrijd- en spelerstatistieken, H2H en recap. |
+| `/combis`    | Apart geladen pagina met maximaal negen compacte combivoorstellen, instelbare doelodds, historische drempel en variatie.                  |
+| `/odds`      | Apart geladen marktenoverzicht per geschatte modelkans, met beschikbare bookmakerprijzen en een link naar de analyse.                     |
 
 ‘Ons model’ opent een uitlegvenster. ‘Matchanalyse’ mag niet hetzelfde modelvenster
 openen; op een matchpagina brengt die navigatie je naar boven in de huidige analyse.
@@ -67,8 +67,8 @@ Het odds-overzicht zet per markt het uur links, gevolgd door thuisploeg – vs �
 uitploeg met logo's; markt, modelkans en bookmakerprijs volgen daarna. Op mobiel
 volgt de volledig aanklikbare rij de Analyse-indeling: tijd met scheidingslijn links,
 logo's boven de ploegnamen en een vaste VS-kolom ertussen. Het kleine percentage
-staat rechts; de odd staat op dezelfde regel als de markt. Markt en historische treffers
-blijven onder de ploegnamen zichtbaar; lange namen krijgen ellips. Desktop behoudt
+staat rechts; de odd staat op dezelfde regel als de markt. De markt blijft onder de ploegnamen zichtbaar; historische treffers staan alleen in de analyse.
+Mobiele ploegnamen tonen maximaal tien tekens (zoals Strasbourg), gevolgd door drie puntjes bij langere namen. Desktop behoudt
 de uitgebreide grid en VS-badge. De mobiele odds-datumkiezer staat compact naast
 ‘Vanaf’, zoals bij Combi’s; filterwaarden delen dezelfde tekstkleur.
 Het dashboard en `/analyse` delen ook `EmptyFixtures`: dezelfde lege melding,

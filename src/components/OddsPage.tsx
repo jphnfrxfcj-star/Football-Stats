@@ -10,6 +10,23 @@ import DataNotice from './DataNotice';
 import RefreshButton from './RefreshButton';
 import { Badge, ErrorBox, Loading, time } from './ui';
 
+function OddsTeamName({ name }: { name: string }) {
+  const fullName = t(name);
+  const characters = Array.from(fullName);
+  const mobileName =
+    characters.length > 10 ? `${characters.slice(0, 10).join('').trimEnd()}...` : fullName;
+  return (
+    <span title={fullName} aria-label={fullName}>
+      <span className="odds-team-name-desktop" aria-hidden="true">
+        {fullName}
+      </span>
+      <span className="odds-team-name-mobile" aria-hidden="true">
+        {mobileName}
+      </span>
+    </span>
+  );
+}
+
 function newestQuote(quotes: OddsQuote[], bookmaker: string) {
   const observedTime = (quote: OddsQuote) => {
     const value = Date.parse(quote.observedAt ?? quote.updatedAt ?? '');
@@ -245,7 +262,7 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                           </div>
                           <div className="odds-board-teams">
                             <div className="odds-board-team home">
-                              <span title={t(fixture.home.name)}>{t(fixture.home.name)}</span>
+                              <OddsTeamName name={fixture.home.name} />
                               <Badge team={fixture.home} size="small" />
                             </div>
                             <span className="fixture-vs odds-board-vs">
@@ -253,19 +270,11 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                             </span>
                             <div className="odds-board-team away">
                               <Badge team={fixture.away} size="small" />
-                              <span title={t(fixture.away.name)}>{t(fixture.away.name)}</span>
+                              <OddsTeamName name={fixture.away.name} />
                             </div>
                           </div>
                           <div className="odds-board-market">
                             <strong>{t(pricedMarkets[item.key])}</strong>
-                            <small>
-                              {tr('Laatste 10: thuis {0}/{1} · uit {2}/{3}', [
-                                item.homeRecent.successes,
-                                item.homeRecent.total,
-                                item.awayRecent.successes,
-                                item.awayRecent.total,
-                              ])}
-                            </small>
                           </div>
                           <div className="odds-board-probability">
                             <strong>
