@@ -119,7 +119,7 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
         )}
       </p>
       <div className="odds-board-controls">
-        <label>
+        <label className="odds-board-date">
           {t('Vanaf')}
           <input
             type="date"
@@ -248,7 +248,7 @@ export default function OddsPage({ navigate }: { navigate: (path: string) => voi
                               <span title={t(fixture.home.name)}>{t(fixture.home.name)}</span>
                               <Badge team={fixture.home} size="small" />
                             </div>
-                            <span className="odds-board-vs">{t('vs')}</span>
+                            <span className="fixture-vs odds-board-vs">{t('vs')}</span>
                             <div className="odds-board-team away">
                               <Badge team={fixture.away} size="small" />
                               <span title={t(fixture.away.name)}>{t(fixture.away.name)}</span>

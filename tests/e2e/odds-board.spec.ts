@@ -27,7 +27,10 @@ test('odds page groups model chances, filters markets and opens the selected mat
     );
   if (info.project.name === 'mobile') {
     expect(controls.slice(1).every((control, index) => control.y > controls[index].y)).toBe(true);
-    expect(controls.every((control) => Math.abs(control.width - controls[0].width) < 1)).toBe(true);
+    expect(controls[0].width).toBeLessThan(220);
+    expect(
+      controls.slice(1).every((control) => Math.abs(control.width - controls[1].width) < 1),
+    ).toBe(true);
   } else {
     expect(controls.every((control) => Math.abs(control.y - controls[0].y) < 1)).toBe(true);
     expect(controls.every((control) => Math.abs(control.width - controls[0].width) < 1)).toBe(true);
@@ -36,6 +39,7 @@ test('odds page groups model chances, filters markets and opens the selected mat
   await expect(page.locator('.odds-board-row')).toHaveCount(36);
   const fixture = page.locator('.odds-board-row').first();
   await expect(fixture.locator('.odds-board-vs')).toHaveText('vs');
+  await expect(fixture.locator('.odds-board-vs')).toHaveClass(/fixture-vs/);
   const timePosition = await fixture.locator('.odds-board-time').boundingBox();
   const teamsPosition = await fixture.locator('.odds-board-teams').boundingBox();
   expect(timePosition && teamsPosition && timePosition.x < teamsPosition.x).toBe(true);
